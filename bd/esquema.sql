@@ -15,8 +15,10 @@
 
 PRAGMA foreign_keys = ON;
 
--- Versión del esquema. Súbela cada vez que cambies este fichero: el servidor
--- se niega a arrancar con una base de datos de otra versión (ver conexion.ts).
+-- ESQUEMA BASE (versión 2). NO LO MODIFIQUES: desde la fase 5 hay datos
+-- reales (originales) que no se pueden borrar. Cada cambio nuevo va en un
+-- fichero de bd/migraciones (003-..., 004-...) y se aplica con
+-- npm run db:migrar. Una base nueva = este fichero + todas las migraciones.
 -- 1 = fase 1 · 2 = fase 3 (sesiones con hash, intentos de acceso)
 PRAGMA user_version = 2;
 

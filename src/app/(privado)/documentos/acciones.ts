@@ -1,9 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { MAX_ARCHIVOS_POR_SUBIDA, TAMANO_MAXIMO, type EstadoSubida, type ResultadoArchivo } from "@/dominio/subida";
 import { repositorioActual } from "@/servidor/auth/sesion";
 import { limpiarNombre, recibirArchivo } from "@/servidor/documentos/recibir";
+import { lanzarCola } from "@/servidor/lectura/cola";
 
 export async function subirDocumentos(_previo: EstadoSubida, f: FormData): Promise<EstadoSubida> {
   const { repo } = await repositorioActual(); // la empresa sale de la sesión
@@ -21,6 +23,8 @@ export async function subirDocumentos(_previo: EstadoSubida, f: FormData): Promi
     }
     resultados.push(recibirArchivo(repo, { nombre: a.name, bytes: new Uint8Array(await a.arrayBuffer()) }));
   }
+  // La lectura automática empieza DESPUÉS de responder: la subida no espera al OCR
+  if (resultados.some((r) => r.ok)) after(lanzarCola);
   revalidatePath("/documentos");
   revalidatePath("/panel");
   return { resultados };

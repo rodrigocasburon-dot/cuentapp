@@ -10,6 +10,7 @@ import { RUTA_BD } from "@/config";
 export type Bd = Database.Database;
 
 const RUTA_ESQUEMA = path.join(process.cwd(), "bd", "esquema.sql");
+const CARPETA_MIGRACIONES = path.join(process.cwd(), "bd", "migraciones");
 
 /**
  * Abre la base de datos con las opciones que necesitamos.
@@ -24,9 +25,36 @@ export function abrirBd(ruta: string = RUTA_BD, crear = true): Bd {
   return bd;
 }
 
-/** Crea todas las tablas y triggers. Solo para una base de datos vacía. */
+/**
+ * Base de datos NUEVA: crea el esquema base (bd/esquema.sql, versión 2) y
+ * aplica después todas las migraciones. Así una base nueva y una migrada
+ * acaban exactamente iguales.
+ */
 export function aplicarEsquema(bd: Bd): void {
   bd.exec(fs.readFileSync(RUTA_ESQUEMA, "utf8"));
+  migrar(bd);
+}
+
+/**
+ * Aplica, en orden, las migraciones de bd/migraciones con número mayor que
+ * la versión actual ("003-lectura.sql" → versión 3). Cada una va en su
+ * propia transacción: si falla, la base de datos queda como estaba.
+ * Devuelve los ficheros aplicados.
+ */
+export function migrar(bd: Bd): string[] {
+  const actual = bd.pragma("user_version", { simple: true }) as number;
+  const pendientes = fs
+    .readdirSync(CARPETA_MIGRACIONES)
+    .filter((f) => /^\d{3}-.+\.sql$/.test(f))
+    .sort()
+    .filter((f) => Number(f.slice(0, 3)) > actual);
+  for (const f of pendientes) {
+    bd.transaction(() => {
+      bd.exec(fs.readFileSync(path.join(CARPETA_MIGRACIONES, f), "utf8"));
+      bd.pragma(`user_version = ${Number(f.slice(0, 3))}`);
+    })();
+  }
+  return pendientes;
 }
 
 /** Datos de referencia: los tres planes (importes provisionales, sin IVA). */
@@ -40,8 +68,8 @@ export function insertarPlanes(bd: Bd): void {
   insertar.run({ id: "despacho", nombre: "Despacho", precio_centimos: 0, limite_docs_mes: null, limite_docs_total: null, dias_prueba: null, disponible: 0 });
 }
 
-/** Debe coincidir con "PRAGMA user_version" de bd/esquema.sql. */
-export const VERSION_ESQUEMA = 2;
+/** Número de la última migración de bd/migraciones (una prueba lo comprueba). */
+export const VERSION_ESQUEMA = 3;
 
 // Una sola conexión compartida por el servidor de Next.js
 let compartida: Bd | undefined;
@@ -51,7 +79,7 @@ export function bd(): Bd {
     const version = nueva.pragma("user_version", { simple: true });
     if (version !== VERSION_ESQUEMA) {
       nueva.close();
-      throw new Error(`La base de datos es de la versión ${version} y el código espera la ${VERSION_ESQUEMA}. Ejecuta npm run db:reset.`);
+      throw new Error(`La base de datos es de la versión ${version} y el código espera la ${VERSION_ESQUEMA}. Ejecuta npm run db:migrar.`);
     }
     compartida = nueva;
   }

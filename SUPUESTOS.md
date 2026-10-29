@@ -5,7 +5,7 @@ Registro vivo de supuestos, decisiones y dudas. Cada entrada indica si está
 instalado) o es **supuesta** (pendiente de confirmar). `[A VERIFICAR]` marca
 lo que alguien del equipo debe comprobar antes de darlo por bueno.
 
-Última actualización: 29/10/2026 (fase 4).
+Última actualización: 29/10/2026 (fase 5).
 
 ---
 
@@ -87,6 +87,25 @@ niega a borrar la base de datos. Para empezar de cero en local hay que
 borrar a mano la carpeta `datos/` entera (se pierden todos los documentos).
 Hasta que haya migraciones (D-19), cambiar el esquema obliga a eso.
 
+### Fase 5 (29/10/2026) · RF-05 lectura integrada
+
+| # | Decisión | Motivo / estado |
+|---|---|---|
+| D-28 | **Migraciones** (`bd/migraciones/NNN-*.sql`, `npm run db:migrar`, copia de seguridad previa). `esquema.sql` queda congelado como base v2. | Ya hay originales: no se puede volver a crear la BD. Probado con la BD local real (v2 → v3, originales intactos). Sustituye a D-19. |
+| D-29 | `extractInvoice(ruta)` es la única puerta a la lectura: devuelve una `Extraccion` validada con zod. Motor B (RapidOCR) como **servicio Python persistente** (el modelo se carga una vez, ~3 s). | Cambiar de motor = cambiar solo `src/servidor/lectura/extraer.ts`. |
+| D-30 | **PDF:** si trae texto (factura generada por programa) se usa ese texto (~0,04 s, exacto); si es escaneado, se convierte a imagen (200 ppp, máx. 3 páginas) y pasa por OCR. Librería `pypdfium2` 5.14 (3,8 MB, PyPI) en `.venv-ocr`. | Licencia de pypdfium2/PDFium `[A VERIFICAR]` (se declaran Apache-2.0/BSD). |
+| D-31 | La lectura va **en segundo plano** (`after()` de Next tras la subida), de uno en uno; la lista se refresca sola cada 3 s mientras haya documentos leyéndose. Los atascados en "procesando" más de 10 min vuelven a la cola. | Una subida de 10 fotos no bloquea la pantalla. |
+| D-32 | Estados tras leer: **incidencia** si hay un aviso rojo; si no, **pendiente de revisión**. Nunca "validado" automáticamente. Si el motor falla → revisión manual (ámbar). Si el archivo está **dañado** → incidencia "ilegible". | La validación es manual (fase 6). |
+| D-33 | Avisos de las validaciones guardados en `documentos.avisos_json` con nivel rojo/ámbar/info. Solo los rojos generan fila en `incidencias`. | El semáforo (fase 7) leerá ambos. |
+| D-34 | Rojo: ilegible (≤1 campo leído), archivo dañado, **documento a nombre de otro NIF** (si el NIF leído es válido y con confianza ≥ 0,8; si no, ámbar). Ámbar: NIF con control erróneo o ajeno a España, factura completa sin NIF, sin total o sin desglose, descuadre (> 1 cént. por línea), cuota ≠ base × tipo, tipo de IVA no español, fecha futura o de hace > 4 años, moneda desconocida, sin tipo de cambio, campo con confianza < 0,6. Info: ticket sin NIF de receptor, moneda extranjera. | Umbrales provisionales; ajustar con tickets reales. |
+| D-35 | Tipo de cambio: Frankfurter `api.frankfurter.dev/v1`, 1 EUR = x moneda, `total_eur = total / x`, **caché en BD** por moneda y fecha. Sin red → aviso ámbar y total en euros vacío. | Verificado: fin de semana → último día hábil (S-07 resuelto). Solo se envían moneda y fecha. |
+
+**Resultado de `npm run lectura:probar`** (banco sintético por la lectura
+real de la app, 16 lecturas: 12 imágenes + 4 facturas en PDF): **136/144
+campos correctos (94 %)**; los 8 fallos son todos del ticket ilegible, que
+acaba como incidencia, como debe. Imágenes: 2-5 s; PDF con texto: 0,04 s.
+Sigue pendiente repetirlo con tickets reales.
+
 ## 3. Consecuencias de D-01 (SQLite) que el equipo debe conocer
 
 - **No hay RLS.** El aislamiento entre empresas se impone en tres capas:
@@ -116,7 +135,7 @@ Hasta que haya migraciones (D-19), cambiar el esquema obliga a eso.
 | S-04 | En el MVP cada usuario pertenece a una sola empresa; el modelo (membresías) admite varias. | Supuesto |
 | S-05 | Un duplicado exacto (mismo SHA-256) se guarda igualmente y abre incidencia `duplicado` bloqueante; no se rechaza en la subida. | Supuesto |
 | S-06 | Tipo de cambio: `1 EUR = x moneda`; `total_eur = total / x`, con la fecha de emisión. | Supuesto |
-| S-07 | Frankfurter publica tipos de referencia del BCE solo en días hábiles; para festivos y fines de semana devuelve el día hábil anterior. | `[A VERIFICAR]` en la fase 5 |
+| S-07 | Frankfurter publica tipos de referencia del BCE solo en días hábiles; para festivos y fines de semana devuelve el día hábil anterior. | **Verificado** el 29/10/2026 (06/09/2026 → 04/09/2026) |
 | S-08 | Plazo de conservación de originales: al menos 4 años (prescripción tributaria) y 6 si se aplica el Código de Comercio. Afecta a la política de borrado. | `[A VERIFICAR]` (consultar a un gestor; no es asesoramiento legal) |
 
 ## 5. Huecos y fallos detectados en el planteamiento

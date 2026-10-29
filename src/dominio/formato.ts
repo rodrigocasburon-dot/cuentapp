@@ -14,6 +14,24 @@ export function fechaHora(iso: string): string {
   return FECHA_HORA.format(new Date(iso));
 }
 
+/** "2026-07-14" → "14/07/2026" */
+export function fecha(isoDia: string): string {
+  const [a, m, d] = isoDia.split("-");
+  return `${d}/${m}/${a}`;
+}
+
+/**
+ * 151250, "EUR" → "1512,50 €" · 4999, "USD" → "49,99 US$".
+ * (En es-ES, Intl no pone punto de miles en números de 4 cifras: es la norma de la RAE.)
+ */
+export function importe(centimos: number, moneda = "EUR"): string {
+  try {
+    return (centimos / 100).toLocaleString("es-ES", { style: "currency", currency: moneda });
+  } catch {
+    return `${(centimos / 100).toLocaleString("es-ES", { minimumFractionDigits: 2 })} ${moneda}`; // moneda desconocida
+  }
+}
+
 /** Mes "AAAA-MM" en hora de España (no UTC: a medianoche del día 1 importa). */
 export function mesDe(fecha: Date): string {
   return new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Madrid", year: "numeric", month: "2-digit" }).format(fecha);

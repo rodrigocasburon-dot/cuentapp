@@ -23,6 +23,27 @@ local), o crea una cuenta nueva en «Crear cuenta».
 > y no en el PATH. En PowerShell, antes de los comandos:
 > `$env:PATH = "C:\Users\rodri\tools\node-v24.22.1-win-x64;$env:PATH"`
 
+### Lectura automática (una sola vez)
+
+La app arranca sin esto, pero entonces los documentos pasan a revisión
+manual sin datos. Para que se lean solos hace falta Python 3.11 y el motor OCR
+en un entorno virtual del proyecto (unos 100 MB, todo local):
+
+```bash
+python -m venv .venv-ocr
+.venv-ocr\Scripts\python -m pip install rapidocr==3.10.0 onnxruntime==1.31.1 pypdfium2==5.14.0
+npm run lectura:probar
+```
+
+El último comando lee el banco sintético y debe acabar con unos 136/144
+campos correctos. La conversión de moneda necesita internet (Frankfurter).
+
+### Si actualizas el código
+
+Si alguien ha añadido una migración en `bd/migraciones/`, el servidor no
+arranca y pide `npm run db:migrar`. Migra sin borrar datos y antes hace una
+copia de la base de datos.
+
 ## Otros comandos
 
 | Comando | Qué hace |
@@ -31,6 +52,8 @@ local), o crea una cuenta nueva en «Crear cuenta».
 | `npm run banco:generar` | Regenera el banco de documentos sintéticos con Edge |
 | `npm run comparar` | Comparativa de motores de lectura (ver `docs/pruebas-lectura.md`) |
 | `npm run originales:verificar` | Comprueba que todos los originales existen y coinciden con su SHA-256 |
+| `npm run db:migrar` | Aplica las migraciones pendientes sin borrar datos (con copia previa) |
+| `npm run lectura:probar` | Pasa el banco sintético por la lectura real de la app |
 | `npm run lint` | ESLint |
 
 > **Empezar de cero en local.** Cuando ya hay documentos subidos,
@@ -41,7 +64,11 @@ local), o crea una cuenta nueva en «Crear cuenta».
 ## Estructura
 
 ```
-bd/esquema.sql              Tablas, CHECK de estados y triggers de integridad
+bd/esquema.sql              Esquema BASE (v2, congelado): tablas, CHECK y triggers
+bd/migraciones/             Cambios posteriores del esquema (003-..., 004-...)
+lectura-py/                 Servicio OCR en Python (RapidOCR + lectura de PDF)
+src/servidor/lectura/       extractInvoice, cola de lectura, tipo de cambio
+src/dominio/validaciones.ts Validaciones deterministas (NIF, cuadre, fecha, moneda...)
 src/config.ts               Modo local / producción y rutas de datos
 src/dominio/                Reglas puras: estados, NIF... (sin BD)
 src/lectura/                Contrato de lectura (zod) y analizador de texto OCR
@@ -70,7 +97,8 @@ SUPUESTOS.md                Supuestos, decisiones y dudas abiertas
   falla si alguien ejecuta SQL fuera de `src/servidor/bd/`.
 - Las páginas y acciones obtienen los datos con `repositorioActual()`: la
   empresa sale de la sesión, nunca del navegador.
-- Si cambias `bd/esquema.sql`, sube `PRAGMA user_version` y `VERSION_ESQUEMA`.
+- No toques `bd/esquema.sql`: cada cambio del esquema es una migración nueva
+  en `bd/migraciones/` y sube `VERSION_ESQUEMA` (una prueba lo vigila).
 - El original de un documento no se modifica ni se borra (lo impiden la BD
   y el sistema de archivos), y se comprueba su hash cada vez que se sirve.
 - Importes siempre en céntimos enteros.

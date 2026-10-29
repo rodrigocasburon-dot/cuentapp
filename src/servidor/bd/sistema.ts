@@ -28,6 +28,24 @@ export function referenciasDeOriginales(bd: Bd): { id: string; ruta_original: st
   }[];
 }
 
+/**
+ * Cola de lectura: documentos en "recibido" de TODAS las empresas, el más
+ * antiguo primero. Solo devuelve id y empresa: el procesador abre después
+ * el repositorio de cada empresa para trabajar con sus datos.
+ */
+export function documentosPorLeer(bd: Bd, limite = 20): { id: string; empresa_id: string }[] {
+  return bd
+    .prepare("SELECT id, empresa_id FROM documentos WHERE estado = 'recibido' ORDER BY creado_en, rowid LIMIT ?")
+    .all(limite) as { id: string; empresa_id: string }[];
+}
+
+/** Devuelve a "recibido" los que llevan en "procesando" desde antes de `antesDe` (servidor caído a medias). */
+export function recuperarAtascados(bd: Bd, antesDe: string): number {
+  return bd
+    .prepare("UPDATE documentos SET estado = 'recibido', procesando_desde = NULL WHERE estado = 'procesando' AND procesando_desde < ?")
+    .run(antesDe).changes;
+}
+
 export function estadoSistema(bd: Bd): EstadoSistema {
   return {
     planes: bd.prepare("SELECT * FROM planes ORDER BY disponible DESC, precio_centimos").all() as EstadoSistema["planes"],

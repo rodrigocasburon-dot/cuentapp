@@ -328,6 +328,19 @@ function capturar(html: string, png: string, ancho: number, alto: number): void 
   if (!fs.existsSync(png)) throw new Error(`Edge no generó ${png}`);
 }
 
+/** Misma página, pero como PDF digital (con capa de texto), como los que envían los proveedores. */
+function imprimirPdf(html: string, pdf: string): void {
+  const fichero = path.join(TEMPORAL, path.basename(pdf, ".pdf") + "-pdf.html");
+  fs.writeFileSync(fichero, html.replace("html,body{margin:0;background:#cfcac2}", "html,body{margin:0;background:#fff}"), "utf8");
+  execFileSync(EDGE, [
+    "--headless=new", "--disable-gpu", "--no-first-run", "--no-pdf-header-footer",
+    `--user-data-dir=${path.join(TEMPORAL, "perfil")}`,
+    `--print-to-pdf=${pdf}`,
+    "file:///" + fichero.replace(/\\/g, "/"),
+  ], { stdio: "ignore", timeout: 60_000 });
+  if (!fs.existsSync(pdf)) throw new Error(`Edge no generó ${pdf}`);
+}
+
 function altoTicket(c: Caso): number {
   return 430 + c.conceptos.length * 21 + c.lineas_iva.length * 21;
 }
@@ -351,6 +364,7 @@ for (const c of casos()) {
     capturar(paginaHtml(c), png, 400, altoTicket(c));
   } else {
     capturar(paginaHtml(c), png, 800, 820);
+    imprimirPdf(paginaHtml(c), path.join(SALIDA, `${c.id}.pdf`)); // las facturas, también en PDF
   }
   // La verdad lleva lo que un lector debe extraer, más la degradación y la
   // copia (las usa la comparativa para agrupar). Formato, conceptos y
@@ -362,5 +376,10 @@ for (const c of casos()) {
   console.log(`✓ ${c.id}`);
 }
 fs.writeFileSync(path.join(SALIDA, "indice.json"), JSON.stringify(indice, null, 2) + "\n", "utf8");
-fs.rmSync(TEMPORAL, { recursive: true, force: true });
+// Edge puede tardar un momento en soltar su perfil temporal: reintentos y, si aun así falla, se deja
+try {
+  fs.rmSync(TEMPORAL, { recursive: true, force: true, maxRetries: 5, retryDelay: 500 });
+} catch {
+  console.warn(`No se pudo borrar la carpeta temporal ${TEMPORAL} (Edge aún la usa). Puedes borrarla a mano.`);
+}
 console.log(`\n${indice.length} documentos sintéticos en ${SALIDA}`);
