@@ -12,6 +12,13 @@ import { randomUUID } from "node:crypto";
 import type { Bd } from "./conexion";
 import type { Estado, TipoDocumento, TipoIncidencia } from "@/dominio/estados";
 import { mesDe } from "@/dominio/formato";
+import {
+  calcularSemaforo,
+  fechasTrimestre,
+  type DocumentoParaSemaforo,
+  type LineaIvaResumen,
+  type ResultadoSemaforo,
+} from "@/dominio/semaforo";
 import { validar, type Aviso } from "@/dominio/validaciones";
 import type { Extraccion } from "@/lectura/esquema";
 import type { TipoCambio } from "./cambios";
@@ -627,6 +634,98 @@ export function repositorioDeEmpresa(bd: Bd, empresaId: string) {
       return bd
         .prepare("SELECT * FROM documentos WHERE empresa_id = ? AND hash_sha256 = ?")
         .all(empresaId, hash) as FilaDocumento[];
+    },
+
+    /**
+     * Documentos activos de un trimestre con sus líneas de IVA (Fase 7 · RF-09).
+     */
+    documentosDelTrimestre(anio: number, trimestre: number): (FilaDocumento & { lineasIva: FilaLineaIva[] })[] {
+      const { inicio, fin } = fechasTrimestre(anio, trimestre);
+      const docs = bd
+        .prepare(
+          `SELECT d.* FROM documentos d
+           LEFT JOIN periodos p ON p.id = d.periodo_id
+           WHERE d.empresa_id = ?
+             AND d.descartado_en IS NULL
+             AND (
+               (p.anio = ? AND p.trimestre = ?)
+               OR (d.fecha_emision >= ? AND d.fecha_emision <= ?)
+             )
+           ORDER BY d.fecha_emision ASC, d.creado_en ASC, d.rowid ASC`,
+        )
+        .all(empresaId, anio, trimestre, inicio, fin) as FilaDocumento[];
+
+      const insLineas = bd.prepare(
+        "SELECT tipo_iva, base_centimos, cuota_centimos FROM lineas_iva WHERE documento_id = ? AND empresa_id = ? ORDER BY tipo_iva",
+      );
+
+      return docs.map((d) => ({
+        ...d,
+        lineasIva: insLineas.all(d.id, empresaId) as FilaLineaIva[],
+      }));
+    },
+
+    /**
+     * Resumen y cálculo del semáforo para un trimestre (Fase 7).
+     */
+    resumenTrimestre(anio: number, trimestre: number): ResultadoSemaforo {
+      const docs = this.documentosDelTrimestre(anio, trimestre);
+      const incsAbiertasStmt = bd.prepare(
+        "SELECT 1 FROM incidencias WHERE documento_id = ? AND empresa_id = ? AND bloqueante = 1 AND estado = 'abierta'",
+      );
+
+      const docsParaSemaforo: DocumentoParaSemaforo[] = docs.map((d) => ({
+        id: d.id,
+        estado: d.estado,
+        tipo: d.tipo,
+        nif_emisor: d.nif_emisor,
+        nif_receptor: d.nif_receptor,
+        total_eur_centimos: d.total_eur_centimos,
+        total_centimos: d.total_centimos,
+        base_centimos: d.base_centimos,
+        cuota_centimos: d.cuota_centimos,
+        avisos: d.avisos_json ? JSON.parse(d.avisos_json) : [],
+        tieneIncidenciasBloqueantes: !!incsAbiertasStmt.get(d.id, empresaId),
+        descartado: !!d.descartado_en,
+      }));
+
+      const todasLineas: LineaIvaResumen[] = docs.flatMap((d) =>
+        d.lineasIva.map((l) => ({
+          tipo_iva: l.tipo_iva,
+          base_centimos: l.base_centimos,
+          cuota_centimos: l.cuota_centimos,
+        })),
+      );
+
+      return calcularSemaforo(docsParaSemaforo, todasLineas);
+    },
+
+    /**
+     * Lista los trimestres que tienen documentos en esta empresa, más el actual.
+     */
+    listarTrimestres(): { anio: number; trimestre: number; totalDocumentos: number }[] {
+      const filas = bd
+        .prepare(
+          `SELECT
+             COALESCE(p.anio, CAST(SUBSTR(d.fecha_emision, 1, 4) AS INTEGER)) AS anio,
+             COALESCE(p.trimestre, CAST((CAST(SUBSTR(d.fecha_emision, 6, 2) AS INTEGER) + 2) / 3 AS INTEGER)) AS trimestre,
+             COUNT(*) AS totalDocumentos
+           FROM documentos d
+           LEFT JOIN periodos p ON p.id = d.periodo_id
+           WHERE d.empresa_id = ? AND d.descartado_en IS NULL AND (p.anio IS NOT NULL OR d.fecha_emision IS NOT NULL)
+           GROUP BY anio, trimestre
+           ORDER BY anio DESC, trimestre DESC`,
+        )
+        .all(empresaId) as { anio: number; trimestre: number; totalDocumentos: number }[];
+
+      const ahora = new Date();
+      const actual = { anio: ahora.getFullYear(), trimestre: Math.ceil((ahora.getMonth() + 1) / 3) };
+
+      if (!filas.some((f) => f.anio === actual.anio && f.trimestre === actual.trimestre)) {
+        filas.unshift({ anio: actual.anio, trimestre: actual.trimestre, totalDocumentos: 0 });
+      }
+
+      return filas.filter((f) => f.anio >= 2000 && f.anio <= 2100 && f.trimestre >= 1 && f.trimestre <= 4);
     },
   };
 }
