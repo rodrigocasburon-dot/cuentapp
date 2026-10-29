@@ -113,6 +113,16 @@ describe("procesado de un documento", () => {
     expect(JSON.parse(repo.obtenerDocumento(id)!.avisos_json!)[0].codigo).toBe("lectura_fallida");
   });
 
+  it("SVG: no pasa por el lector y queda pendiente de revisión manual", async () => {
+    const bd = bdDePrueba();
+    const repo = repositorioDeEmpresa(bd, "A");
+    const r = recibirArchivo(repo, { nombre: "t.svg", bytes: new TextEncoder().encode("<svg></svg>") }, "subida", carpeta);
+    if (!r.ok) throw new Error(r.motivo);
+    const lector = deps(new Error("no debería llamarse al lector"));
+    expect(await procesarDocumento(repo, r.id, lector)).toBe("pendiente_revision");
+    expect(JSON.parse(repo.obtenerDocumento(r.id)!.avisos_json!)[0].codigo).toBe("lectura_manual");
+  });
+
   it("moneda extranjera: convierte a euros con el tipo del BCE de la fecha", async () => {
     const bd = bdDePrueba();
     const { repo, id } = subir(bd, "A");

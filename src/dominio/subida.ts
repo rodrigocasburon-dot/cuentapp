@@ -3,8 +3,8 @@
 
 export const TAMANO_MAXIMO = 10 * 1024 * 1024; // 10 MB por archivo
 export const MAX_ARCHIVOS_POR_SUBIDA = 10;
-export const EXTENSIONES_ADMITIDAS = ".pdf,.jpg,.jpeg,.png,.webp";
-export const TEXTO_FORMATOS = "PDF, JPG, PNG o WebP";
+export const EXTENSIONES_ADMITIDAS = ".pdf,.jpg,.jpeg,.png,.webp,.svg";
+export const TEXTO_FORMATOS = "PDF, JPG, PNG, WebP o SVG";
 
 export type ResultadoArchivo =
   | { nombre: string; ok: true; id: string; duplicadoDe?: string }

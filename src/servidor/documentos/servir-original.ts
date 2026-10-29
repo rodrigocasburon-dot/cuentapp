@@ -2,7 +2,7 @@
 // Solo si el documento es de la empresa de la sesión (el repositorio ya
 // filtra) y solo si el fichero sigue coincidiendo con su SHA-256.
 
-import { leerOriginal } from "@/servidor/almacen/originales";
+import { leerOriginal, MIME_SVG } from "@/servidor/almacen/originales";
 import type { Repositorio } from "@/servidor/bd/repositorio";
 
 export interface RespuestaOriginal {
@@ -29,13 +29,17 @@ export function respuestaOriginal(repo: Repositorio, id: string, descargar: bool
     console.error(`[RF-08] Original ${lectura.motivo} · documento ${doc.id} · ${doc.ruta_original}`);
     return { estado: 500, cuerpo: "El original no supera la comprobación de integridad. Avisa al equipo.", cabeceras: TEXTO };
   }
+  // Un SVG puede llevar scripts: siempre como descarga (nunca se abre en la
+  // web) y, por si acaso, con una política que bloquea todo código (D-40).
+  const svg = doc.mime === MIME_SVG;
   return {
     estado: 200,
     cuerpo: new Uint8Array(lectura.bytes),
     cabeceras: {
       "Content-Type": doc.mime,                 // detectado por sus bytes al subirlo, no el que dijo el navegador
       "Content-Length": String(lectura.bytes.length),
-      "Content-Disposition": disposicion(doc.nombre_original, descargar),
+      "Content-Disposition": disposicion(doc.nombre_original, descargar || svg),
+      ...(svg ? { "Content-Security-Policy": "default-src 'none'; sandbox" } : {}),
       "X-Content-Type-Options": "nosniff",      // el navegador no debe "adivinar" otro tipo
       "Cache-Control": "private, no-store",     // nada de cachés compartidas
       ETag: `"${doc.hash_sha256}"`,

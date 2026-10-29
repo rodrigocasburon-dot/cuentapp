@@ -19,6 +19,7 @@ export default async function FichaDocumento({ params }: { params: Promise<{ id:
 
   const integro = originalIntegro(doc.ruta_original, doc.hash_sha256);
   const urlOriginal = `/documentos/${doc.id}/original`;
+  const esSvg = doc.mime === "image/svg+xml"; // solo descarga (D-40)
   const leyendo = doc.estado === "recibido" || doc.estado === "procesando";
   const confianza: Record<string, number> = doc.confianza_json ? JSON.parse(doc.confianza_json) : {};
   const avisos: Aviso[] = doc.avisos_json ? JSON.parse(doc.avisos_json) : [];
@@ -85,6 +86,7 @@ export default async function FichaDocumento({ params }: { params: Promise<{ id:
               </dd>
             </dl>
             <div className="mt-4 flex flex-wrap gap-3">
+              {!esSvg && (
               <a
                 href={urlOriginal}
                 target="_blank"
@@ -93,6 +95,7 @@ export default async function FichaDocumento({ params }: { params: Promise<{ id:
               >
                 Abrir el original
               </a>
+              )}
               <a
                 href={`${urlOriginal}?descargar=1`}
                 className="rounded-full border-2 border-marron-oscuro px-5 py-2 font-bold hover:bg-crema-2"
@@ -104,7 +107,15 @@ export default async function FichaDocumento({ params }: { params: Promise<{ id:
         </div>
 
         <div className="space-y-6">
-          {integro && doc.mime.startsWith("image/") && (
+          {integro && esSvg && (
+            <div className="sticky top-6 rounded-2xl border-2 border-crema-2 bg-crema-2 p-6 text-center">
+              <p className="font-bold">Documento SVG</p>
+              <p className="mt-1 text-sm text-marron">
+                Por seguridad, los SVG no se muestran en la web: descárgalo para verlo. Tampoco se leen solos; escribe los datos a mano.
+              </p>
+            </div>
+          )}
+          {integro && doc.mime.startsWith("image/") && !esSvg && (
             // eslint-disable-next-line @next/next/no-img-element -- el original se sirve tal cual, sin optimizar
             <img
               src={urlOriginal}

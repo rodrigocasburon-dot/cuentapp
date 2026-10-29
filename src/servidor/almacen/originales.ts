@@ -18,11 +18,29 @@ export interface TipoArchivo {
   ext: string;
 }
 
+export const MIME_SVG = "image/svg+xml";
+
+/**
+ * ¿Es un SVG? Texto XML cuyo primer elemento es <svg>. Un SVG puede llevar
+ * código (scripts) que se ejecutaría al abrirlo: se admite, pero NUNCA se
+ * muestra en la web, solo se descarga (servir-original.ts), y no pasa por
+ * el OCR (D-40).
+ */
+function esSvg(bytes: Uint8Array): boolean {
+  let texto = new TextDecoder("utf-8", { fatal: false }).decode(bytes.subarray(0, 4096));
+  texto = texto.replace(/^﻿/, "");
+  // Quitamos la declaración XML, comentarios y DOCTYPE del principio
+  for (let previo = ""; previo !== texto; ) {
+    previo = texto;
+    texto = texto.replace(/^\s+/, "").replace(/^<\?xml[\s\S]*?\?>/, "").replace(/^<!--[\s\S]*?-->/, "").replace(/^<!DOCTYPE\s+svg[^>]*>/i, "");
+  }
+  return /^<svg[\s>]/.test(texto);
+}
+
 /**
  * Detecta el tipo por los primeros bytes ("número mágico"), NO por la
  * extensión ni por lo que diga el navegador, que se pueden falsear.
- * Solo admitimos PDF, JPEG, PNG y WebP. Nada de SVG ni HTML: podrían
- * llevar código que se ejecutaría al abrirlos.
+ * Admitimos PDF, JPEG, PNG, WebP y SVG. Nada de HTML.
  */
 export function detectarTipo(bytes: Uint8Array): TipoArchivo | null {
   const empieza = (...firma: number[]) => firma.every((b, i) => bytes[i] === b);
@@ -31,6 +49,7 @@ export function detectarTipo(bytes: Uint8Array): TipoArchivo | null {
   if (empieza(0xff, 0xd8, 0xff)) return { mime: "image/jpeg", ext: "jpg" };
   if (empieza(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a)) return { mime: "image/png", ext: "png" };
   if (ascii(0, "RIFF") && ascii(8, "WEBP")) return { mime: "image/webp", ext: "webp" };
+  if (esSvg(bytes)) return { mime: MIME_SVG, ext: "svg" };
   return null;
 }
 

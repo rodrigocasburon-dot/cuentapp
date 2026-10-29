@@ -43,8 +43,17 @@ describe("tipo de archivo por su contenido", () => {
     expect(detectarTipo(WEBP)?.mime).toBe("image/webp");
   });
 
-  it("rechaza ejecutables, HTML y SVG aunque se llamen .pdf", () => {
-    for (const texto of ["MZ\x90\0", "<!doctype html><script>", "<svg onload=alert(1)>", ""]) {
+  it("reconoce SVG por su contenido (con o sin declaración XML, comentarios o DOCTYPE)", () => {
+    for (const texto of [
+      '<svg xmlns="http://www.w3.org/2000/svg"></svg>',
+      '﻿<?xml version="1.0"?>\n<!-- logo -->\n<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "x.dtd">\n<svg>',
+    ]) {
+      expect(detectarTipo(new TextEncoder().encode(texto))).toEqual({ mime: "image/svg+xml", ext: "svg" });
+    }
+  });
+
+  it("rechaza ejecutables, HTML y XML que no es SVG aunque se llamen .pdf o .svg", () => {
+    for (const texto of ["MZ\x90\0", "<!doctype html><script>", "<html><svg></svg></html>", '<?xml version="1.0"?><factura/>', "<svgx>", ""]) {
       expect(detectarTipo(new TextEncoder().encode(texto))).toBeNull();
     }
   });
@@ -139,6 +148,17 @@ describe("entrega del original (RF-03, RF-08) y aislamiento", () => {
     expect(resp.cabeceras["Content-Type"]).toBe("application/pdf");
     expect(resp.cabeceras["X-Content-Type-Options"]).toBe("nosniff");
     expect(resp.cabeceras["Content-Disposition"]).toMatch(/^attachment; filename="[\x20-\x7e]+"; filename\*=UTF-8''Factura%20n%C2%BA/);
+  });
+
+  it("un SVG se entrega siempre como descarga y con una política que bloquea scripts", () => {
+    const bd = bdDePrueba();
+    const repo = repositorioDeEmpresa(bd, "A");
+    const svg = new TextEncoder().encode('<svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)"></svg>');
+    const r = recibirArchivo(repo, { nombre: "logo.svg", bytes: svg }, "subida", carpeta);
+    const resp = respuestaOriginal(repo, r.ok ? r.id : "", false, carpeta); // pedido para VER, no para descargar
+    expect(resp.cabeceras["Content-Disposition"]).toMatch(/^attachment;/);
+    expect(resp.cabeceras["Content-Security-Policy"]).toBe("default-src 'none'; sandbox");
+    expect(resp.cuerpo).toEqual(svg); // el original, intacto
   });
 
   it("otra empresa recibe 404 con el id del documento: ni lo ve ni sabe que existe", () => {

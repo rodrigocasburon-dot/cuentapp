@@ -8,7 +8,7 @@ import path from "node:path";
 import { CARPETA_ORIGINALES } from "@/config";
 import { validar, type Aviso } from "@/dominio/validaciones";
 import { extraccionVacia } from "@/lectura/esquema";
-import { leerOriginal } from "@/servidor/almacen/originales";
+import { leerOriginal, MIME_SVG } from "@/servidor/almacen/originales";
 import type { Bd } from "@/servidor/bd/conexion";
 import type { TipoCambio } from "@/servidor/bd/cambios";
 import { repositorioDeEmpresa, type Repositorio } from "@/servidor/bd/repositorio";
@@ -39,6 +39,13 @@ export async function procesarDocumento(repo: Repositorio, id: string, deps: Dep
     const avisos: Aviso[] = [{ codigo: "ilegible", nivel: "rojo", texto: "El original no supera la comprobación de integridad." }];
     repo.guardarLectura(id, { extraccion: extraccionVacia(), motor: "ninguno", avisos, cambio: null, estado: "incidencia", ahora: ahora() });
     return "incidencia";
+  }
+
+  // 1.5) SVG: no se lee automáticamente (D-40). Pasa directo a revisión manual.
+  if (doc.mime === MIME_SVG) {
+    const avisos: Aviso[] = [{ codigo: "lectura_manual", nivel: "ambar", texto: "Los SVG no se leen automáticamente. Completa los datos a mano." }];
+    repo.guardarLectura(id, { extraccion: extraccionVacia(), motor: "ninguno (SVG)", avisos, cambio: null, estado: "pendiente_revision", ahora: ahora() });
+    return "pendiente_revision";
   }
 
   // 2) Lectura. Si el motor falla, el documento pasa a revisión manual: no se queda atascado.
