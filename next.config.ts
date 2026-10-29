@@ -8,6 +8,12 @@ const nextConfig: NextConfig = {
   // better-sqlite3 es un módulo nativo: no se empaqueta, se carga tal cual.
   serverExternalPackages: ["better-sqlite3"],
 
+  // Las Server Actions aceptan 1 MB por defecto. La subida admite hasta
+  // 10 archivos de 10 MB (src/dominio/subida.ts) más el envoltorio del formulario.
+  experimental: {
+    serverActions: { bodySizeLimit: "101mb" },
+  },
+
   turbopack: {
     rules: {
       "*.css": {

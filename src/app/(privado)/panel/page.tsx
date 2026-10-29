@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { repositorioActual } from "@/servidor/auth/sesion";
+import { mesDe } from "@/dominio/formato";
 
 export const metadata: Metadata = { title: "Panel · Cuentapp" };
 
@@ -14,6 +16,7 @@ export default async function Panel() {
   const { sesion, repo } = await repositorioActual();
   const { empresa } = sesion;
   const documentos = repo.listarDocumentos();
+  const usoMes = repo.usoDelMes(mesDe(new Date()));
 
   return (
     <main className="mx-auto w-full max-w-4xl px-6 py-10">
@@ -31,7 +34,10 @@ export default async function Panel() {
         </div>
         <div className="rounded-2xl bg-crema-2 p-5">
           <dt className="text-sm text-marron">Documentos</dt>
-          <dd className="mt-1 text-xl font-bold">{documentos.length}</dd>
+          <dd className="mt-1 text-xl font-bold">
+            {documentos.length}
+            <span className="block text-base font-normal">{usoMes} recibidos este mes</span>
+          </dd>
         </div>
         <div className="rounded-2xl bg-crema-2 p-5">
           <dt className="text-sm text-marron">Tu buzón</dt>
@@ -43,6 +49,9 @@ export default async function Panel() {
         <section className="mt-10 rounded-2xl border-2 border-dashed border-marron p-8 text-center">
           <h2 className="text-xl font-bold">Aún no has subido documentos</h2>
           <p className="mt-2 text-marron">Aquí verás tus facturas y tickets, y el semáforo del trimestre.</p>
+          <Link href="/documentos" className="mt-4 inline-block rounded-full bg-marron-oscuro px-6 py-3 font-bold text-crema hover:bg-marron">
+            Subir documentos
+          </Link>
         </section>
       )}
     </main>

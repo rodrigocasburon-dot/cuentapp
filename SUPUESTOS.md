@@ -5,7 +5,7 @@ Registro vivo de supuestos, decisiones y dudas. Cada entrada indica si está
 instalado) o es **supuesta** (pendiente de confirmar). `[A VERIFICAR]` marca
 lo que alguien del equipo debe comprobar antes de darlo por bueno.
 
-Última actualización: 29/10/2026 (fase 3).
+Última actualización: 29/10/2026 (fase 4).
 
 ---
 
@@ -69,6 +69,24 @@ anónima de uso a Vercel. No incluye documentos, pero contradice el espíritu
 en este equipo) o con la variable `NEXT_TELEMETRY_DISABLED=1`.
 **Pendiente de decisión del equipo.**
 
+### Fase 4 (29/10/2026) · RF-02, RF-03, RF-08 subida y original
+
+| # | Decisión | Motivo / estado |
+|---|---|---|
+| D-20 | Formatos admitidos: **PDF, JPEG, PNG y WebP**, detectados por sus primeros bytes (no por extensión ni por lo que diga el navegador). | SVG y HTML podrían ejecutar código al abrirse. **HEIC (fotos de iPhone) no se admite**: el navegador no lo muestra y los motores OCR no lo leen; el iPhone convierte a JPEG al subir desde Safari `[A VERIFICAR]` con un iPhone real. |
+| D-21 | Límites: **10 MB por archivo, 10 archivos por subida** (`bodySizeLimit` de las Server Actions a 101 MB). | Una foto de móvil ocupa 2-8 MB. |
+| D-22 | Original guardado **por su SHA-256** en `datos/originales/<empresa>/<hash>.<ext>`, escritura atómica (temporal + enlace), **solo lectura** después. Un duplicado exacto reutiliza el mismo fichero. | Verificado en disco (atributo de solo lectura activo en Windows). |
+| D-23 | El original se **comprueba contra su hash cada vez que se sirve**; si no coincide, no se entrega (error 500 y aviso en el registro). `npm run originales:verificar` revisa todos. | RF-08. |
+| D-24 | Un documento de otra empresa devuelve **404, igual que uno inexistente**. | No revela qué identificadores existen. |
+| D-25 | Orden: primero se guarda el original y después la fila. Puede quedar un original sin fila (inofensivo), nunca una fila sin original. | |
+| D-26 | El uso mensual se cuenta al dar de alta el documento, en la misma transacción, con el **mes en hora de España**. Los **límites del plan aún no se aplican** (fase 9). | S-03 sigue abierto: ahora mismo cuentan también los duplicados. |
+| D-27 | El duplicado exacto se recibe y se avisa ("es idéntico a…"); la **incidencia bloqueante** llega en la fase 6 (RF-07). | |
+
+**Consecuencia práctica:** con originales guardados, `npm run db:reset` se
+niega a borrar la base de datos. Para empezar de cero en local hay que
+borrar a mano la carpeta `datos/` entera (se pierden todos los documentos).
+Hasta que haya migraciones (D-19), cambiar el esquema obliga a eso.
+
 ## 3. Consecuencias de D-01 (SQLite) que el equipo debe conocer
 
 - **No hay RLS.** El aislamiento entre empresas se impone en tres capas:
@@ -82,9 +100,8 @@ en este equipo) o con la variable `NEXT_TELEMETRY_DISABLED=1`.
   repositorio no la para la base de datos. Por eso cada función nueva del
   repositorio debe venir con su prueba de aislamiento.
 - **No hay Supabase Auth.** La autenticación es propia (fase 3, ver D-14).
-- **No hay Supabase Storage.** Los originales irán a
-  `datos/originales/<empresa_id>/<sha256>.<ext>`, escritos una sola vez y
-  marcados como solo lectura (fase 4).
+- **No hay Supabase Storage.** Los originales van a
+  `datos/originales/<empresa_id>/<sha256>.<ext>` (fase 4, ver D-22).
 - **Migración a Supabase:** el SQL es casi todo portable, pero los triggers
   usan sintaxis de SQLite y habría que reescribirlos en PL/pgSQL y añadir las
   políticas RLS. No es trivial; no está previsto en los 10 días.

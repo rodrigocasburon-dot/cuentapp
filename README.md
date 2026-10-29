@@ -30,7 +30,13 @@ local), o crea una cuenta nueva en «Crear cuenta».
 | `npm test` | Pruebas (esquema, acceso, aislamiento entre empresas, NIF, lectura, banco) |
 | `npm run banco:generar` | Regenera el banco de documentos sintéticos con Edge |
 | `npm run comparar` | Comparativa de motores de lectura (ver `docs/pruebas-lectura.md`) |
+| `npm run originales:verificar` | Comprueba que todos los originales existen y coinciden con su SHA-256 |
 | `npm run lint` | ESLint |
+
+> **Empezar de cero en local.** Cuando ya hay documentos subidos,
+> `npm run db:reset` se niega a borrar (protege los originales). Si de verdad
+> quieres borrarlo todo, elimina a mano la carpeta `datos/` y vuelve a
+> ejecutar `npm run db:reset`. Se pierden todos los documentos.
 
 ## Estructura
 
@@ -46,7 +52,9 @@ src/servidor/bd/            ÚNICO sitio que toca la base de datos
   cuentas.ts                Registro, sesiones e intentos de acceso
 src/servidor/auth/          Contraseñas (scrypt) y sesión por cookie
   sesion.ts                 repositorioActual(): la única puerta a los datos desde las páginas
-src/app/(privado)/          Páginas que exigen sesión (panel...)
+src/servidor/almacen/       Originales: guardar por SHA-256, solo lectura, comprobar al leer
+src/servidor/documentos/    Recepción de archivos y entrega del original
+src/app/(privado)/          Páginas que exigen sesión (panel, documentos)
 src/app/                    Páginas (Next.js App Router)
 scripts/                    db:reset, generador del banco
 tests/                      Vitest
@@ -63,7 +71,8 @@ SUPUESTOS.md                Supuestos, decisiones y dudas abiertas
 - Las páginas y acciones obtienen los datos con `repositorioActual()`: la
   empresa sale de la sesión, nunca del navegador.
 - Si cambias `bd/esquema.sql`, sube `PRAGMA user_version` y `VERSION_ESQUEMA`.
-- El original de un documento no se modifica ni se borra (lo impide la BD).
+- El original de un documento no se modifica ni se borra (lo impiden la BD
+  y el sistema de archivos), y se comprueba su hash cada vez que se sirve.
 - Importes siempre en céntimos enteros.
 - Nunca se envían documentos reales a servicios de IA gratuitos.
 - Textos de la interfaz en español; estados siempre con icono y texto.

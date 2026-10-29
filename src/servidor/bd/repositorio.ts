@@ -11,6 +11,7 @@
 import { randomUUID } from "node:crypto";
 import type { Bd } from "./conexion";
 import type { Estado, TipoDocumento } from "@/dominio/estados";
+import { mesDe } from "@/dominio/formato";
 
 export interface FilaDocumento {
   id: string;
@@ -43,8 +44,9 @@ export function repositorioDeEmpresa(bd: Bd, empresaId: string) {
     empresaId,
 
     listarDocumentos(): FilaDocumento[] {
+      // rowid desempata los subidos en el mismo segundo (el último, primero)
       return bd
-        .prepare("SELECT * FROM documentos WHERE empresa_id = ? ORDER BY creado_en DESC")
+        .prepare("SELECT * FROM documentos WHERE empresa_id = ? ORDER BY creado_en DESC, rowid DESC")
         .all(empresaId) as FilaDocumento[];
     },
 
@@ -55,13 +57,31 @@ export function repositorioDeEmpresa(bd: Bd, empresaId: string) {
         .get(id, empresaId) as FilaDocumento | undefined;
     },
 
-    crearDocumento(datos: NuevoDocumento): string {
+    /**
+     * Da de alta un documento (estado "recibido") y suma 1 al uso del mes,
+     * en la misma transacción: o se hacen las dos cosas o ninguna.
+     */
+    crearDocumento(datos: NuevoDocumento, ahora = new Date()): string {
       const id = randomUUID();
-      bd.prepare(
-        `INSERT INTO documentos (id, empresa_id, origen, nombre_original, mime, tamano_bytes, ruta_original, hash_sha256)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      ).run(id, empresaId, datos.origen, datos.nombre_original, datos.mime, datos.tamano_bytes, datos.ruta_original, datos.hash_sha256);
+      bd.transaction(() => {
+        bd.prepare(
+          `INSERT INTO documentos (id, empresa_id, origen, nombre_original, mime, tamano_bytes, ruta_original, hash_sha256)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        ).run(id, empresaId, datos.origen, datos.nombre_original, datos.mime, datos.tamano_bytes, datos.ruta_original, datos.hash_sha256);
+        bd.prepare(
+          `INSERT INTO uso_mensual (empresa_id, mes, documentos) VALUES (?, ?, 1)
+           ON CONFLICT (empresa_id, mes) DO UPDATE SET documentos = documentos + 1`,
+        ).run(empresaId, mesDe(ahora));
+      })();
       return id;
+    },
+
+    /** Documentos dados de alta en un mes ("AAAA-MM"). */
+    usoDelMes(mes: string): number {
+      const fila = bd.prepare("SELECT documentos FROM uso_mensual WHERE empresa_id = ? AND mes = ?").get(empresaId, mes) as
+        | { documentos: number }
+        | undefined;
+      return fila?.documentos ?? 0;
     },
 
     /** Devuelve true si cambió algo. Con un id de otra empresa no cambia nada. */

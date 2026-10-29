@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "db:reset": "tsx scripts/bd-reset.ts",
     "banco:generar": "tsx scripts/generar-banco.ts",
-    "comparar": "tsx comparativa/comparar.ts"
+    "comparar": "tsx comparativa/comparar.ts",
+    "originales:verificar": "tsx scripts/verificar-originales.ts"
   },
   "engines": {
     "node": ">=24"

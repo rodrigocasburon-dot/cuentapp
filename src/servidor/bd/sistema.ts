@@ -16,6 +16,18 @@ export interface EstadoSistema {
   empresas: number;  // solo el recuento, nunca la lista
 }
 
+/**
+ * Para el verificador de integridad (npm run originales:verificar): solo
+ * la ruta y el hash de cada original, sin datos del documento. No usar en páginas.
+ */
+export function referenciasDeOriginales(bd: Bd): { id: string; ruta_original: string; hash_sha256: string }[] {
+  return bd.prepare("SELECT id, ruta_original, hash_sha256 FROM documentos ORDER BY creado_en").all() as {
+    id: string;
+    ruta_original: string;
+    hash_sha256: string;
+  }[];
+}
+
 export function estadoSistema(bd: Bd): EstadoSistema {
   return {
     planes: bd.prepare("SELECT * FROM planes ORDER BY disponible DESC, precio_centimos").all() as EstadoSistema["planes"],

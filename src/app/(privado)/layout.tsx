@@ -12,9 +12,17 @@ export default async function LayoutPrivado({ children }: { children: React.Reac
     <>
       <header className="border-b-2 border-crema-2 bg-crema-2">
         <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-between gap-3 px-6 py-3">
-          <Link href="/panel" className="text-2xl font-black uppercase tracking-tight">
-            Cuentapp
-          </Link>
+          <nav aria-label="Principal" className="flex items-center gap-6">
+            <Link href="/panel" className="text-2xl font-black uppercase tracking-tight">
+              Cuentapp
+            </Link>
+            <Link href="/panel" className="font-semibold underline-offset-4 hover:underline">
+              Panel
+            </Link>
+            <Link href="/documentos" className="font-semibold underline-offset-4 hover:underline">
+              Documentos
+            </Link>
+          </nav>
           <div className="flex items-center gap-4">
             <p className="text-sm">
               <span className="font-semibold">{empresa.nombre}</span>
