@@ -11,7 +11,13 @@ const nextConfig: NextConfig = {
   // Las Server Actions aceptan 1 MB por defecto. La subida admite hasta
   // 10 archivos de 10 MB (src/dominio/subida.ts) más el envoltorio del formulario.
   experimental: {
-    serverActions: { bodySizeLimit: "101mb" },
+    serverActions: {
+      bodySizeLimit: "101mb",
+      // En GitHub Codespaces la app se ve en https://<codespace>-3000.app.github.dev
+      // a través de un proxy; sin esto Next rechazaría los formularios (protección CSRF).
+      // Fuera de Codespaces no se amplía nada.
+      allowedOrigins: process.env.CODESPACES ? ["*.app.github.dev"] : [],
+    },
   },
 
   turbopack: {

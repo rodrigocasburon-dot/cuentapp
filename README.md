@@ -5,6 +5,16 @@
 
 Proyecto final · MVP local y de coste cero · Next.js + TypeScript + Tailwind + SQLite.
 
+## Probarla sin instalar nada
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/rodrigocasburon-dot/cuentapp?quickstart=1)
+
+Pulsa el botón (hace falta cuenta de GitHub con acceso al repositorio). GitHub
+crea un ordenador en la nube, instala todo y abre la app en el puerto 3000 en
+unos minutos la primera vez. Entra con los botones de **acceso de
+demostración**. Cada persona tiene su propia copia con datos de prueba; se
+apaga sola tras 30 minutos sin uso. Sube solo documentos de prueba.
+
 ## Arranque en 3 comandos
 
 Requisito: Node.js 24 LTS (`node -v` debe responder `v24.x`).

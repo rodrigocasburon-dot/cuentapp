@@ -1,0 +1,21 @@
+// GitHub Codespaces: abre Cuentapp en un ordenador en la nube, sin instalar nada.
+// Botón «Open in GitHub Codespaces» del README. Cada codespace tiene su propia
+// base de datos (datos de prueba de db:reset); no se comparte con nadie.
+{
+  "name": "Cuentapp",
+  // Python 3.11 para la lectura automática (RapidOCR); Node 24 se añade abajo
+  "image": "mcr.microsoft.com/devcontainers/python:3.11-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "24" }
+  },
+  "hostRequirements": { "cpus": 2, "memory": "8gb" },
+  // Una sola vez, al crear el codespace: dependencias, BD de prueba y OCR
+  "postCreateCommand": "bash .devcontainer/preparar.sh",
+  // Cada vez que se abre: arranca la app (modo desarrollo, con acceso de demostración)
+  "postAttachCommand": "npm run dev",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": { "label": "Cuentapp", "onAutoForward": "openBrowser" }
+  },
+  "containerEnv": { "NEXT_TELEMETRY_DISABLED": "1" }
+}
