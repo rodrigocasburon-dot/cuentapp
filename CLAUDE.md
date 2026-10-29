@@ -69,13 +69,16 @@ npm run lectura:probar # banco sintético por la lectura real (~136/144 campos)
   cada 3 s.
 - Validaciones deterministas en `src/dominio/validaciones.ts`; cada aviso tiene
   nivel `rojo | ambar | info`. Los avisos rojos crean incidencias bloqueantes.
-- **Semáforo** (pendiente de implementar en la fase 7):
+- **Semáforo** (`src/dominio/semaforo.ts`, D-44):
+  - Rojo: incidencias bloqueantes ABIERTAS (duplicado, ilegible, documental).
+  - Ámbar: documentos sin validar (y sus avisos ámbar: campos dudosos,
+    factura completa sin NIF…). Los avisos de un documento validado no cuentan.
   - Verde: todo validado y sin incidencias abiertas.
-  - Ámbar: documentos recibidos/procesando/pendientes, campos dudosos, o
-    factura completa sin NIF del emisor o del receptor.
-  - Rojo: incidencias bloqueantes (duplicado sin resolver, ilegible, problema
-    documental relevante).
-  - Solo informativo: ticket sin NIF del receptor.
+  - Sin documentos: trimestre vacío. Los avisos «info» nunca cambian el color.
+- Papelera (D-41) en vez de borrado; baja de cuenta sin borrar datos (D-42).
+- Buzón simulado, copia local y límites del plan: D-45 a D-47.
+- Toda Server Action nueva debe llamar a `repositorioActual()` o
+  `exigirSesion()`: lo exige `tests/seguridad.test.ts`.
 
 ## Estado (29-10-2026)
 
@@ -87,25 +90,13 @@ npm run lectura:probar # banco sintético por la lectura real (~136/144 campos)
 | 4 | RF-02/03/08 subida y original inmutable | Hecha |
 | 5 | RF-05 lectura automática, validaciones, tipo de cambio | Hecha |
 | 6 | RF-06 corrección + «Validar»; RF-07 duplicados (punto de control) | Hecha |
-| 7 | RF-09 exportación Excel + semáforo del trimestre | **Siguiente** |
-| 8 | Buzón de correo simulado + copia local | Pendiente |
-| 9 | Precios, límites del plan, textos legales, diseño | Pendiente |
-| 10 | Aceptación, revisión de seguridad, README, entrega | Pendiente |
+| 7 | RF-09 exportación Excel + semáforo del trimestre | Hecha |
+| 8 | Buzón de correo simulado + copia local | Hecha |
+| 9 | Límites y cambio de plan (sin cobro), textos legales, portada, PWA | Hecha (sin tipografías propias) |
+| 10 | Revisión de seguridad, aceptación (`docs/aceptacion.md`), README, entrega | Hecha |
 
-Punto de control de la fase 6: si RF-01..RF-07 no pasan, se suspenden FA-03 y
-la PWA.
-
-### Pistas para la fase 6
-
-- Las correcciones se guardan en la tabla `correcciones` (ya existe); la
-  `extraccion_json` original es inmutable por trigger: no se reescribe, se
-  corrige encima.
-- Tras corregir hay que volver a ejecutar `validar()` y recalcular avisos.
-- `buscarPorHash` ya detecta duplicados exactos al subir (`recibir.ts`
-  devuelve `duplicadoDe`); falta crear la incidencia `duplicado` y detectar
-  duplicados «lógicos» (mismo emisor + número + fecha + total).
-- Las incidencias tienen estado `abierta | resuelta`; resolverlas debe quedar
-  registrado.
+Esquema en la versión 6. Lo que queda abierto está en `SUPUESTOS.md` (D-48 a
+D-51 y las marcas `[A VERIFICAR]`).
 
 ## Pendiente fuera del código
 

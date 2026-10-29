@@ -15,6 +15,23 @@ unos minutos la primera vez. Entra con los botones de **acceso de
 demostración**. Cada persona tiene su propia copia con datos de prueba; se
 apaga sola tras 30 minutos sin uso. Sube solo documentos de prueba.
 
+> **No pongas el puerto 3000 como «Public»** en la pestaña Puertos: con el
+> acceso de demostración, cualquiera con el enlace entraría sin contraseña.
+
+## Qué hace
+
+- **Documentos**: subida (PDF, JPG, PNG, WebP; SVG solo se guarda y descarga),
+  lectura automática local, avisos de datos que faltan o no cuadran,
+  duplicados, corrección con historial, validación manual, papelera y
+  acciones sobre varios a la vez.
+- **Panel**: el semáforo de cada trimestre, totales y desglose de IVA, Excel
+  para el gestor y copia local ordenada de los originales validados.
+- **Buzón** (simulado): los adjuntos de un correo a la dirección de la
+  empresa entran como documentos.
+- **Mi cuenta**: plan y uso, cambio de plan (sin cobro), datos de la empresa y baja.
+
+Qué se ha comprobado y qué falta: [`docs/aceptacion.md`](docs/aceptacion.md).
+
 ## Arranque en 3 comandos
 
 Requisito: Node.js 24 LTS (`node -v` debe responder `v24.x`).
@@ -25,8 +42,9 @@ npm run db:reset
 npm run dev
 ```
 
-Abre http://localhost:3000 y entra con una de las **cuentas de prueba** que
-crea `db:reset` (están en la cabecera de `scripts/bd-reset.ts`; solo valen en
+Abre http://localhost:3000 y entra con los botones de **acceso de
+demostración** (solo con `npm run dev`), con una de las cuentas de prueba que
+crea `db:reset` (en la cabecera de `scripts/bd-reset.ts`; solo valen en
 local), o crea una cuenta nueva en «Crear cuenta».
 
 > **En el portátil del equipo** Node está en `C:\Users\rodri\tools\node-v24.22.1-win-x64`
@@ -64,6 +82,10 @@ copia de la base de datos.
 | `npm run originales:verificar` | Comprueba que todos los originales existen y coinciden con su SHA-256 |
 | `npm run db:migrar` | Aplica las migraciones pendientes sin borrar datos (con copia previa) |
 | `npm run lectura:probar` | Pasa el banco sintético por la lectura real de la app |
+| `npm run cuentas:listar` | Lista las cuentas registradas en esta base de datos (sin contraseñas) |
+| `npm run buzon:simular -- <buzón> <archivo…>` | Simula un correo con adjuntos al buzón de una empresa |
+| `npm run typecheck` | Comprobación de tipos de TypeScript |
+| `npm run build` y `npm start` | Versión de producción (sin acceso de demostración) |
 | `npm run lint` | ESLint |
 
 > **Empezar de cero en local.** Cuando ya hay documentos subidos,
@@ -90,7 +112,7 @@ src/servidor/bd/            ÚNICO sitio que toca la base de datos
 src/servidor/auth/          Contraseñas (scrypt) y sesión por cookie
   sesion.ts                 repositorioActual(): la única puerta a los datos desde las páginas
 src/servidor/almacen/       Originales: guardar por SHA-256, solo lectura, comprobar al leer
-src/servidor/documentos/    Recepción de archivos y entrega del original
+src/servidor/documentos/    Recepción, entrega del original, buzón, límites, Excel y copia local
 src/app/(privado)/          Páginas que exigen sesión (panel, documentos)
 src/app/                    Páginas (Next.js App Router)
 scripts/                    db:reset, generador del banco

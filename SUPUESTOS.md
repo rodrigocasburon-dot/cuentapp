@@ -5,7 +5,7 @@ Registro vivo de supuestos, decisiones y dudas. Cada entrada indica si está
 instalado) o es **supuesta** (pendiente de confirmar). `[A VERIFICAR]` marca
 lo que alguien del equipo debe comprobar antes de darlo por bueno.
 
-Última actualización: 29/10/2026 (fase 5).
+Última actualización: 29/10/2026 (fase 10, entrega).
 
 ---
 
@@ -117,6 +117,19 @@ real de la app, 16 lecturas: 12 imágenes + 4 facturas en PDF): **136/144
 campos correctos (94 %)**; los 8 fallos son todos del ticket ilegible, que
 acaba como incidencia, como debe. Imágenes: 2-5 s; PDF con texto: 0,04 s.
 Sigue pendiente repetirlo con tickets reales.
+
+### Fases 7 a 10 (29/10/2026)
+
+| # | Decisión | Motivo / estado |
+|---|---|---|
+| D-44 | **Semáforo**: rojo solo por incidencias bloqueantes **abiertas**; ámbar por documentos sin validar (y sus avisos ámbar); los avisos de un documento **validado** no cuentan; trimestre vacío = «Sin documentos» (ni verde ni rojo). Trimestre actual en hora de España. | La validación manual es la decisión de que el documento está bien. Un trimestre vacío no está «listo para el gestor». |
+| D-45 | **Buzón simulado** (FA-02): cada empresa tiene una dirección; un correo a ella mete sus adjuntos como documentos con origen `buzon`, remitente y asunto (migración 6). Se simula desde la página «Buzón» o con `npm run buzon:simular`. No hay servidor de correo. | MVP local. En producción, un proveedor de correo entrante llamaría a `recibirCorreo()`. |
+| D-46 | **Copia local** (sustituto de Google Drive): copia los originales **validados** de un trimestre a `datos/copia/<empresa>/<año>/T<n>/{Facturas completas,Tickets}/` con el Excel; nunca toca el original, es idempotente. | Solo validados: lo que no ha revisado nadie no debería llegar al gestor. |
+| D-47 | **Límites del plan** en subida y buzón: Prueba 30 documentos en total y 14 días; Cuentapp 250/mes. **Cambio de plan simulado, sin cobro** (Stripe en producción). Comprobación y alta no son atómicas: dos subidas simultáneas pueden pasarse del cupo por pocos documentos. | Riesgo aceptado en local (un solo proceso). |
+| D-48 | **Textos legales** (aviso legal, privacidad, términos, cookies) como **borradores**: titular ficticio, sin revisión jurídica `[A VERIFICAR]`. Solo hay una cookie técnica, sin banner. Aceptación obligatoria al registrarse. | No es asesoramiento jurídico. |
+| D-49 | **PWA**: manifiesto e icono; **sin service worker** (la app necesita el servidor). Tipografías Anton / Bebas Neue **no incorporadas**: se usan las del sistema (habría que descargarlas y verificar su licencia OFL). | Instalabilidad con icono SVG `[A VERIFICAR]` en Chrome y Safari. |
+| D-50 | **Revisión de seguridad** (agente, solo lectura): sin hallazgos críticos ni altos ni fugas entre empresas. Arreglados: resolución manual solo de duplicados abiertos (M1), líneas de IVA validadas y acotadas (M2), intento de acceso apuntado antes de verificar y límite global de 20 altas / 15 min (M4), tope de píxeles en OCR (M5), `allowedOrigins` del propio codespace (B1), nombres sin caracteres bidi y con extensión real (B3), cabeceras de seguridad (B4), empresas de baja (B5), errores internos ocultos (B7). | Prueba estática nueva: toda Server Action comprueba la sesión. |
+| D-51 | **Riesgos aceptados para el MVP local**, a resolver en producción: el límite de 101 MB de las Server Actions vale también para entrar/registrarse (M3; en producción, subida por un route handler con sesión previa y límite global bajo); sin límite por IP (no hay IP fiable en local); sesiones caducadas que no se purgan (B6, sin impacto). En Codespaces, **no hacer público el puerto 3000** (B2): el acceso de demostración dejaría entrar a cualquiera. | |
 
 ## 3. Consecuencias de D-01 (SQLite) que el equipo debe conocer
 

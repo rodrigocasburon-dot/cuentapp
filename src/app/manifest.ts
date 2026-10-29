@@ -1,6 +1,6 @@
 // Manifiesto de la PWA (FA-03): permite «instalar» Cuentapp en el móvil o el
 // escritorio. Sin service worker: la app necesita el servidor para funcionar,
-// así que no hay modo sin conexión (D-43).
+// así que no hay modo sin conexión (D-49).
 
 import type { MetadataRoute } from "next";
 

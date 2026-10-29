@@ -1,6 +1,6 @@
 // Textos legales (fase 9). BORRADORES para el proyecto académico: no son
 // asesoramiento jurídico y deben revisarse antes de cualquier uso real
-// (SUPUESTOS.md, D-43). Los datos del responsable son ficticios.
+// (SUPUESTOS.md, D-48). Los datos del responsable son ficticios.
 
 import type { Metadata } from "next";
 import Link from "next/link";

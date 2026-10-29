@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import "./globals.css";
 
-// Tipografías Anton / Bebas Neue: pendientes (D-43). Se usan las del sistema.
+// Tipografías Anton / Bebas Neue: pendientes (D-49). Se usan las del sistema.
 export const viewport: Viewport = { themeColor: "#2e1c14" };
 export const metadata: Metadata = {
   title: "Cuentapp",
