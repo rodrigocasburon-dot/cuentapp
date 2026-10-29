@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { fecha, importe, mesDe } from "@/dominio/formato";
 import { AVISO } from "@/dominio/legal";
 import { repositorioActual } from "@/servidor/auth/sesion";
+import { bd } from "@/servidor/bd/conexion";
+import { estadoSistema } from "@/servidor/bd/sistema";
 import { cupoDisponible } from "@/servidor/documentos/limites";
 import { activarPlanAction } from "./acciones";
 import { FormBaja, FormDatos } from "./FormCuenta";
@@ -15,6 +17,7 @@ export default async function MiCuenta({ searchParams }: { searchParams: Promise
   const cupo = cupoDisponible(repo);
   const usoMes = repo.usoDelMes(mesDe(new Date()));
   const { plan: planCambiado } = await searchParams;
+  const planesDePago = estadoSistema(bd()).planes.filter((p) => p.disponible && p.id !== "prueba");
 
   return (
     <main className="mx-auto w-full max-w-xl px-6 py-10">
@@ -51,16 +54,22 @@ export default async function MiCuenta({ searchParams }: { searchParams: Promise
             </li>
           )}
         </ul>
-        {plan.id === "prueba" && (
-          <form action={activarPlanAction.bind(null, "cuentapp")}>
-            <button type="submit" className="rounded-full bg-marron-oscuro px-6 py-3 font-bold text-crema hover:bg-marron">
-              Activar plan Cuentapp · 20 € al mes + IVA
-            </button>
-            <p className="mt-2 text-sm text-marron">
-              {AVISO.prueba} {AVISO.precioProvisional} Versión de demostración: no se cobra nada.
-            </p>
-          </form>
-        )}
+        {/* Planes de pago a los que se puede cambiar (el servidor vuelve a comprobarlo) */}
+        <div className="flex flex-col gap-3">
+          {planesDePago
+            .filter((p) => p.id !== plan.id)
+            .map((p) => (
+              <form key={p.id} action={activarPlanAction.bind(null, p.id)}>
+                <button type="submit" className="w-full rounded-full bg-marron-oscuro px-6 py-3 font-bold text-white hover:bg-black sm:w-auto">
+                  {plan.id === "prueba" ? "Activar" : "Cambiar a"} {p.nombre} · {importe(p.precio_centimos)} al mes + IVA · {p.limite_docs_mes} documentos/mes
+                </button>
+              </form>
+            ))}
+          <p className="text-sm text-marron">
+            {plan.id === "prueba" ? `${AVISO.prueba} ` : ""}
+            {AVISO.precioProvisional} Versión de demostración: no se cobra nada.
+          </p>
+        </div>
       </section>
 
       <section aria-labelledby="datos" className="mt-10 rounded-2xl border-2 border-crema-2 bg-white p-6">

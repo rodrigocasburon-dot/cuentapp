@@ -65,15 +65,21 @@ describe("límites del plan (fase 9)", () => {
     expect(cupoDisponible(repo, new Date("2026-11-06T00:00:00Z"))).toMatchObject({ disponibles: 0, motivo: expect.stringMatching(/prueba gratuita ha terminado/) });
   });
 
-  it("plan Cuentapp: 250 al mes; cambiar de plan quita el fin de la prueba", () => {
+  it("plan Cuentapp: 100 al mes; Pro: 300; cambiar de plan quita el fin de la prueba", () => {
     const bd = bdDePrueba();
     bd.prepare("UPDATE empresas SET plan_id = 'prueba', prueba_hasta = '2026-10-01T00:00:00Z' WHERE id = 'A'").run();
     const repo = repositorioDeEmpresa(bd, "A");
     expect(cupoDisponible(repo, HOY).disponibles).toBe(0); // prueba caducada
     expect(repo.cambiarPlan("despacho")).toBe(false); // no disponible
+    expect(repo.cambiarPlan("prueba")).toBe(false); // no se vuelve a la prueba
     expect(repo.cambiarPlan("cuentapp")).toBe(true);
-    bd.prepare("INSERT INTO uso_mensual (empresa_id, mes, documentos) VALUES ('A', '2026-10', 249)").run();
+    bd.prepare("INSERT INTO uso_mensual (empresa_id, mes, documentos) VALUES ('A', '2026-10', 99)").run();
     expect(cupoDisponible(repo, HOY).disponibles).toBe(1);
+    expect(cupoDisponible(repo, HOY).motivo).toMatch(/límite de 100 documentos al mes del plan Cuentapp/);
+
+    expect(repo.cambiarPlan("pro")).toBe(true);
+    expect(repo.plan()).toMatchObject({ id: "pro", nombre: "Cuentapp Pro", precio_centimos: 4000, limite_docs_mes: 300 });
+    expect(cupoDisponible(repo, HOY).disponibles).toBe(201);
     expect(repositorioDeEmpresa(bd, "B").plan().id).toBe("cuentapp"); // B no cambia
   });
 });

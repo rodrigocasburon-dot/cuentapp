@@ -261,11 +261,11 @@ export default async function Inicio() {
         </section>
 
         {estado && (
-          <section id="planes" className="mx-auto mt-24 max-w-4xl px-6 pb-20" aria-labelledby="planes-titulo">
+          <section id="planes" className="mx-auto mt-24 max-w-6xl px-6 pb-20" aria-labelledby="planes-titulo">
             <h2 id="planes-titulo" className="text-center text-3xl font-extrabold tracking-tight sm:text-4xl">
               Planes
             </h2>
-            <ul className="mt-10 grid gap-6 md:grid-cols-3">
+            <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {estado.planes.map((p) => (
                 <li
                   key={p.id}

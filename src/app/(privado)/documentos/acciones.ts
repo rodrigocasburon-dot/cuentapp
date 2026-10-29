@@ -21,7 +21,7 @@ export async function subirDocumentos(_previo: EstadoSubida, f: FormData): Promi
   if (archivos.length === 0) return { mensaje: "Elige al menos un archivo." };
   if (archivos.length > MAX_ARCHIVOS_POR_SUBIDA) return { mensaje: `Sube como máximo ${MAX_ARCHIVOS_POR_SUBIDA} archivos cada vez.` };
 
-  // Límites del plan (fase 9): prueba caducada, 30 en total o 250 al mes
+  // Límites del plan (fase 9): prueba caducada, 30 en total o el límite mensual del plan
   const cupo = cupoDisponible(repo);
   if (cupo.disponibles === 0) return { mensaje: cupo.motivo };
   let quedan = cupo.disponibles;

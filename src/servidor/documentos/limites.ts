@@ -1,7 +1,7 @@
 // Límites del plan (fase 9). Se comprueban ANTES de recibir archivos, tanto
 // en la subida como en el buzón.
 //   Prueba:   30 documentos en total (S-02) y solo durante sus 14 días.
-//   Cuentapp: 250 documentos al mes (mes en hora de España).
+//   Cuentapp: 100 documentos al mes; Cuentapp Pro: 300 (mes en hora de España, D-55).
 // Cuentan al darse de alta, también los duplicados (S-03).
 
 import { mesDe } from "@/dominio/formato";

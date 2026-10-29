@@ -57,19 +57,20 @@ export function migrar(bd: Bd): string[] {
   return pendientes;
 }
 
-/** Datos de referencia: los tres planes (importes provisionales, sin IVA). */
+/** Datos de referencia: los planes (importes provisionales, sin IVA). */
 export function insertarPlanes(bd: Bd): void {
   const insertar = bd.prepare(
     `INSERT INTO planes (id, nombre, precio_centimos, limite_docs_mes, limite_docs_total, dias_prueba, disponible)
      VALUES (@id, @nombre, @precio_centimos, @limite_docs_mes, @limite_docs_total, @dias_prueba, @disponible)`,
   );
   insertar.run({ id: "prueba", nombre: "Prueba", precio_centimos: 0, limite_docs_mes: null, limite_docs_total: 30, dias_prueba: 14, disponible: 1 });
-  insertar.run({ id: "cuentapp", nombre: "Cuentapp", precio_centimos: 2000, limite_docs_mes: 250, limite_docs_total: null, dias_prueba: null, disponible: 1 });
+  insertar.run({ id: "cuentapp", nombre: "Cuentapp", precio_centimos: 2000, limite_docs_mes: 100, limite_docs_total: null, dias_prueba: null, disponible: 1 });
+  insertar.run({ id: "pro", nombre: "Cuentapp Pro", precio_centimos: 4000, limite_docs_mes: 300, limite_docs_total: null, dias_prueba: null, disponible: 1 });
   insertar.run({ id: "despacho", nombre: "Despacho", precio_centimos: 0, limite_docs_mes: null, limite_docs_total: null, dias_prueba: null, disponible: 0 });
 }
 
 /** Número de la última migración de bd/migraciones (una prueba lo comprueba). */
-export const VERSION_ESQUEMA = 7;
+export const VERSION_ESQUEMA = 8;
 
 // Una sola conexión compartida por el servidor de Next.js
 let compartida: Bd | undefined;
