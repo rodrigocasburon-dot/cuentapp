@@ -45,6 +45,23 @@ describe("papelera (D-41)", () => {
   });
 });
 
+describe("incidencias abiertas por documento (columna «A revisar»)", () => {
+  it("devuelve solo las abiertas y solo de esta empresa", () => {
+    const bd = bdDePrueba();
+    const repoA = repositorioDeEmpresa(bd, "A");
+    const repoB = repositorioDeEmpresa(bd, "B");
+    const a1 = repoA.crearDocumento(ORIGINAL, HOY);
+    const a2 = repoA.crearDocumento({ ...ORIGINAL, hash_sha256: "b".repeat(64) }, HOY);
+    const b1 = repoB.crearDocumento(ORIGINAL, HOY);
+    repoA.crearIncidencia({ documentoId: a2, tipo: "duplicado", bloqueante: 1, descripcion: "x", documentoReferenciaId: a1 });
+    const resuelta = repoA.crearIncidencia({ documentoId: a1, tipo: "ilegible", bloqueante: 1, descripcion: "x" });
+    repoA.resolverIncidencia(resuelta, "no_duplicado", "uA", HOY);
+    repoB.crearIncidencia({ documentoId: b1, tipo: "ilegible", bloqueante: 1, descripcion: "x" });
+
+    expect([...repoA.incidenciasAbiertasPorDocumento()]).toEqual([[a2, ["duplicado"]]]);
+  });
+});
+
 describe("datos de la empresa y del usuario", () => {
   it("cada empresa solo cambia sus propios datos", () => {
     const bd = bdDePrueba();

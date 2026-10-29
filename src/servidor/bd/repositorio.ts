@@ -216,6 +216,16 @@ export function repositorioDeEmpresa(bd: Bd, empresaId: string) {
       );
     },
 
+    /** Tipos de incidencia abiertas por documento, en UNA consulta (para la lista). */
+    incidenciasAbiertasPorDocumento(): Map<string, TipoIncidencia[]> {
+      const filas = bd
+        .prepare("SELECT documento_id, tipo FROM incidencias WHERE empresa_id = ? AND estado = 'abierta'")
+        .all(empresaId) as { documento_id: string; tipo: TipoIncidencia }[];
+      const mapa = new Map<string, TipoIncidencia[]>();
+      for (const f of filas) mapa.set(f.documento_id, [...(mapa.get(f.documento_id) ?? []), f.tipo]);
+      return mapa;
+    },
+
     /** Nombre y NIF de ESTA empresa (página «Mi cuenta»). */
     cambiarDatosEmpresa(nombre: string, nif: string | null): void {
       bd.prepare("UPDATE empresas SET nombre = ?, nif = ? WHERE id = ?").run(nombre, nif, empresaId);

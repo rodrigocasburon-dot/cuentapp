@@ -55,6 +55,20 @@ describe("casos concretos", () => {
     expect(validar(base(), HOY).map((a) => [a.codigo, a.nivel])).toEqual([["ticket_sin_nif_receptor", "info"]]);
   });
 
+  it("avisa si falta el número (en todo documento) o el nombre del emisor (en factura completa)", () => {
+    const ticket = base();
+    ticket.numero = { valor: null, confianza: 0 };
+    ticket.nombre_emisor = { valor: null, confianza: 0 };
+    const codigosTicket = validar(ticket, HOY).map((a) => a.codigo);
+    expect(codigosTicket).toContain("falta_numero");
+    expect(codigosTicket).not.toContain("falta_nombre_emisor"); // en un ticket no es obligatorio
+
+    const factura = base();
+    factura.tipo = { valor: "factura_completa", confianza: 0.9 };
+    factura.nombre_emisor = { valor: null, confianza: 0 };
+    expect(validar(factura, HOY)).toContainEqual(expect.objectContaining({ codigo: "falta_nombre_emisor", nivel: "ambar" }));
+  });
+
   it("casi nada leído = ilegible (rojo) y no se valida nada más", () => {
     const ex = extraccionVacia();
     ex.moneda = { valor: "EUR", confianza: 0.2 };

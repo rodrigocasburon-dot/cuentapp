@@ -80,7 +80,11 @@ export function validar(ex: Extraccion, hoy = new Date(), contexto: Contexto = {
       "nif_receptor",
     );
   }
+  // Datos de identificación obligatorios (RD 1619/2012): número en toda
+  // factura y ticket; nombre del emisor en la factura completa.
+  if (!ex.numero.valor) av("falta_numero", "ambar", "No consta el número del documento.", "numero");
   if (ex.tipo.valor === "factura_completa") {
+    if (!ex.nombre_emisor.valor) av("falta_nombre_emisor", "ambar", "Es una factura completa y no consta el nombre del emisor.", "nombre_emisor");
     if (!ex.nif_emisor.valor) av("falta_nif_emisor", "ambar", "Es una factura completa y no consta el NIF del emisor.", "nif_emisor");
     if (!ex.nif_receptor.valor) av("falta_nif_receptor", "ambar", "Es una factura completa y no consta tu NIF como receptor.", "nif_receptor");
   } else if (!ex.nif_receptor.valor) {

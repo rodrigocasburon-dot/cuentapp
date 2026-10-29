@@ -4,12 +4,29 @@ import { after } from "next/server";
 import { EstadoDocumento } from "@/componentes/EstadoDocumento";
 import { Refresco } from "@/componentes/Refresco";
 import { fecha, fechaHora, importe } from "@/dominio/formato";
+import type { Aviso } from "@/dominio/validaciones";
 import { repositorioActual } from "@/servidor/auth/sesion";
 import { lanzarCola } from "@/servidor/lectura/cola";
 import { accionEnBloque } from "./acciones";
 import { FormSubida } from "./FormSubida";
 
 export const metadata: Metadata = { title: "Documentos · Cuentapp" };
+
+/** Datos que faltan, a partir de los avisos «falta_…» de validar(). */
+const FALTA: Record<string, string> = {
+  falta_numero: "número",
+  falta_nombre_emisor: "emisor",
+  falta_nif_emisor: "NIF del emisor",
+  falta_nif_receptor: "tu NIF",
+  falta_fecha: "fecha",
+  falta_total: "total",
+  falta_desglose_iva: "desglose de IVA",
+};
+
+function faltan(avisosJson: string | null): string[] {
+  const avisos: Aviso[] = avisosJson ? JSON.parse(avisosJson) : [];
+  return avisos.flatMap((a) => (FALTA[a.codigo] ? [FALTA[a.codigo]] : []));
+}
 
 const VERBO: Record<string, string> = { validar: "validado", papelera: "movido a la papelera", recuperar: "recuperado" };
 
@@ -33,6 +50,7 @@ export default async function Documentos({ searchParams }: { searchParams: Promi
   // Si quedan pendientes (p. ej. tras reiniciar el servidor), retomar la cola
   if (documentos.some((d) => d.estado === "recibido")) after(lanzarCola);
   const mensaje = resultado(p);
+  const incidencias = repo.incidenciasAbiertasPorDocumento();
 
   const pestana = (activa: boolean) =>
     `rounded-full px-4 py-1.5 text-sm font-bold ${activa ? "bg-marron-oscuro text-crema" : "border border-marron-oscuro hover:bg-crema-2"}`;
@@ -108,7 +126,8 @@ export default async function Documentos({ searchParams }: { searchParams: Promi
                     <th scope="col" className="py-2 pr-4">Emisor</th>
                     <th scope="col" className="py-2 pr-4">Fecha</th>
                     <th scope="col" className="py-2 pr-4 text-right">Total</th>
-                    <th scope="col" className="py-2">Estado</th>
+                    <th scope="col" className="py-2 pr-4">Estado</th>
+                    <th scope="col" className="py-2">A revisar</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -134,8 +153,20 @@ export default async function Documentos({ searchParams }: { searchParams: Promi
                       <td className="py-2 pr-4 text-right whitespace-nowrap">
                         {d.total_centimos !== null ? importe(d.total_centimos, d.moneda ?? "EUR") : "—"}
                       </td>
-                      <td className="py-2">
+                      <td className="py-2 pr-4">
                         <EstadoDocumento estado={d.estado} />
+                      </td>
+                      <td className="py-2 text-sm">
+                        {incidencias.get(d.id)?.includes("duplicado") && (
+                          <span className="block font-semibold text-rojo">
+                            <span aria-hidden="true">⧉ </span>Posible duplicado
+                          </span>
+                        )}
+                        {faltan(d.avisos_json).length > 0 && (
+                          <span className="block">
+                            <span aria-hidden="true">⚠ </span>Falta: {faltan(d.avisos_json).join(", ")}
+                          </span>
+                        )}
                       </td>
                     </tr>
                   ))}
