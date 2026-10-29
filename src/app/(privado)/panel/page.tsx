@@ -9,6 +9,7 @@ import {
   type ColorSemaforo,
 } from "@/dominio/semaforo";
 import { repositorioActual } from "@/servidor/auth/sesion";
+import { copiarTrimestreAction } from "./acciones";
 
 export const metadata: Metadata = { title: "Panel · Cuentapp" };
 
@@ -28,7 +29,7 @@ const CLASE_FONDO_SEMAFORO: Record<ColorSemaforo, string> = {
 export default async function Panel({
   searchParams,
 }: {
-  searchParams?: Promise<{ anio?: string; trimestre?: string }>;
+  searchParams?: Promise<{ anio?: string; trimestre?: string; copiados?: string; yaEstaban?: string; sinValidar?: string; fallidos?: string }>;
 }) {
   const { sesion, repo } = await repositorioActual();
   const { empresa } = sesion;
@@ -184,6 +185,30 @@ export default async function Panel({
             <span aria-hidden="true">📊 </span>Descargar Excel {trimSel}T {anioSel}
           </a>
         </div>
+
+        {/* Copia local ordenada (fase 8): sustituto local de Google Drive */}
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t-2 border-current/20 pt-6">
+          <p className="max-w-md text-sm text-marron-oscuro">
+            Guarda en una carpeta de este equipo los originales <strong>validados</strong> del trimestre, ordenados por
+            tipo, junto con el Excel.
+          </p>
+          <form action={copiarTrimestreAction.bind(null, anioSel, trimSel)}>
+            <button
+              type="submit"
+              className="rounded-full border-2 border-marron-oscuro bg-white px-6 py-3 font-bold text-marron-oscuro hover:bg-crema-2"
+            >
+              <span aria-hidden="true">📁 </span>Copia local {trimSel}T {anioSel}
+            </button>
+          </form>
+        </div>
+        {params?.copiados !== undefined && (
+          <p role="status" className="mt-4 rounded-lg border-2 border-marron-oscuro bg-white px-4 py-2 text-sm font-semibold text-marron-oscuro">
+            <span aria-hidden="true">✔ </span>
+            Copia hecha: {params.copiados} copiados, {params.yaEstaban} ya estaban, {params.sinValidar} sin validar (no se
+            copian){Number(params.fallidos) > 0 ? `, ${params.fallidos} con el original dañado` : ""}. Carpeta:{" "}
+            <code>datos/copia</code>.
+          </p>
+        )}
       </section>
 
       {/* Desglose de IVA agrupado del trimestre */}

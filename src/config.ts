@@ -23,3 +23,5 @@ export const CUENTAS_DEMO = [
 export const CARPETA_DATOS = process.env.CUENTAPP_DATOS ?? path.join(process.cwd(), "datos");
 export const RUTA_BD = path.join(CARPETA_DATOS, "cuentapp.db");
 export const CARPETA_ORIGINALES = path.join(CARPETA_DATOS, "originales");
+// Copia local ordenada para el gestor (fase 8). En producción: Google Drive.
+export const CARPETA_COPIA = process.env.CUENTAPP_COPIA ?? path.join(CARPETA_DATOS, "copia");

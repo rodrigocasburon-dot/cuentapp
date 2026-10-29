@@ -69,6 +69,8 @@ export interface FilaDocumento {
   validado_por: string | null;
   descartado_en: string | null;
   descartado_por: string | null;
+  correo_remitente: string | null;
+  correo_asunto: string | null;
   creado_en: string;
   actualizado_en: string;
 }
@@ -214,6 +216,43 @@ export function repositorioDeEmpresa(bd: Bd, empresaId: string) {
           .prepare("UPDATE documentos SET descartado_en = NULL, descartado_por = NULL WHERE id = ? AND empresa_id = ? AND descartado_en IS NOT NULL")
           .run(id, empresaId).changes > 0
       );
+    },
+
+    /** Plan de ESTA empresa con sus límites (fase 9). */
+    plan(): { id: string; nombre: string; precio_centimos: number; limite_docs_mes: number | null; limite_docs_total: number | null; prueba_hasta: string | null } {
+      return bd
+        .prepare(
+          `SELECT p.id, p.nombre, p.precio_centimos, p.limite_docs_mes, p.limite_docs_total, e.prueba_hasta
+           FROM empresas e JOIN planes p ON p.id = e.plan_id WHERE e.id = ?`,
+        )
+        .get(empresaId) as ReturnType<ReturnType<typeof repositorioDeEmpresa>["plan"]>;
+    },
+
+    /** Documentos dados de alta desde siempre (para el límite total del plan Prueba). */
+    usoTotal(): number {
+      return (bd.prepare("SELECT coalesce(sum(documentos), 0) AS n FROM uso_mensual WHERE empresa_id = ?").get(empresaId) as { n: number }).n;
+    },
+
+    /**
+     * Cambio de plan (fase 9). MVP local: SIN cobro real (en producción iría
+     * Stripe). Solo a planes disponibles y de pago; al salir de la prueba se
+     * quita su fecha de fin. Devuelve false si el plan no se puede contratar.
+     */
+    cambiarPlan(planId: string): boolean {
+      const plan = bd.prepare("SELECT 1 FROM planes WHERE id = ? AND disponible = 1 AND id <> 'prueba'").get(planId);
+      if (!plan) return false;
+      bd.prepare("UPDATE empresas SET plan_id = ?, prueba_hasta = NULL WHERE id = ?").run(planId, empresaId);
+      return true;
+    },
+
+    /** Remitente y asunto de un documento llegado por el buzón (fase 8). */
+    anotarCorreo(id: string, remitente: string, asunto: string): void {
+      bd.prepare("UPDATE documentos SET correo_remitente = ?, correo_asunto = ? WHERE id = ? AND empresa_id = ?").run(remitente, asunto, id, empresaId);
+    },
+
+    /** Nombre, NIF y buzón de ESTA empresa. */
+    datosEmpresa(): { nombre: string; nif: string | null; buzon: string } {
+      return bd.prepare("SELECT nombre, nif, buzon FROM empresas WHERE id = ?").get(empresaId) as { nombre: string; nif: string | null; buzon: string };
     },
 
     /** Tipos de incidencia abiertas por documento, en UNA consulta (para la lista). */

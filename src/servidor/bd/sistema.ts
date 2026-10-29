@@ -46,6 +46,15 @@ export function recuperarAtascados(bd: Bd, antesDe: string): number {
     .run(antesDe).changes;
 }
 
+/**
+ * Buzón simulado (fase 8): ¿de qué empresa ACTIVA es esta dirección? Solo
+ * devuelve el id; después se trabaja con repositorioDeEmpresa(bd, id).
+ */
+export function empresaPorBuzon(bd: Bd, direccion: string): string | null {
+  const fila = bd.prepare("SELECT id FROM empresas WHERE buzon = ? COLLATE NOCASE AND baja_en IS NULL").get(direccion.trim()) as { id: string } | undefined;
+  return fila?.id ?? null;
+}
+
 export function estadoSistema(bd: Bd): EstadoSistema {
   return {
     planes: bd.prepare("SELECT * FROM planes ORDER BY disponible DESC, precio_centimos").all() as EstadoSistema["planes"],

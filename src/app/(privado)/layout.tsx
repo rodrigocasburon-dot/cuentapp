@@ -22,6 +22,9 @@ export default async function LayoutPrivado({ children }: { children: React.Reac
             <Link href="/documentos" className="font-semibold underline-offset-4 hover:underline">
               Documentos
             </Link>
+            <Link href="/buzon" className="font-semibold underline-offset-4 hover:underline">
+              Buzón
+            </Link>
             <Link href="/cuenta" className="font-semibold underline-offset-4 hover:underline">
               Mi cuenta
             </Link>
