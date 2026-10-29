@@ -69,7 +69,7 @@ export function insertarPlanes(bd: Bd): void {
 }
 
 /** Número de la última migración de bd/migraciones (una prueba lo comprueba). */
-export const VERSION_ESQUEMA = 4;
+export const VERSION_ESQUEMA = 5;
 
 // Una sola conexión compartida por el servidor de Next.js
 let compartida: Bd | undefined;

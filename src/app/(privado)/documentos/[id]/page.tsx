@@ -7,6 +7,7 @@ import { fechaHora, tamano } from "@/dominio/formato";
 import type { Aviso } from "@/dominio/validaciones";
 import { repositorioActual } from "@/servidor/auth/sesion";
 import { originalIntegro } from "@/servidor/documentos/servir-original";
+import { moverAPapeleraAction, recuperarDePapeleraAction } from "../acciones";
 import { FormFichaDocumento } from "./FormFichaDocumento";
 
 export const metadata: Metadata = { title: "Documento · Cuentapp" };
@@ -41,9 +42,23 @@ export default async function FichaDocumento({ params }: { params: Promise<{ id:
           <EstadoDocumento estado={doc.estado} />
           {doc.descartado_en && (
             <span className="rounded-full bg-rojo px-3 py-1 text-sm font-bold text-crema">
-              <span aria-hidden="true">⛔ </span>Descartado
+              <span aria-hidden="true">🗑 </span>En la papelera
             </span>
           )}
+          {/* Papelera (D-41): no borra nada; se puede recuperar */}
+          <form action={doc.descartado_en ? recuperarDePapeleraAction.bind(null, doc.id) : moverAPapeleraAction.bind(null, doc.id)}>
+            <button type="submit" className="rounded-full border-2 border-marron-oscuro px-4 py-1 text-sm font-bold hover:bg-crema-2">
+              {doc.descartado_en ? (
+                <>
+                  <span aria-hidden="true">↩ </span>Recuperar
+                </>
+              ) : (
+                <>
+                  <span aria-hidden="true">🗑 </span>Mover a la papelera
+                </>
+              )}
+            </button>
+          </form>
         </div>
       </div>
 

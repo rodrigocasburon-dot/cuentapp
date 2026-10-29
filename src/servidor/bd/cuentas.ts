@@ -79,8 +79,9 @@ export function crearEmpresaConTitular(bd: Bd, d: DatosRegistro, ahora = new Dat
 // Inicio de sesión
 // ---------------------------------------------------------------------------
 
+/** Credenciales de un usuario activo (los dados de baja no pueden entrar). */
 export function buscarCredenciales(bd: Bd, email: string): { id: string; hash_contrasena: string } | undefined {
-  return bd.prepare("SELECT id, hash_contrasena FROM usuarios WHERE email = ?").get(email) as
+  return bd.prepare("SELECT id, hash_contrasena FROM usuarios WHERE email = ? AND baja_en IS NULL").get(email) as
     | { id: string; hash_contrasena: string }
     | undefined;
 }
@@ -119,7 +120,7 @@ export function leerSesion(bd: Bd, token: string, ahora = new Date()): Sesion | 
          JOIN membresias m ON m.usuario_id = s.usuario_id AND m.empresa_id = s.empresa_id
          JOIN usuarios u   ON u.id = s.usuario_id
          JOIN empresas e   ON e.id = s.empresa_id
-        WHERE s.id = ? AND s.expira_en > ?`,
+        WHERE s.id = ? AND s.expira_en > ? AND u.baja_en IS NULL AND e.baja_en IS NULL`,
     )
     .get(hashToken(token), iso(ahora)) as Record<string, string | null> | undefined;
   if (!fila) return null;
@@ -136,6 +137,29 @@ export function borrarSesion(bd: Bd, token: string): void {
 
 export function borrarSesionesCaducadas(bd: Bd, ahora = new Date()): void {
   bd.prepare("DELETE FROM sesiones WHERE expira_en <= ?").run(iso(ahora));
+}
+
+// ---------------------------------------------------------------------------
+// Mi cuenta: datos del usuario y baja
+// ---------------------------------------------------------------------------
+
+export function cambiarNombreUsuario(bd: Bd, usuarioId: string, nombre: string): void {
+  bd.prepare("UPDATE usuarios SET nombre = ? WHERE id = ?").run(nombre, usuarioId);
+}
+
+/**
+ * Baja de la cuenta (D-42): marca la empresa y al usuario titular y cierra
+ * todas sus sesiones. No borra nada: los documentos y sus originales se
+ * conservan (obligación de conservación, S-08). Solo el titular puede hacerlo.
+ */
+export function darDeBaja(bd: Bd, usuarioId: string, empresaId: string, ahora = new Date()): void {
+  bd.transaction(() => {
+    const titular = bd.prepare("SELECT 1 FROM membresias WHERE usuario_id = ? AND empresa_id = ? AND rol = 'titular'").get(usuarioId, empresaId);
+    if (!titular) throw new Error("Solo el titular puede dar de baja la empresa");
+    bd.prepare("UPDATE empresas SET baja_en = ? WHERE id = ?").run(iso(ahora), empresaId);
+    bd.prepare("UPDATE usuarios SET baja_en = ? WHERE id = ?").run(iso(ahora), usuarioId);
+    bd.prepare("DELETE FROM sesiones WHERE usuario_id = ? OR empresa_id = ?").run(usuarioId, empresaId);
+  })();
 }
 
 // ---------------------------------------------------------------------------

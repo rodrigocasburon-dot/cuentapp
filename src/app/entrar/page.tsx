@@ -8,11 +8,17 @@ import { FormEntrar } from "./FormEntrar";
 
 export const metadata: Metadata = { title: "Entrar · Cuentapp" };
 
-export default async function Entrar() {
+export default async function Entrar({ searchParams }: { searchParams: Promise<{ baja?: string }> }) {
   if (await sesionActual()) redirect("/panel");
+  const { baja } = await searchParams;
   return (
     <main className="mx-auto w-full max-w-md px-6 py-12">
       <h1 className="mb-8 text-4xl font-black uppercase tracking-tight">Entrar</h1>
+      {baja && (
+        <p role="status" className="mb-8 rounded-lg border-2 border-marron-oscuro bg-crema-2 px-4 py-3 font-semibold">
+          <span aria-hidden="true">✔ </span>La cuenta se ha dado de baja y la sesión se ha cerrado.
+        </p>
+      )}
       {ACCESO_DEMO && (
         <section aria-labelledby="demo" className="mb-8 rounded-2xl border-2 border-dashed border-marron p-5">
           <h2 id="demo" className="font-bold">

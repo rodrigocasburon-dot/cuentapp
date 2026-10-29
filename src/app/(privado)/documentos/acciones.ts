@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { after } from "next/server";
 import {
   esquemaCorreccion,
@@ -112,6 +113,57 @@ export async function validarDocumentoAction(documentoId: string): Promise<{ ok:
   } catch (e) {
     return { ok: false, mensaje: e instanceof Error ? e.message : "Error al validar el documento." };
   }
+}
+
+function revalidarTodo(documentoId?: string) {
+  if (documentoId) revalidatePath(`/documentos/${documentoId}`);
+  revalidatePath("/documentos");
+  revalidatePath("/panel");
+}
+
+/** Mueve un documento a la papelera (D-41). No se borra: se puede recuperar. */
+export async function moverAPapeleraAction(documentoId: string): Promise<void> {
+  const { repo, sesion } = await repositorioActual();
+  repo.moverAPapelera(documentoId, sesion.usuario.id);
+  revalidarTodo(documentoId);
+}
+
+export async function recuperarDePapeleraAction(documentoId: string): Promise<void> {
+  const { repo } = await repositorioActual();
+  repo.recuperarDePapelera(documentoId);
+  revalidarTodo(documentoId);
+}
+
+const ACCIONES_BLOQUE = ["validar", "papelera", "recuperar"] as const;
+
+/**
+ * Acción sobre varios documentos marcados en la lista. Cada id pasa por el
+ * repositorio de la empresa de la sesión: los de otra empresa se ignoran.
+ * Vuelve a la lista con el resultado en la dirección (solo números).
+ */
+export async function accionEnBloque(f: FormData): Promise<void> {
+  const { repo, sesion } = await repositorioActual();
+  const accion = String(f.get("accion"));
+  const ids = f.getAll("ids").map(String).slice(0, 500);
+  if (!(ACCIONES_BLOQUE as readonly string[]).includes(accion) || ids.length === 0) redirect("/documentos");
+
+  let hechos = 0;
+  for (const id of ids) {
+    try {
+      const ok =
+        accion === "validar"
+          ? (repo.validarDocumento(id, sesion.usuario.id), true)
+          : accion === "papelera"
+            ? repo.moverAPapelera(id, sesion.usuario.id)
+            : repo.recuperarDePapelera(id);
+      if (ok) hechos++;
+    } catch {
+      // p. ej. validar uno con incidencias bloqueantes: se cuenta como no hecho
+    }
+  }
+  revalidarTodo();
+  const ver = accion === "recuperar" ? "ver=papelera&" : "";
+  redirect(`/documentos?${ver}accion=${accion}&hechos=${hechos}&total=${ids.length}`);
 }
 
 /**

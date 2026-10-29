@@ -184,11 +184,41 @@ export function repositorioDeEmpresa(bd: Bd, empresaId: string) {
   return {
     empresaId,
 
-    listarDocumentos(): FilaDocumento[] {
+    /** Documentos activos o, con papelera = true, los de la papelera (descartados). */
+    listarDocumentos({ papelera = false } = {}): FilaDocumento[] {
       // rowid desempata los subidos en el mismo segundo (el último, primero)
       return bd
-        .prepare("SELECT * FROM documentos WHERE empresa_id = ? ORDER BY creado_en DESC, rowid DESC")
+        .prepare(
+          `SELECT * FROM documentos WHERE empresa_id = ? AND descartado_en IS ${papelera ? "NOT NULL" : "NULL"}
+           ORDER BY creado_en DESC, rowid DESC`,
+        )
         .all(empresaId) as FilaDocumento[];
+    },
+
+    /**
+     * Papelera (D-41): el documento sale de la lista, del semáforo y del
+     * Excel, pero NO se borra: su fila y su original se conservan y se puede
+     * recuperar. Devuelve false si no es de esta empresa o ya estaba en la papelera.
+     */
+    moverAPapelera(id: string, usuarioId: string, ahora = new Date()): boolean {
+      return (
+        bd
+          .prepare("UPDATE documentos SET descartado_en = ?, descartado_por = ? WHERE id = ? AND empresa_id = ? AND descartado_en IS NULL")
+          .run(iso(ahora), usuarioId, id, empresaId).changes > 0
+      );
+    },
+
+    recuperarDePapelera(id: string): boolean {
+      return (
+        bd
+          .prepare("UPDATE documentos SET descartado_en = NULL, descartado_por = NULL WHERE id = ? AND empresa_id = ? AND descartado_en IS NOT NULL")
+          .run(id, empresaId).changes > 0
+      );
+    },
+
+    /** Nombre y NIF de ESTA empresa (página «Mi cuenta»). */
+    cambiarDatosEmpresa(nombre: string, nif: string | null): void {
+      bd.prepare("UPDATE empresas SET nombre = ?, nif = ? WHERE id = ?").run(nombre, nif, empresaId);
     },
 
     /** Devuelve undefined si el documento no existe O es de otra empresa (no distinguimos, a propósito). */

@@ -25,6 +25,9 @@ export const RegistroSchema = z.object({
     .max(200, { error: "Máximo 200 caracteres." }),
 });
 
+/** «Mi cuenta»: mismas reglas que el registro para nombre de empresa, NIF y nombre. */
+export const DatosCuentaSchema = RegistroSchema.pick({ empresa: true, nif: true, nombre: true });
+
 export const EntradaSchema = z.object({
   email,
   contrasena: z.string().min(1, { error: "Escribe tu contraseña." }).max(200),
@@ -34,6 +37,7 @@ export const EntradaSchema = z.object({
 export interface EstadoFormulario {
   errores?: Record<string, string>;   // por campo
   mensaje?: string;                    // error general
+  hecho?: string;                      // confirmación (p. ej. «Datos guardados»)
   valores?: Record<string, string>;    // lo que escribió el usuario (nunca la contraseña)
 }
 

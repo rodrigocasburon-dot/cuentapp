@@ -22,6 +22,9 @@ export default async function LayoutPrivado({ children }: { children: React.Reac
             <Link href="/documentos" className="font-semibold underline-offset-4 hover:underline">
               Documentos
             </Link>
+            <Link href="/cuenta" className="font-semibold underline-offset-4 hover:underline">
+              Mi cuenta
+            </Link>
           </nav>
           <div className="flex items-center gap-4">
             <p className="text-sm">
