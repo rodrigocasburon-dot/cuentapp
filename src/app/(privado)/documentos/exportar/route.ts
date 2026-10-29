@@ -2,6 +2,7 @@
 // Descarga el Excel contable del trimestre para el gestor (RF-09).
 // Aislamiento: la empresa sale siempre de la sesión (repositorioActual).
 
+import { trimestreActual } from "@/dominio/formato";
 import { repositorioActual } from "@/servidor/auth/sesion";
 import { generarExcelTrimestre } from "@/servidor/documentos/excel";
 
@@ -12,8 +13,9 @@ export async function GET(peticion: Request) {
   const anioParam = Number(url.searchParams.get("anio"));
   const trimParam = Number(url.searchParams.get("trimestre"));
 
-  const anio = anioParam >= 2000 && anioParam <= 2100 ? anioParam : new Date().getFullYear();
-  const trimestre = trimParam >= 1 && trimParam <= 4 ? trimParam : Math.ceil((new Date().getMonth() + 1) / 3);
+  const actual = trimestreActual();
+  const anio = anioParam >= 2000 && anioParam <= 2100 ? anioParam : actual.anio;
+  const trimestre = trimParam >= 1 && trimParam <= 4 ? trimParam : actual.trimestre;
 
   const docs = repo.documentosDelTrimestre(anio, trimestre);
   const semaforo = repo.resumenTrimestre(anio, trimestre);

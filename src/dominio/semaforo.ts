@@ -1,24 +1,32 @@
 // Reglas del Semáforo del Trimestre (propuesta de valor de Cuentapp).
 // Determina si los documentos de un trimestre están listos para el gestor:
+//   Rojo: alguna incidencia bloqueante ABIERTA (duplicado sin resolver,
+//         ilegible, problema documental). Una incidencia resuelta ya no cuenta.
+//   Ámbar: algún documento sin validar (recibido, procesando, pendiente), o
+//          sin validar con avisos ámbar (campos dudosos, factura sin NIF…).
+//          Validar es la decisión manual de que el documento está bien, así
+//          que los avisos ámbar de un documento VALIDADO ya no cuentan.
 //   Verde: todo validado y sin incidencias abiertas.
-//   Ámbar: documentos pendientes de revisión, procesando, recibidos o con campos dudosos.
-//   Rojo: incidencias bloqueantes abiertas (duplicados, ilegibles o problemas documentales).
+//   Sin documentos: trimestre vacío (no es «listo para el gestor»).
+//   Los avisos «info» (p. ej. ticket sin NIF del receptor) nunca cambian el color.
 
 import type { Estado, TipoDocumento } from "./estados";
 import type { Aviso } from "./validaciones";
 
-export type ColorSemaforo = "verde" | "ambar" | "rojo";
+export type ColorSemaforo = "verde" | "ambar" | "rojo" | "vacio";
 
 export const ICONO_SEMAFORO: Record<ColorSemaforo, string> = {
   verde: "🟢",
   ambar: "🟡",
   rojo: "🔴",
+  vacio: "⚪",
 };
 
 export const TEXTO_SEMAFORO: Record<ColorSemaforo, string> = {
   verde: "Verde · Listo para el gestor",
   ambar: "Ámbar · Revisión pendiente",
   rojo: "Rojo · Incidencias bloqueantes",
+  vacio: "Sin documentos",
 };
 
 export interface DocumentoParaSemaforo {
@@ -115,7 +123,7 @@ export function calcularSemaforo(
 
   if (activos.length === 0) {
     return {
-      color: "verde",
+      color: "vacio",
       motivo: "Sin documentos en este trimestre.",
       totalDocumentos: 0,
       validados: 0,
@@ -129,10 +137,8 @@ export function calcularSemaforo(
     };
   }
 
-  // 1) ROJO: si hay incidencias bloqueantes abiertas o avisos rojos
-  const bloqueantes = activos.filter(
-    (d) => d.tieneIncidenciasBloqueantes || d.avisos.some((a) => a.nivel === "rojo"),
-  );
+  // 1) ROJO: incidencias bloqueantes abiertas (no avisos antiguos ya resueltos)
+  const bloqueantes = activos.filter((d) => d.tieneIncidenciasBloqueantes);
   if (bloqueantes.length > 0) {
     return {
       color: "rojo",
@@ -151,9 +157,9 @@ export function calcularSemaforo(
     };
   }
 
-  // 2) ÁMBAR: documentos sin validar, en revisión o con avisos ámbar
+  // 2) ÁMBAR: documentos sin validar (los validados ya los revisó una persona)
   const sinValidar = activos.filter((d) => d.estado !== "validado");
-  const conAvisosAmbar = activos.filter((d) => d.avisos.some((a) => a.nivel === "ambar"));
+  const conAvisosAmbar = sinValidar.filter((d) => d.avisos.some((a) => a.nivel === "ambar"));
   if (sinValidar.length > 0 || conAvisosAmbar.length > 0) {
     const motivos: string[] = [];
     if (sinValidar.length > 0) {

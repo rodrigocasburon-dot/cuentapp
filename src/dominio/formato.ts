@@ -37,6 +37,12 @@ export function mesDe(fecha: Date): string {
   return new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Madrid", year: "numeric", month: "2-digit" }).format(fecha);
 }
 
+/** Trimestre actual en hora de España (no la del servidor). */
+export function trimestreActual(ahora = new Date()): { anio: number; trimestre: number } {
+  const [anio, mes] = mesDe(ahora).split("-").map(Number);
+  return { anio, trimestre: Math.ceil(mes / 3) };
+}
+
 /** 1536 → "1,5 kB" · 2_400_000 → "2,3 MB" */
 export function tamano(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;

@@ -11,7 +11,7 @@
 import { randomUUID } from "node:crypto";
 import type { Bd } from "./conexion";
 import type { Estado, TipoDocumento, TipoIncidencia } from "@/dominio/estados";
-import { mesDe } from "@/dominio/formato";
+import { mesDe, trimestreActual } from "@/dominio/formato";
 import {
   calcularSemaforo,
   fechasTrimestre,
@@ -759,7 +759,7 @@ export function repositorioDeEmpresa(bd: Bd, empresaId: string) {
         .all(empresaId) as { anio: number; trimestre: number; totalDocumentos: number }[];
 
       const ahora = new Date();
-      const actual = { anio: ahora.getFullYear(), trimestre: Math.ceil((ahora.getMonth() + 1) / 3) };
+      const actual = trimestreActual(ahora);
 
       if (!filas.some((f) => f.anio === actual.anio && f.trimestre === actual.trimestre)) {
         filas.unshift({ anio: actual.anio, trimestre: actual.trimestre, totalDocumentos: 0 });

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { EstadoDocumento } from "@/componentes/EstadoDocumento";
 import { ETIQUETA_TIPO, type TipoDocumento } from "@/dominio/estados";
-import { fecha, fechaHora, importe, mesDe } from "@/dominio/formato";
+import { fecha, importe, mesDe, trimestreActual } from "@/dominio/formato";
 import {
   ICONO_SEMAFORO,
   TEXTO_SEMAFORO,
@@ -22,6 +22,7 @@ const CLASE_FONDO_SEMAFORO: Record<ColorSemaforo, string> = {
   verde: "border-verde bg-crema-2 text-verde",
   ambar: "border-arena bg-crema-2 text-marron-oscuro",
   rojo: "border-rojo bg-crema-2 text-rojo",
+  vacio: "border-marron bg-crema-2 text-marron-oscuro",
 };
 
 export default async function Panel({
@@ -38,12 +39,13 @@ export default async function Panel({
   const trimestres = repo.listarTrimestres();
   const params = await searchParams;
 
-  const ahora = new Date();
-  const anioActual = ahora.getFullYear();
-  const trimActual = Math.ceil((ahora.getMonth() + 1) / 3);
-
-  const anioSel = params?.anio ? Number(params.anio) : (trimestres[0]?.anio ?? anioActual);
-  const trimSel = params?.trimestre ? Number(params.trimestre) : (trimestres[0]?.trimestre ?? trimActual);
+  // Trimestre elegido en la dirección (validado) o, si no, el más reciente
+  const actual = trimestreActual();
+  const anioPedido = Number(params?.anio);
+  const trimPedido = Number(params?.trimestre);
+  const valido = Number.isInteger(anioPedido) && anioPedido >= 2000 && anioPedido <= 2100 && [1, 2, 3, 4].includes(trimPedido);
+  const anioSel = valido ? anioPedido : (trimestres[0]?.anio ?? actual.anio);
+  const trimSel = valido ? trimPedido : (trimestres[0]?.trimestre ?? actual.trimestre);
 
   const semaforo = repo.resumenTrimestre(anioSel, trimSel);
   const docsTrimestre = repo.documentosDelTrimestre(anioSel, trimSel);

@@ -22,6 +22,7 @@ const COLOR_SEMAFORO_EXCEL: Record<string, string> = {
   verde: "15803D", // verde oscuro
   ambar: "B45309", // ámbar oscuro
   rojo: "B91C1C",  // rojo oscuro
+  vacio: "6B5B4E", // gris marrón
 };
 
 export async function generarExcelTrimestre(datos: DatosExportacionTrimestre): Promise<Uint8Array> {
@@ -56,7 +57,7 @@ export async function generarExcelTrimestre(datos: DatosExportacionTrimestre): P
   ws.getCell("G3").value = "Semáforo del trimestre:";
   ws.getCell("G3").font = { bold: true };
   const celdaSemaforo = ws.getCell("H3");
-  celdaSemaforo.value = datos.semaforo.color.toUpperCase();
+  celdaSemaforo.value = datos.semaforo.color === "vacio" ? "SIN DOCUMENTOS" : datos.semaforo.color.toUpperCase();
   celdaSemaforo.font = { bold: true, color: { argb: "FFFFFF" } };
   celdaSemaforo.fill = {
     type: "pattern",
