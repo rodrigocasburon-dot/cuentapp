@@ -35,7 +35,7 @@ automática (`npm test`, 15 ficheros, 138 pruebas en verde el 29/10/2026);
 | — | Copia local por trimestre | `buzon-copia-limites` | ✔ (D-46) |
 | FA-03 | PWA | Manifiesto e icono | Parcial: sin service worker (D-49) |
 | — | Planes, límites, cambio de plan | `buzon-copia-limites` · «Mi cuenta» | ✔ sin cobro (D-47) |
-| — | Textos legales | `/legal/*` | Borradores (D-48) |
+| — | Textos legales | Pie con enlaces a `/legal/*` | Contenido pendiente del equipo (D-48) |
 
 ## Requisitos no funcionales (interpretación)
 
@@ -52,5 +52,5 @@ automática (`npm test`, 15 ficheros, 138 pruebas en verde el 29/10/2026);
 
 - Documento de decisiones consolidado (RF-04, RNF-01..07 y PL-01..04 oficiales).
 - Validación de la lectura con tickets reales (15-20 fotos de móvil).
-- Revisión jurídica de los textos legales; tipografías propias; service worker.
+- Contenido de los textos legales (lo aporta el equipo); tipografías propias; service worker.
 - Servidor de correo real, Google Drive, cobro con Stripe y despliegue (solo documentados).
