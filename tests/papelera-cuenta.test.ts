@@ -54,11 +54,18 @@ describe("incidencias abiertas por documento (columna «A revisar»)", () => {
     const a2 = repoA.crearDocumento({ ...ORIGINAL, hash_sha256: "b".repeat(64) }, HOY);
     const b1 = repoB.crearDocumento(ORIGINAL, HOY);
     repoA.crearIncidencia({ documentoId: a2, tipo: "duplicado", bloqueante: 1, descripcion: "x", documentoReferenciaId: a1 });
-    const resuelta = repoA.crearIncidencia({ documentoId: a1, tipo: "ilegible", bloqueante: 1, descripcion: "x" });
-    repoA.resolverIncidencia(resuelta, "no_duplicado", "uA", HOY);
+    const resuelta = repoA.crearIncidencia({ documentoId: a1, tipo: "duplicado", bloqueante: 1, descripcion: "x", documentoReferenciaId: a2 });
+    expect(repoA.resolverIncidencia(resuelta, "no_duplicado", "uA", HOY)).toBe(true);
+    // Un ilegible no se puede «resolver» a mano: solo corrigiendo los datos (M1)
+    const ilegible = repoA.crearIncidencia({ documentoId: a1, tipo: "ilegible", bloqueante: 1, descripcion: "x" });
+    expect(repoA.resolverIncidencia(ilegible, "no_duplicado", "uA", HOY)).toBe(false);
+    expect(repoA.resolverIncidencia(resuelta, "no_duplicado", "uA", HOY)).toBe(false); // ya resuelta
     repoB.crearIncidencia({ documentoId: b1, tipo: "ilegible", bloqueante: 1, descripcion: "x" });
 
-    expect([...repoA.incidenciasAbiertasPorDocumento()]).toEqual([[a2, ["duplicado"]]]);
+    expect([...repoA.incidenciasAbiertasPorDocumento()]).toEqual([
+      [a2, ["duplicado"]],
+      [a1, ["ilegible"]],
+    ]);
   });
 });
 

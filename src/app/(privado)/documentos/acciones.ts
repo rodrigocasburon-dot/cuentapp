@@ -97,16 +97,14 @@ export async function corregirDocumentoAction(
   }
 
   try {
-    repo.corregirDocumento(documentoId, sesion.usuario.id, {
-      ...parseo.data,
-      lineas_iva,
-    });
+    // Solo lo que ha pasado por zod (revisión de seguridad M2), nunca el JSON en bruto
+    repo.corregirDocumento(documentoId, sesion.usuario.id, parseo.data);
     revalidatePath(`/documentos/${documentoId}`);
     revalidatePath("/documentos");
     revalidatePath("/panel");
     return { ok: true, mensaje: "Documento actualizado correctamente." };
   } catch (e) {
-    return { ok: false, mensaje: e instanceof Error ? e.message : "Error al guardar la corrección." };
+    return { ok: false, mensaje: mensajeSeguro(e, "Error al guardar la corrección.") };
   }
 }
 
@@ -123,7 +121,7 @@ export async function validarDocumentoAction(documentoId: string): Promise<{ ok:
     revalidatePath("/panel");
     return { ok: true };
   } catch (e) {
-    return { ok: false, mensaje: e instanceof Error ? e.message : "Error al validar el documento." };
+    return { ok: false, mensaje: mensajeSeguro(e, "Error al validar el documento.") };
   }
 }
 
@@ -187,14 +185,21 @@ export async function resolverIncidenciaAction(
   resolucion: "no_duplicado" | "descartado",
 ): Promise<{ ok: boolean; mensaje?: string }> {
   const { repo, sesion } = await repositorioActual();
+  // Las Server Actions se pueden llamar a mano: el tipo de TypeScript no basta (M1)
+  if (resolucion !== "no_duplicado" && resolucion !== "descartado") return { ok: false, mensaje: "Resolución no válida." };
   try {
     const resuelta = repo.resolverIncidencia(incidenciaId, resolucion, sesion.usuario.id);
     if (!resuelta) return { ok: false, mensaje: "No se encontró la incidencia." };
-    revalidatePath(`/documentos/${documentoId}`);
-    revalidatePath("/documentos");
-    revalidatePath("/panel");
+    revalidarTodo(documentoId);
     return { ok: true };
   } catch (e) {
-    return { ok: false, mensaje: e instanceof Error ? e.message : "Error al resolver la incidencia." };
+    return { ok: false, mensaje: mensajeSeguro(e, "Error al resolver la incidencia.") };
   }
+}
+
+/** Nuestros mensajes sí se muestran; los errores internos (SQLite…) no (B7). */
+function mensajeSeguro(e: unknown, generico: string): string {
+  if (e instanceof Error && e.name !== "SqliteError" && !e.message.includes("SQLITE")) return e.message;
+  console.error(e);
+  return generico;
 }

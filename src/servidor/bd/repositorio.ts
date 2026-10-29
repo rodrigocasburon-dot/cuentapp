@@ -420,7 +420,11 @@ export function repositorioDeEmpresa(bd: Bd, empresaId: string) {
      */
     resolverIncidencia(incidenciaId: string, resolucion: "no_duplicado" | "descartado", usuarioId: string, ahora = new Date()): boolean {
       return bd.transaction(() => {
-        const inc = bd.prepare("SELECT * FROM incidencias WHERE id = ? AND empresa_id = ?").get(incidenciaId, empresaId) as FilaIncidencia | undefined;
+        // Solo los DUPLICADOS abiertos se resuelven a mano: un ilegible o un
+        // documento a nombre de otro se resuelve corrigiendo los datos (revisión de seguridad M1)
+        const inc = bd
+          .prepare("SELECT * FROM incidencias WHERE id = ? AND empresa_id = ? AND tipo = 'duplicado' AND estado = 'abierta'")
+          .get(incidenciaId, empresaId) as FilaIncidencia | undefined;
         if (!inc) return false;
 
         bd.prepare(
@@ -690,6 +694,7 @@ export function repositorioDeEmpresa(bd: Bd, empresaId: string) {
         const doc = bd.prepare("SELECT * FROM documentos WHERE id = ? AND empresa_id = ?").get(id, empresaId) as FilaDocumento | undefined;
         if (!doc) throw new Error("Documento no encontrado");
         if (doc.descartado_en) throw new Error("Un documento descartado no se puede validar");
+        if (doc.estado === "recibido" || doc.estado === "procesando") throw new Error("El documento todavía se está leyendo");
 
         const bloqueantes = bd
           .prepare("SELECT COUNT(*) as c FROM incidencias WHERE documento_id = ? AND empresa_id = ? AND bloqueante = 1 AND estado = 'abierta'")

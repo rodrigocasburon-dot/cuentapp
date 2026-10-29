@@ -42,7 +42,8 @@ export async function darmeDeBaja(_previo: EstadoFormulario, f: FormData): Promi
   try {
     darDeBaja(bd(), sesion.usuario.id, sesion.empresa.id);
   } catch (e) {
-    return { mensaje: e instanceof Error ? e.message : "No se ha podido dar de baja la cuenta." };
+    console.error(e);
+    return { mensaje: "No se ha podido dar de baja la cuenta. Solo puede hacerlo el titular." };
   }
   await cerrarSesion();
   redirect("/entrar?baja=1");

@@ -89,7 +89,7 @@ export function buscarCredenciales(bd: Bd, email: string): { id: string; hash_co
 /** Empresas a las que pertenece el usuario (en el MVP, una). */
 export function empresasDeUsuario(bd: Bd, usuarioId: string): { id: string; nombre: string }[] {
   return bd
-    .prepare("SELECT e.id, e.nombre FROM membresias m JOIN empresas e ON e.id = m.empresa_id WHERE m.usuario_id = ? ORDER BY e.creada_en")
+    .prepare("SELECT e.id, e.nombre FROM membresias m JOIN empresas e ON e.id = m.empresa_id WHERE m.usuario_id = ? AND e.baja_en IS NULL ORDER BY e.creada_en")
     .all(usuarioId) as { id: string; nombre: string }[];
 }
 

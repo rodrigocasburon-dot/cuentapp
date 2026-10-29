@@ -11,9 +11,16 @@ import { TAMANO_MAXIMO, TEXTO_FORMATOS, type ResultadoArchivo } from "@/dominio/
 import { detectarTipo, guardarOriginal } from "@/servidor/almacen/originales";
 import type { Repositorio } from "@/servidor/bd/repositorio";
 
-/** Nombre presentable y seguro: sin carpetas, sin caracteres de control, máximo 200. */
+/**
+ * Nombre presentable y seguro: sin carpetas, sin caracteres de control ni de
+ * formato Unicode (p. ej. U+202E, que haría ver «factura‮fdp.exe» como
+ * «facturaexe.pdf»), máximo 200.
+ */
 export function limpiarNombre(nombre: string): string {
-  const limpio = path.basename(nombre.replace(/\\/g, "/")).replace(/[\u0000-\u001f\u007f]/g, "").trim();
+  const limpio = path
+    .basename(nombre.replace(/\\/g, "/"))
+    .replace(/[\u0000-\u001f\u007f​-‏‪-‮⁦-⁩﻿]/g, "")
+    .trim();
   return limpio.slice(0, 200) || "documento";
 }
 

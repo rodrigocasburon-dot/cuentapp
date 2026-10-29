@@ -17,6 +17,13 @@ function disposicion(nombre: string, descargar: boolean): string {
   return `${descargar ? "attachment" : "inline"}; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(nombre)}`;
 }
 
+/** El nombre de descarga acaba siempre en la extensión del tipo detectado (B3). */
+function conExtensionReal(nombre: string, ruta: string): string {
+  const ext = ruta.slice(ruta.lastIndexOf(".")); // ".pdf", ".jpg"… lo puso el servidor
+  const igualQue = (e: string) => nombre.toLowerCase().endsWith(e);
+  return igualQue(ext) || (ext === ".jpg" && igualQue(".jpeg")) ? nombre : nombre + ext;
+}
+
 const TEXTO = { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" };
 
 export function respuestaOriginal(repo: Repositorio, id: string, descargar: boolean, carpeta?: string): RespuestaOriginal {
@@ -38,7 +45,7 @@ export function respuestaOriginal(repo: Repositorio, id: string, descargar: bool
     cabeceras: {
       "Content-Type": doc.mime,                 // detectado por sus bytes al subirlo, no el que dijo el navegador
       "Content-Length": String(lectura.bytes.length),
-      "Content-Disposition": disposicion(doc.nombre_original, descargar || svg),
+      "Content-Disposition": disposicion(conExtensionReal(doc.nombre_original, doc.ruta_original), descargar || svg),
       ...(svg ? { "Content-Security-Policy": "default-src 'none'; sandbox" } : {}),
       "X-Content-Type-Options": "nosniff",      // el navegador no debe "adivinar" otro tipo
       "Cache-Control": "private, no-store",     // nada de cachés compartidas

@@ -27,6 +27,7 @@ import pypdfium2 as pdfium  # noqa: E402
 from rapidocr import RapidOCR  # noqa: E402
 
 MAX_PAGINAS = 3
+MAX_PIXELES = 40_000_000  # ~ A4 a 600 ppp; más no mejora la lectura y dispara la memoria
 MIN_CARACTERES_TEXTO = 30  # menos que esto en un PDF = probablemente escaneado
 motor = RapidOCR()
 
@@ -67,7 +68,10 @@ def leer_pdf(ruta):
         # Escaneado: cada página a imagen (200 ppp) y OCR
         partes, confianzas = [], []
         for p in paginas:
-            imagen = p.render(scale=200 / 72).to_numpy()
+            # Tope de píxeles por página: una página gigantesca agotaría la memoria
+            ancho, alto = p.get_size()  # en puntos (1/72")
+            escala = min(200 / 72, (MAX_PIXELES / max(ancho * alto, 1)) ** 0.5)
+            imagen = p.render(scale=escala).to_numpy()
             t, c = ocr(imagen)
             partes.append(t)
             confianzas.append(c)

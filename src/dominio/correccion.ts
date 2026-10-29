@@ -32,9 +32,11 @@ export function formatearCentimosAInput(centimos: number | null | undefined): st
 
 export const esquemaLineaIva = z.object({
   tipo_iva: z.coerce.number().min(0, "El tipo de IVA debe ser mayor o igual a 0.").max(100, "El tipo de IVA no puede superar el 100 %."),
-  base_centimos: z.number().int("La base debe ser un número entero de céntimos."),
-  cuota_centimos: z.number().int("La cuota debe ser un número entero de céntimos."),
+  base_centimos: z.number().int("La base debe ser un número entero de céntimos.").min(-1e11).max(1e11),
+  cuota_centimos: z.number().int("La cuota debe ser un número entero de céntimos.").min(-1e11).max(1e11),
 });
+
+export const MAX_LINEAS_IVA = 20;
 
 export const esquemaCorreccion = z.object({
   tipo: z.enum(TIPOS_DOCUMENTO, {
@@ -86,8 +88,8 @@ export const esquemaCorreccion = z.object({
       message: "La moneda debe tener 3 letras (ej. EUR, USD).",
     })
     .transform((v) => (v ? v.toUpperCase() : null)),
-  total_centimos: z.number().int("El total debe ser un importe válido.").nullable().optional(),
-  lineas_iva: z.array(esquemaLineaIva).optional(),
+  total_centimos: z.number().int("El total debe ser un importe válido.").min(-1e11).max(1e11).nullable().optional(),
+  lineas_iva: z.array(esquemaLineaIva).max(MAX_LINEAS_IVA, `Como máximo ${MAX_LINEAS_IVA} líneas de IVA.`).optional(),
 });
 
 export type EntradaCorreccion = z.infer<typeof esquemaCorreccion>;

@@ -20,6 +20,7 @@ import {
 } from "@/servidor/bd/cuentas";
 
 const texto = (f: FormData, campo: string) => String(f.get(campo) ?? "");
+const MAX_REGISTROS = 20;
 
 export async function registrar(_previo: EstadoFormulario, f: FormData): Promise<EstadoFormulario> {
   const valores = { empresa: texto(f, "empresa"), nif: texto(f, "nif"), nombre: texto(f, "nombre"), email: texto(f, "email") };
@@ -27,6 +28,13 @@ export async function registrar(_previo: EstadoFormulario, f: FormData): Promise
   const errores: Record<string, string> = datos.success ? {} : erroresPorCampo(datos.error);
   if (texto(f, "acepto") !== "si") errores.acepto = "Para crear la cuenta tienes que aceptar los términos y la política de privacidad.";
   if (!datos.success || errores.acepto) return { errores, valores };
+
+  // Freno a altas masivas (M4): cada registro cuesta ~0,5 s de CPU y crea una empresa.
+  // Sin IP fiable en local, el límite es global: 20 altas cada 15 minutos.
+  if (intentosRecientes(bd(), "registro:global") >= MAX_REGISTROS) {
+    return { mensaje: "Se están creando demasiadas cuentas. Espera unos minutos y vuelve a probar.", valores };
+  }
+  registrarIntentoFallido(bd(), "registro:global");
 
   let usuarioId: string, empresaId: string;
   try {
@@ -55,12 +63,14 @@ export async function entrar(_previo: EstadoFormulario, f: FormData): Promise<Es
     return { mensaje: "Demasiados intentos fallidos. Espera 15 minutos y vuelve a probar.", valores };
   }
 
+  // El intento se apunta ANTES de verificar: así varias peticiones a la vez no
+  // pueden pasar todas el freno (revisión de seguridad M4). Si acierta, se olvida.
+  registrarIntentoFallido(bd(), email);
   const usuario = buscarCredenciales(bd(), email);
   // Se verifica siempre (con un hash ficticio si el email no existe) para tardar lo mismo
   const correcta = await verificarContrasena(contrasena, usuario?.hash_contrasena ?? (await hashParaIgualarTiempos()));
   const empresa = usuario && correcta ? empresasDeUsuario(bd(), usuario.id)[0] : undefined;
   if (!usuario || !correcta || !empresa) {
-    registrarIntentoFallido(bd(), email);
     // Mismo mensaje en todos los casos: no revelamos si el email existe
     return { mensaje: "El email o la contraseña no son correctos.", valores };
   }

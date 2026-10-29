@@ -13,6 +13,7 @@ import type { Bd } from "@/servidor/bd/conexion";
 import type { TipoCambio } from "@/servidor/bd/cambios";
 import { repositorioDeEmpresa, type Repositorio } from "@/servidor/bd/repositorio";
 import { documentosPorLeer, recuperarAtascados } from "@/servidor/bd/sistema";
+import { imagenDemasiadoGrande } from "./dimensiones";
 import { DocumentoDanado, type ResultadoLectura } from "./extraer";
 
 /** Lo que necesita el procesador. En las pruebas se sustituye por versiones falsas. */
@@ -41,9 +42,11 @@ export async function procesarDocumento(repo: Repositorio, id: string, deps: Dep
     return "incidencia";
   }
 
-  // 1.5) SVG: no se lee automáticamente (D-40). Pasa directo a revisión manual.
-  if (doc.mime === MIME_SVG) {
-    const avisos: Aviso[] = [{ codigo: "lectura_manual", nivel: "ambar", texto: "Los SVG no se leen automáticamente. Completa los datos a mano." }];
+  // 1.5) SVG (D-40) o imagen gigantesca (bomba de descompresión): no se leen
+  // automáticamente. Pasan directo a revisión manual.
+  if (doc.mime === MIME_SVG || (doc.mime.startsWith("image/") && imagenDemasiadoGrande(original.bytes))) {
+    const texto = doc.mime === MIME_SVG ? "Los SVG no se leen automáticamente." : "La imagen es demasiado grande para leerla automáticamente.";
+    const avisos: Aviso[] = [{ codigo: "lectura_manual", nivel: "ambar", texto: `${texto} Completa los datos a mano.` }];
     repo.guardarLectura(id, { extraccion: extraccionVacia(), motor: "ninguno (SVG)", avisos, cambio: null, estado: "pendiente_revision", ahora: ahora() });
     return "pendiente_revision";
   }

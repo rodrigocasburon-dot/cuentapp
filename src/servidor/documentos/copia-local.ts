@@ -61,7 +61,7 @@ export async function copiarTrimestre(
     }
     const categoria = d.tipo === "factura_completa" ? "Facturas completas" : "Tickets";
     const ext = path.extname(d.ruta_original);
-    let base = [d.fecha_emision ?? "sin-fecha", parteSegura(d.nombre_emisor), parteSegura(d.numero, 30)].join("_");
+    let base = [parteSegura(d.fecha_emision, 10), parteSegura(d.nombre_emisor), parteSegura(d.numero, 30)].join("_");
     // Dos documentos con el mismo nombre: se distinguen por el principio del hash
     if (usados.has(`${categoria}/${base}`)) base += `_${d.hash_sha256.slice(0, 8)}`;
     usados.add(`${categoria}/${base}`);

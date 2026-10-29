@@ -67,7 +67,9 @@ describe("semáforo desde la base de datos", () => {
     const repo = repositorioDeEmpresa(bd, "A");
     const id = repo.crearDocumento(ORIGINAL, HOY);
     repo.corregirDocumento(id, "uA", { nombre_emisor: "Bar", nif_emisor: "B00000000", numero: "1", fecha_emision: "2026-08-19", total_centimos: 121, lineas_iva: [{ tipo_iva: 21, base_centimos: 100, cuota_centimos: 21 }] }, HOY);
-    const inc = repo.crearIncidencia({ documentoId: id, tipo: "documental", bloqueante: 1, descripcion: "x" });
+    const otro = repo.crearDocumento({ ...ORIGINAL, hash_sha256: "b".repeat(64) }, HOY);
+    const inc = repo.crearIncidencia({ documentoId: id, tipo: "duplicado", bloqueante: 1, descripcion: "x", documentoReferenciaId: otro });
+    repo.moverAPapelera(otro, "uA", HOY);
     expect(repo.resumenTrimestre(2026, 3).color).toBe("rojo");
     repo.resolverIncidencia(inc, "no_duplicado", "uA", HOY);
     repo.validarDocumento(id, "uA", HOY);
