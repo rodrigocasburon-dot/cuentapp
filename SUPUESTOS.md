@@ -100,6 +100,15 @@ Hasta que haya migraciones (D-19), cambiar el esquema obliga a eso.
 | D-34 | Rojo: ilegible (≤1 campo leído), archivo dañado, **documento a nombre de otro NIF** (si el NIF leído es válido y con confianza ≥ 0,8; si no, ámbar). Ámbar: NIF con control erróneo o ajeno a España, factura completa sin NIF, sin total o sin desglose, descuadre (> 1 cént. por línea), cuota ≠ base × tipo, tipo de IVA no español, fecha futura o de hace > 4 años, moneda desconocida, sin tipo de cambio, campo con confianza < 0,6. Info: ticket sin NIF de receptor, moneda extranjera. | Umbrales provisionales; ajustar con tickets reales. |
 | D-35 | Tipo de cambio: Frankfurter `api.frankfurter.dev/v1`, 1 EUR = x moneda, `total_eur = total / x`, **caché en BD** por moneda y fecha. Sin red → aviso ámbar y total en euros vacío. | Verificado: fin de semana → último día hábil (S-07 resuelto). Solo se envían moneda y fecha. |
 
+### Fase 6 (29/10/2026) · RF-06 y RF-07 corrección, validación y duplicados
+
+| # | Decisión | Motivo / estado |
+|---|---|---|
+| D-36 | **Migración 4** (`bd/migraciones/004-correccion-duplicados.sql`): amplía `incidencias` (`resuelta_por`, `motivo_resolucion`, `documento_referencia_id`) y `documentos` (`descartado_en`, `descartado_por`). Se añade trigger para asegurar que el `documento_referencia_id` pertenece a la misma empresa. | Trazabilidad de quién y cuándo resuelve incidencias o descarta documentos, manteniendo el aislamiento multi-empresa. |
+| D-37 | **Corrección manual (RF-06):** cada cambio de campo o líneas de IVA se registra en `correcciones` con valor anterior y nuevo; `extraccion_json` es inmutable. Tras cada corrección se vuelve a ejecutar `validar()`, recalculando avisos e incidencias. Si el documento estaba validado, se revierte a `pendiente_revision`. | Auditoría íntegra de cambios manuales y consistencia del semáforo. |
+| D-38 | **Validación manual (RF-06):** el botón «Validar» se activa únicamente si no hay incidencias bloqueantes abiertas y el documento no está descartado. Registra `validado_en` y `validado_por`. | La validación nunca es automática. |
+| D-39 | **Detección y resolución de duplicados (RF-07):** duplicado exacto detectado en la subida por SHA-256 (`recibirArchivo`), abriendo incidencia bloqueante `duplicado` que apunta al original. Duplicado lógico (mismo NIF de emisor, número, fecha y total) se comprueba al terminar la lectura y tras cada corrección. La resolución admite «no es duplicado» o «descartar este documento» (marcado con fecha y usuario, sin borrado físico, D-06). | Cumplimiento estricto de la regla de no borrado de documentos ni originales. |
+
 **Resultado de `npm run lectura:probar`** (banco sintético por la lectura
 real de la app, 16 lecturas: 12 imágenes + 4 facturas en PDF): **136/144
 campos correctos (94 %)**; los 8 fallos son todos del ticket ilegible, que

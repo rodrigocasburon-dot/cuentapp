@@ -68,8 +68,31 @@ export async function procesarDocumento(repo: Repositorio, id: string, deps: Dep
     if (!cambio) avisos.push({ codigo: "sin_tipo_cambio", nivel: "ambar", texto: `No se ha podido obtener el cambio ${moneda}/EUR del ${fecha}. ¿Hay conexión a internet?` });
   }
 
+  // 3.5) Duplicado lógico (RF-07): se comprueba al terminar la lectura
+  const dupLogico = repo.buscarDuplicadoLogico(id, {
+    nif_emisor: ex.nif_emisor.valor,
+    numero: ex.numero.valor,
+    fecha_emision: ex.fecha_emision.valor,
+    total_centimos: ex.total_centimos.valor,
+  });
+  if (dupLogico) {
+    const yaExiste = repo
+      .incidencias(id)
+      .some((i) => i.tipo === "duplicado" && i.estado === "abierta" && i.documento_referencia_id === dupLogico.id);
+    if (!yaExiste) {
+      repo.crearIncidencia({
+        documentoId: id,
+        tipo: "duplicado",
+        bloqueante: 1,
+        descripcion: `Posible duplicado de ${dupLogico.nombre_original} (mismo emisor, número, fecha y total).`,
+        documentoReferenciaId: dupLogico.id,
+      });
+    }
+  }
+
   // 4) Guardar y decidir el estado (la validación final siempre es manual)
-  const estado = avisos.some((a) => a.nivel === "rojo") ? "incidencia" : "pendiente_revision";
+  const incidenciasAbiertas = repo.incidencias(id).filter((i) => i.bloqueante === 1 && i.estado === "abierta");
+  const estado = avisos.some((a) => a.nivel === "rojo") || incidenciasAbiertas.length > 0 ? "incidencia" : "pendiente_revision";
   repo.guardarLectura(id, { extraccion: ex, motor: lectura.motor, avisos, cambio, estado, ahora: ahora() });
   return estado;
 }

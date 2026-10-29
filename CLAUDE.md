@@ -86,8 +86,8 @@ npm run lectura:probar # banco sintético por la lectura real (~136/144 campos)
 | 3 | RF-01 acceso, sesiones y aislamiento | Hecha |
 | 4 | RF-02/03/08 subida y original inmutable | Hecha |
 | 5 | RF-05 lectura automática, validaciones, tipo de cambio | Hecha |
-| 6 | RF-06 corrección + «Validar»; RF-07 duplicados (punto de control) | **Siguiente** |
-| 7 | RF-09 exportación Excel + semáforo del trimestre | Pendiente |
+| 6 | RF-06 corrección + «Validar»; RF-07 duplicados (punto de control) | Hecha |
+| 7 | RF-09 exportación Excel + semáforo del trimestre | **Siguiente** |
 | 8 | Buzón de correo simulado + copia local | Pendiente |
 | 9 | Precios, límites del plan, textos legales, diseño | Pendiente |
 | 10 | Aceptación, revisión de seguridad, README, entrega | Pendiente |

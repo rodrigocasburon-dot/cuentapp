@@ -32,7 +32,7 @@ describe("migraciones", () => {
     ).run();
     expect(bd.pragma("user_version", { simple: true })).toBe(2);
 
-    expect(migrar(bd)).toEqual(["003-lectura.sql"]);
+    expect(migrar(bd)).toEqual(["003-lectura.sql", "004-correccion-duplicados.sql"]);
     expect(bd.pragma("user_version", { simple: true })).toBe(VERSION_ESQUEMA);
     const doc = bd.prepare("SELECT nombre_original, avisos_json FROM documentos WHERE id = 'd1'").get();
     expect(doc).toEqual({ nombre_original: "x.png", avisos_json: null });

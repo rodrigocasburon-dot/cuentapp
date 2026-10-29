@@ -49,3 +49,4 @@ next-env.d.ts
 /.venv-ocr/
 # Resultados de las pruebas de lectura con documentos reales
 /banco-tickets/resultados/reales/
+cuentapp-codigo.md

@@ -42,6 +42,15 @@ export function recibirArchivo(
     },
     ahora,
   );
-  // El duplicado se registra igualmente; la incidencia se abre en la fase 6 (RF-07)
+  // Duplicado exacto (RF-07): crea incidencia bloqueante apuntando al original
+  if (previo) {
+    repo.crearIncidencia({
+      documentoId: id,
+      tipo: "duplicado",
+      bloqueante: 1,
+      descripcion: `Es un duplicado exacto de ${previo.nombre_original}.`,
+      documentoReferenciaId: previo.id,
+    });
+  }
   return { nombre, ok: true, id, duplicadoDe: previo?.nombre_original };
 }
