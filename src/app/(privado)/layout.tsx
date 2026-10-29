@@ -10,24 +10,25 @@ export default async function LayoutPrivado({ children }: { children: React.Reac
   const { usuario, empresa } = await exigirSesion();
   return (
     <>
-      <header className="border-b-2 border-crema-2 bg-crema-2">
-        <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-between gap-3 px-6 py-3">
-          <nav aria-label="Principal" className="flex items-center gap-6">
-            <Link href="/panel" className="text-2xl font-black uppercase tracking-tight">
+      <header className="sticky top-0 z-10 border-b border-black/5 bg-white/85 backdrop-blur">
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-3">
+          <nav aria-label="Principal" className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <Link href="/panel" className="mr-2 flex items-center gap-2 text-xl font-extrabold tracking-tight">
+              <span aria-hidden="true" className="grid h-8 w-8 place-items-center rounded-xl bg-marron-oscuro text-sm">
+                🚦
+              </span>
               Cuentapp
             </Link>
-            <Link href="/panel" className="font-semibold underline-offset-4 hover:underline">
-              Panel
-            </Link>
-            <Link href="/documentos" className="font-semibold underline-offset-4 hover:underline">
-              Documentos
-            </Link>
-            <Link href="/buzon" className="font-semibold underline-offset-4 hover:underline">
-              Buzón
-            </Link>
-            <Link href="/cuenta" className="font-semibold underline-offset-4 hover:underline">
-              Mi cuenta
-            </Link>
+            {[
+              ["/panel", "Panel"],
+              ["/documentos", "Documentos"],
+              ["/buzon", "Buzón"],
+              ["/cuenta", "Mi cuenta"],
+            ].map(([href, texto]) => (
+              <Link key={href} href={href} className="rounded-full px-3 py-1.5 text-sm font-semibold hover:bg-crema-2">
+                {texto}
+              </Link>
+            ))}
           </nav>
           <div className="flex items-center gap-4">
             <p className="text-sm">
@@ -35,7 +36,7 @@ export default async function LayoutPrivado({ children }: { children: React.Reac
               <span className="text-marron"> · {usuario.nombre}</span>
             </p>
             <form action={salir}>
-              <button type="submit" className="rounded-full border-2 border-marron-oscuro px-4 py-1 font-semibold hover:bg-crema focus:outline-none focus-visible:ring-4 focus-visible:ring-marron/40">
+              <button type="submit" className="rounded-full bg-marron-oscuro px-4 py-1.5 text-sm font-semibold text-white hover:bg-black focus:outline-none focus-visible:ring-4 focus-visible:ring-lima">
                 Salir
               </button>
             </form>

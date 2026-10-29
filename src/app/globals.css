@@ -1,21 +1,46 @@
 @import "tailwindcss";
 
-/* Paleta provisional (guía visual; se confirma en la fase 9).
-   Contraste calculado sobre crema (#FDEEDC):
-     marron-oscuro ≈ 10,9:1 · marron ≈ 6,9:1 → válidos para texto (AA).
-     arena ≈ 2,0:1 → NO apto para texto sobre crema; solo decoración.
-     rojo (errores) ≈ 6,6:1 sobre crema y 7,6:1 sobre blanco. */
+/* Paleta (fase 9, estilo «fintech» claro: fondo casi blanco, tinta casi negra,
+   acento lima). Se mantienen los nombres de los tokens de la primera paleta
+   para no tocar cada componente: «crema» = fondo, «marron-oscuro» = tinta…
+   Contraste calculado (WCAG):
+     marron-oscuro #15171c sobre crema #f7f8f3 ≈ 17:1 · sobre blanco ≈ 18:1
+     marron #4a4f57 sobre crema ≈ 7,6:1 → texto secundario (AA)
+     verde #15803d sobre blanco ≈ 5,0:1 · blanco sobre verde ≈ 5,0:1 (AA)
+     rojo #b42318 sobre blanco ≈ 6,5:1 (AA)
+     lima y arena: SOLO decoración y fondos, nunca texto sobre claro. */
 @theme {
-  --color-crema: #fdeedc;
-  --color-crema-2: #f6e4ce;
-  --color-marron-oscuro: #4b2e12;
-  --color-marron: #6f4a25;
-  --color-arena: #d1a468;
-  --color-rojo: #9b2c1f;
+  --color-crema: #f7f8f3;
+  --color-crema-2: #eef1e6;
+  --color-marron-oscuro: #15171c;
+  --color-marron: #4a4f57;
+  --color-arena: #e3a72f;
+  --color-rojo: #b42318;
+  --color-verde: #15803d;
+  --color-lima: #d9f24f;
+  --color-lima-2: #f3fbd0;
+
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, "Segoe UI", Arial, sans-serif;
 }
 
 body {
   background: var(--color-crema);
   color: var(--color-marron-oscuro);
-  font-family: system-ui, "Segoe UI", Arial, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/* Halo lima/amarillo de la portada (decorativo) */
+.halo {
+  background:
+    radial-gradient(60% 50% at 50% 35%, rgb(217 242 79 / 0.55), transparent 70%),
+    radial-gradient(40% 40% at 15% 90%, rgb(250 230 120 / 0.35), transparent 70%),
+    radial-gradient(40% 40% at 85% 85%, rgb(190 230 90 / 0.35), transparent 70%);
+}
+
+/* Texto con degradado (solo titulares grandes; el color base ya cumple AA) */
+.degradado {
+  background: linear-gradient(90deg, #15171c 0%, #3f6212 55%, #65a30d 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
