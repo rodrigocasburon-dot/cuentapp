@@ -1,0 +1,37 @@
+{
+  "id": "t03-supermercado",
+  "descripcion": "Ticket con tres tipos de IVA (4, 10 y 21 %)",
+  "tipo": "ticket_simplificado",
+  "nombre_emisor": "Supermercados Imaginarios S.A.",
+  "nif_emisor": "A77314029",
+  "nif_receptor": null,
+  "nombre_receptor": null,
+  "numero": "2026/11/004512",
+  "fecha_emision": "2026-09-21",
+  "moneda": "EUR",
+  "lineas_iva": [
+    {
+      "tipo_iva": 4,
+      "base_centimos": 289,
+      "cuota_centimos": 12
+    },
+    {
+      "tipo_iva": 10,
+      "base_centimos": 1245,
+      "cuota_centimos": 125
+    },
+    {
+      "tipo_iva": 21,
+      "base_centimos": 820,
+      "cuota_centimos": 172
+    }
+  ],
+  "total_centimos": 2663,
+  "esperado": {
+    "validaciones": [],
+    "semaforo": "verde",
+    "avisos": [
+      "ticket_sin_nif_receptor"
+    ]
+  }
+}

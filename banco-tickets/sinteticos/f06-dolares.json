@@ -1,0 +1,28 @@
+{
+  "id": "f06-dolares",
+  "descripcion": "Factura en USD (requiere tipo de cambio por fecha)",
+  "tipo": "factura_completa",
+  "nombre_emisor": "Imaginary Software Inc.",
+  "nif_emisor": null,
+  "nif_receptor": "B00000000",
+  "nombre_receptor": "Panadería Ejemplo S.L.",
+  "numero": "INV-90412",
+  "fecha_emision": "2026-09-03",
+  "moneda": "USD",
+  "lineas_iva": [
+    {
+      "tipo_iva": 0,
+      "base_centimos": 4999,
+      "cuota_centimos": 0
+    }
+  ],
+  "total_centimos": 4999,
+  "esperado": {
+    "validaciones": [],
+    "semaforo": "ambar",
+    "avisos": [
+      "factura_sin_nif_emisor",
+      "moneda_extranjera"
+    ]
+  }
+}

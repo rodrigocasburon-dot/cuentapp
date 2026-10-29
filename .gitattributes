@@ -1,0 +1,3 @@
+# Finales de línea LF en el repositorio y en la copia de trabajo,
+# también en Windows. Las imágenes (PNG/JPG) git las detecta como binarias.
+* text=auto eol=lf

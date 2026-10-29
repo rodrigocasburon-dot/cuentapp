@@ -1,0 +1,29 @@
+{
+  "id": "t12-fecha-futura",
+  "descripcion": "Ticket con fecha no plausible (en el futuro)",
+  "tipo": "ticket_simplificado",
+  "nombre_emisor": "Librería Imaginada",
+  "nif_emisor": "48213077V",
+  "nif_receptor": null,
+  "nombre_receptor": null,
+  "numero": "L-771",
+  "fecha_emision": "2031-02-28",
+  "moneda": "EUR",
+  "lineas_iva": [
+    {
+      "tipo_iva": 10,
+      "base_centimos": 950,
+      "cuota_centimos": 95
+    }
+  ],
+  "total_centimos": 1045,
+  "esperado": {
+    "validaciones": [
+      "fecha_no_plausible"
+    ],
+    "semaforo": "ambar",
+    "avisos": [
+      "ticket_sin_nif_receptor"
+    ]
+  }
+}

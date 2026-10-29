@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+/* Paleta provisional (guía visual; se confirma en la fase 9).
+   Contraste calculado sobre crema (#FDEEDC):
+     marron-oscuro ≈ 10,9:1 · marron ≈ 6,9:1 → válidos para texto (AA).
+     arena ≈ 2,0:1 → NO apto para texto sobre crema; solo decoración. */
+@theme {
+  --color-crema: #fdeedc;
+  --color-crema-2: #f6e4ce;
+  --color-marron-oscuro: #4b2e12;
+  --color-marron: #6f4a25;
+  --color-arena: #d1a468;
+}
+
+body {
+  background: var(--color-crema);
+  color: var(--color-marron-oscuro);
+  font-family: system-ui, "Segoe UI", Arial, sans-serif;
+}

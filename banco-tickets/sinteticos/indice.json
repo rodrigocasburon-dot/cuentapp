@@ -1,0 +1,74 @@
+[
+  {
+    "id": "t01-cafeteria",
+    "descripcion": "Ticket simplificado sencillo, 10 % IVA, sin NIF de receptor (aviso informativo)",
+    "imagen": "t01-cafeteria.png",
+    "verdad": "t01-cafeteria.json"
+  },
+  {
+    "id": "t02-gasolinera",
+    "descripcion": "Ticket de combustible, 21 % IVA",
+    "imagen": "t02-gasolinera.png",
+    "verdad": "t02-gasolinera.json"
+  },
+  {
+    "id": "t03-supermercado",
+    "descripcion": "Ticket con tres tipos de IVA (4, 10 y 21 %)",
+    "imagen": "t03-supermercado.png",
+    "verdad": "t03-supermercado.json"
+  },
+  {
+    "id": "f04-asesoria",
+    "descripcion": "Factura completa correcta con NIF de emisor y receptor",
+    "imagen": "f04-asesoria.png",
+    "verdad": "f04-asesoria.json"
+  },
+  {
+    "id": "f05-sin-nif-receptor",
+    "descripcion": "Factura completa SIN NIF de receptor (debe dar ámbar)",
+    "imagen": "f05-sin-nif-receptor.png",
+    "verdad": "f05-sin-nif-receptor.json"
+  },
+  {
+    "id": "f06-dolares",
+    "descripcion": "Factura en USD (requiere tipo de cambio por fecha)",
+    "imagen": "f06-dolares.png",
+    "verdad": "f06-dolares.json"
+  },
+  {
+    "id": "t07-foto-torcida",
+    "descripcion": "Ticket fotografiado: girado, con ruido y poco contraste",
+    "imagen": "t07-foto-torcida.png",
+    "verdad": "t07-foto-torcida.json"
+  },
+  {
+    "id": "t08-ilegible",
+    "descripcion": "Ticket muy desenfocado: debe acabar como incidencia 'ilegible' (rojo)",
+    "imagen": "t08-ilegible.png",
+    "verdad": "t08-ilegible.json"
+  },
+  {
+    "id": "t09-duplicado-t02",
+    "descripcion": "Copia exacta (mismo fichero) de t02: debe detectarse como duplicado",
+    "imagen": "t09-duplicado-t02.png",
+    "verdad": "t09-duplicado-t02.json"
+  },
+  {
+    "id": "t10-descuadre",
+    "descripcion": "Ticket cuyo total impreso NO cuadra con base + cuota",
+    "imagen": "t10-descuadre.png",
+    "verdad": "t10-descuadre.json"
+  },
+  {
+    "id": "f11-nif-erroneo",
+    "descripcion": "Factura con NIF de emisor con dígito de control incorrecto",
+    "imagen": "f11-nif-erroneo.png",
+    "verdad": "f11-nif-erroneo.json"
+  },
+  {
+    "id": "t12-fecha-futura",
+    "descripcion": "Ticket con fecha no plausible (en el futuro)",
+    "imagen": "t12-fecha-futura.png",
+    "verdad": "t12-fecha-futura.json"
+  }
+]

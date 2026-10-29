@@ -1,0 +1,25 @@
+{
+  "id": "f04-asesoria",
+  "descripcion": "Factura completa correcta con NIF de emisor y receptor",
+  "tipo": "factura_completa",
+  "nombre_emisor": "Asesores de Mentira S.L.",
+  "nif_emisor": "B61200754",
+  "nif_receptor": "B00000000",
+  "nombre_receptor": "Panadería Ejemplo S.L.",
+  "numero": "F2026-0187",
+  "fecha_emision": "2026-07-31",
+  "moneda": "EUR",
+  "lineas_iva": [
+    {
+      "tipo_iva": 21,
+      "base_centimos": 125000,
+      "cuota_centimos": 26250
+    }
+  ],
+  "total_centimos": 151250,
+  "esperado": {
+    "validaciones": [],
+    "semaforo": "verde",
+    "avisos": []
+  }
+}

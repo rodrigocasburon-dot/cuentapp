@@ -1,0 +1,27 @@
+{
+  "id": "t01-cafeteria",
+  "descripcion": "Ticket simplificado sencillo, 10 % IVA, sin NIF de receptor (aviso informativo)",
+  "tipo": "ticket_simplificado",
+  "nombre_emisor": "Cafetería La Taza Inventada",
+  "nif_emisor": "B44173813",
+  "nif_receptor": null,
+  "nombre_receptor": null,
+  "numero": "T-000231",
+  "fecha_emision": "2026-07-14",
+  "moneda": "EUR",
+  "lineas_iva": [
+    {
+      "tipo_iva": 10,
+      "base_centimos": 336,
+      "cuota_centimos": 34
+    }
+  ],
+  "total_centimos": 370,
+  "esperado": {
+    "validaciones": [],
+    "semaforo": "verde",
+    "avisos": [
+      "ticket_sin_nif_receptor"
+    ]
+  }
+}

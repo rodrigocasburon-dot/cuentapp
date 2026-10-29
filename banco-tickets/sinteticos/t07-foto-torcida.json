@@ -1,0 +1,27 @@
+{
+  "id": "t07-foto-torcida",
+  "descripcion": "Ticket fotografiado: girado, con ruido y poco contraste",
+  "tipo": "ticket_simplificado",
+  "nombre_emisor": "Restaurante El Plato Ficticio",
+  "nif_emisor": "B90451261",
+  "nif_receptor": null,
+  "nombre_receptor": null,
+  "numero": "M12-00877",
+  "fecha_emision": "2026-07-25",
+  "moneda": "EUR",
+  "lineas_iva": [
+    {
+      "tipo_iva": 10,
+      "base_centimos": 1820,
+      "cuota_centimos": 182
+    }
+  ],
+  "total_centimos": 2002,
+  "esperado": {
+    "validaciones": [],
+    "semaforo": "verde",
+    "avisos": [
+      "ticket_sin_nif_receptor"
+    ]
+  }
+}
