@@ -5,6 +5,7 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { AvisoError, Boton } from "@/componentes/Campo";
+import { AVISO } from "@/dominio/legal";
 import { EXTENSIONES_ADMITIDAS, MAX_ARCHIVOS_POR_SUBIDA, TEXTO_FORMATOS, type EstadoSubida } from "@/dominio/subida";
 import { subirDocumentos } from "./acciones";
 
@@ -82,6 +83,8 @@ export function FormSubida() {
           <p className="text-sm opacity-80">En el móvil abre la cámara. Mejor con buena luz y el ticket entero.</p>
         </div>
       </div>
+
+      <p className="text-sm text-marron">{AVISO.subida}</p>
 
       <div className="flex flex-wrap items-center gap-4">
         <Boton type="submit" pendiente={pendiente}>

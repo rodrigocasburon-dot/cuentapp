@@ -8,6 +8,7 @@ import {
   TEXTO_SEMAFORO,
   type ColorSemaforo,
 } from "@/dominio/semaforo";
+import { AVISO } from "@/dominio/legal";
 import type { Aviso } from "@/dominio/validaciones";
 import { repositorioActual } from "@/servidor/auth/sesion";
 import { copiarTrimestreAction } from "./acciones";
@@ -165,6 +166,7 @@ export default async function Panel({
         <p role="status" className="mt-4 text-base font-semibold text-marron-oscuro">
           {semaforo.motivo}
         </p>
+        <p className="mt-2 text-sm text-marron">{AVISO.semaforo}</p>
 
         {/* Métricas clave del trimestre */}
         <div className="mt-6 grid gap-4 border-t-2 border-current/20 pt-6 sm:grid-cols-4">
@@ -194,7 +196,7 @@ export default async function Panel({
         {/* Botón de exportación a Excel (RF-09) */}
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t-2 border-current/20 pt-6">
           <p className="text-sm text-marron-oscuro">
-            Descarga el desglose contable en Excel listo para enviar a tu gestoría.
+            Excel del trimestre con los documentos <strong>validados</strong>. {AVISO.excel}
           </p>
           <a
             href={`/documentos/exportar?anio=${anioSel}&trimestre=${trimSel}`}
@@ -203,13 +205,20 @@ export default async function Panel({
           >
             <span aria-hidden="true">📊 </span>Descargar Excel {trimSel}T {anioSel}
           </a>
+          <a
+            href={`/documentos/exportar?anio=${anioSel}&trimestre=${trimSel}&pendientes=1`}
+            download
+            className="text-sm font-semibold underline underline-offset-4"
+          >
+            Incluir también los no validados (con su estado)
+          </a>
         </div>
 
         {/* Copia local ordenada (fase 8): sustituto local de Google Drive */}
         <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t-2 border-current/20 pt-6">
           <p className="max-w-md text-sm text-marron-oscuro">
             Guarda en una carpeta de este equipo los originales <strong>validados</strong> del trimestre, ordenados por
-            tipo, junto con el Excel.
+            tipo, junto con el Excel. <em>{AVISO.copiaLocal}</em>
           </p>
           <form action={copiarTrimestreAction.bind(null, anioSel, trimSel)}>
             <button

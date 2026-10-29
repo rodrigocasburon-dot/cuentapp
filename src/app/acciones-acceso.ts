@@ -4,6 +4,7 @@
 
 import { redirect } from "next/navigation";
 import { ACCESO_DEMO, CUENTAS_DEMO } from "@/config";
+import { VERSION_TEXTOS_LEGALES } from "@/dominio/legal";
 import { EntradaSchema, RegistroSchema, erroresPorCampo, type EstadoFormulario } from "@/dominio/formularios-acceso";
 import { cifrarContrasena, hashParaIgualarTiempos, verificarContrasena } from "@/servidor/auth/contrasenas";
 import { abrirSesion, cerrarSesion } from "@/servidor/auth/sesion";
@@ -26,7 +27,8 @@ export async function registrar(_previo: EstadoFormulario, f: FormData): Promise
   const valores = { empresa: texto(f, "empresa"), nif: texto(f, "nif"), nombre: texto(f, "nombre"), email: texto(f, "email") };
   const datos = RegistroSchema.safeParse({ ...valores, contrasena: texto(f, "contrasena") });
   const errores: Record<string, string> = datos.success ? {} : erroresPorCampo(datos.error);
-  if (texto(f, "acepto") !== "si") errores.acepto = "Para crear la cuenta tienes que aceptar los términos y la política de privacidad.";
+  // La aceptación se comprueba en el servidor: no basta con la casilla del navegador (LEG-02)
+  if (texto(f, "acepto") !== "si") errores.acepto = "Para crear la cuenta tienes que aceptar las Condiciones y el acuerdo de tratamiento.";
   if (!datos.success || errores.acepto) return { errores, valores };
 
   // Freno a altas masivas (M4): cada registro cuesta ~0,5 s de CPU y crea una empresa.
@@ -44,6 +46,8 @@ export async function registrar(_previo: EstadoFormulario, f: FormData): Promise
       nombre: datos.data.nombre,
       email: datos.data.email,
       hashContrasena: await cifrarContrasena(datos.data.contrasena),
+      versionLegal: VERSION_TEXTOS_LEGALES,
+      novedades: texto(f, "novedades") === "si",
     }));
   } catch (e) {
     if (e instanceof EmailEnUso) return { errores: { email: "Ya hay una cuenta con ese email. ¿Quieres entrar?" }, valores };

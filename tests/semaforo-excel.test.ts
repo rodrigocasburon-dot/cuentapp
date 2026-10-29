@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { calcularSemaforo, type DocumentoParaSemaforo } from "@/dominio/semaforo";
 import type { Aviso } from "@/dominio/validaciones";
 import { repositorioDeEmpresa } from "@/servidor/bd/repositorio";
-import { generarExcelTrimestre } from "@/servidor/documentos/excel";
+import { generarExcelTrimestre, textoSeguro } from "@/servidor/documentos/excel";
 import { bdDePrueba, ORIGINAL } from "./ayudas";
 
 const HOY = new Date("2026-10-29T10:00:00Z");
@@ -88,20 +88,38 @@ describe("Excel del trimestre", () => {
       lineas_iva: [{ tipo_iva: 21, base_centimos: 500, cuota_centimos: 105 }, { tipo_iva: 10, base_centimos: 495, cuota_centimos: 50 }],
     }, HOY);
 
-    const bytes = await generarExcelTrimestre({
-      empresa: { nombre: "Empresa A", nif: null }, anio: 2026, trimestre: 3,
-      semaforo: repo.resumenTrimestre(2026, 3), documentos: repo.documentosDelTrimestre(2026, 3), generadoEn: HOY,
-    });
-    const wb = new ExcelJS.Workbook();
-    await wb.xlsx.load(Buffer.from(bytes) as unknown as ArrayBuffer);
+    const leer = async (incluirPendientes: boolean) => {
+      const bytes = await generarExcelTrimestre({
+        empresa: { nombre: "Empresa A", nif: null }, anio: 2026, trimestre: 3, incluirPendientes,
+        semaforo: repo.resumenTrimestre(2026, 3), documentos: repo.documentosDelTrimestre(2026, 3), generadoEn: HOY,
+      });
+      const wb = new ExcelJS.Workbook();
+      await wb.xlsx.load(Buffer.from(bytes) as unknown as ArrayBuffer);
+      return wb;
+    };
 
+    // Con pendientes: el documento sin validar aparece con su estado
+    const wb = await leer(true);
     const hoja = wb.worksheets[0];
     expect(hoja.getCell("B3").value).toBe("Empresa A");
     expect(hoja.getCell("H3").value).toBe("AMBAR"); // sin validar
-    expect(hoja.getRow(7).getCell(4).value).toBe("Bar Prueba");
-    expect([hoja.getRow(7).getCell(7).value, hoja.getRow(8).getCell(7).value].sort()).toEqual([4.95, 5]);
-    expect(hoja.getRow(9).getCell(1).value).toBe("TOTALES");
-    expect(hoja.getRow(9).getCell(10).value).toBe(11.5);
-    expect(wb.getWorksheet("Resumen IVA")).toBeDefined();
+    expect(hoja.getRow(9).getCell(4).value).toBe("Bar Prueba");
+    expect([hoja.getRow(9).getCell(7).value, hoja.getRow(10).getCell(7).value].sort()).toEqual([4.95, 5]);
+    expect(hoja.getRow(9).getCell(14).value).toBe("Pendiente de revisión");
+    expect(hoja.getRow(11).getCell(1).value).toBe("TOTALES");
+    expect(hoja.getRow(11).getCell(10).value).toBe(11.5);
+    expect(wb.getWorksheet("Desglose IVA")).toBeDefined();
+
+    // Por defecto, solo validados: este no sale y los totales son cero
+    const soloValidados = (await leer(false)).worksheets[0];
+    expect(soloValidados.getCell("B5").value).toMatch(/Solo validados \(0\); excluidos 1/);
+    expect(soloValidados.getRow(9).getCell(1).value).toBe("TOTALES");
+  });
+
+  it("un texto de terceros que parece una fórmula se guarda como texto", () => {
+    expect(textoSeguro("=HYPERLINK(\"http://x\")")).toBe("'=HYPERLINK(\"http://x\")");
+    expect(textoSeguro("+34 600")).toBe("'+34 600");
+    expect(textoSeguro("Bar Pepe")).toBe("Bar Pepe");
+    expect(textoSeguro(null)).toBe("");
   });
 });

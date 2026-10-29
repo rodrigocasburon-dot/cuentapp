@@ -39,6 +39,15 @@ automática (`npm test`, 15 ficheros, 138 pruebas en verde el 29/10/2026);
 | — | Planes, límites, cambio de plan | `buzon-copia-limites` · «Mi cuenta» | ✔ sin cobro (D-47) |
 | — | Textos legales | Pie con enlaces a `/legal/*` | Contenido pendiente del equipo (D-48) |
 
+## Guía legal (LEG-01..12)
+
+Ninguno se declara superado (la guía exige evidencias en el entorno final).
+Implementado para la demo: aceptación versionada en el registro (LEG-02),
+avisos en contexto y simulaciones rotuladas (LEG-06/07 en modo académico),
+semáforo y Excel según el cap. 13 (LEG-08), solo cookie técnica (LEG-09),
+prueba sin tarjeta y precio provisional (LEG-10). Pendientes y discrepancias:
+`SUPUESTOS.md`, D-53 y D-54.
+
 ## Requisitos no funcionales (interpretación)
 
 | | Qué | Estado |

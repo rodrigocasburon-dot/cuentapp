@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { EstadoDocumento } from "@/componentes/EstadoDocumento";
 import { Refresco } from "@/componentes/Refresco";
 import { fechaHora, tamano } from "@/dominio/formato";
+import { AVISO } from "@/dominio/legal";
 import type { Aviso } from "@/dominio/validaciones";
 import { repositorioActual } from "@/servidor/auth/sesion";
 import { originalIntegro } from "@/servidor/documentos/servir-original";
@@ -69,6 +70,11 @@ export default async function FichaDocumento({ params }: { params: Promise<{ id:
               <span aria-hidden="true">⟳ </span>Leyendo el documento… esta página se actualiza sola.
             </p>
           ) : (
+            <>
+            <p role="note" className="mb-6 rounded-2xl bg-lima-2 px-4 py-3 text-sm">
+              <span aria-hidden="true">ℹ </span>
+              {AVISO.lectura}
+            </p>
             <FormFichaDocumento
               documento={doc}
               confianza={confianza}
@@ -77,6 +83,7 @@ export default async function FichaDocumento({ params }: { params: Promise<{ id:
               lineasIniciales={lineas}
               correcciones={correcciones}
             />
+            </>
           )}
 
           <section aria-labelledby="original" className="mt-10 rounded-2xl border-2 border-crema-2 bg-white p-5">

@@ -22,10 +22,12 @@ export const ICONO_SEMAFORO: Record<ColorSemaforo, string> = {
   vacio: "⚪",
 };
 
+// Textos de la guía legal (cap. 13): el verde dice «revisados», no «listo»,
+// porque el semáforo solo ve los documentos registrados en Cuentapp.
 export const TEXTO_SEMAFORO: Record<ColorSemaforo, string> = {
-  verde: "Verde · Listo para el gestor",
-  ambar: "Ámbar · Revisión pendiente",
-  rojo: "Rojo · Incidencias bloqueantes",
+  verde: "Verde · Documentos registrados revisados",
+  ambar: "Ámbar · Quedan documentos por revisar",
+  rojo: "Rojo · Hay incidencias que debes resolver",
   vacio: "Sin documentos",
 };
 
@@ -124,7 +126,7 @@ export function calcularSemaforo(
   if (activos.length === 0) {
     return {
       color: "vacio",
-      motivo: "Sin documentos en este trimestre.",
+      motivo: "Aún no hay documentos en este periodo.",
       totalDocumentos: 0,
       validados: 0,
       pendientes: 0,
@@ -186,7 +188,7 @@ export function calcularSemaforo(
   // 3) VERDE: todo validado y sin incidencias
   return {
     color: "verde",
-    motivo: "Todos los documentos están validados y sin incidencias. Listos para el gestor.",
+    motivo: "Todos los documentos registrados están validados y sin incidencias abiertas.",
     totalDocumentos: activos.length,
     validados,
     pendientes: 0,

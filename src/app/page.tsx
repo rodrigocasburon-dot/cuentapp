@@ -5,6 +5,7 @@
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { AVISO } from "@/dominio/legal";
 import { sesionActual } from "@/servidor/auth/sesion";
 import { bd } from "@/servidor/bd/conexion";
 import { estadoSistema, type EstadoSistema } from "@/servidor/bd/sistema";
@@ -42,7 +43,7 @@ function Maqueta() {
           <span className="h-8 w-8 rounded-full bg-amber-900/60" />
           <span className="h-8 w-8 rounded-full bg-green-500 shadow-[0_0_20px] shadow-green-400" />
         </div>
-        <p className="mt-4 rounded-2xl bg-crema-2 px-3 py-2 text-sm font-semibold">🟢 Listo para el gestor</p>
+        <p className="mt-4 rounded-2xl bg-crema-2 px-3 py-2 text-sm font-semibold">🟢 Documentos revisados</p>
       </div>
 
       {/* Móvil */}
@@ -143,8 +144,8 @@ export default async function Inicio() {
             <span className="degradado">siempre en verde.</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-marron sm:text-xl">
-            Sube tus facturas y tickets, Cuentapp lee los datos, te avisa de lo que falta y te dice de un vistazo si
-            todo está listo para tu gestor.
+            Sube tus facturas y tickets, Cuentapp propone los datos, te avisa de lo que falta y te dice de un vistazo
+            si tus documentos están revisados para tu gestoría.
           </p>
           {estado ? (
             <div className="mt-8 flex flex-wrap justify-center gap-3">
@@ -196,7 +197,7 @@ export default async function Inicio() {
             </li>
             <li className="rounded-3xl bg-white p-5">
               <span aria-hidden="true">🟢 </span>
-              <strong>Verde</strong>: todo validado, listo para el gestor.
+              <strong>Verde</strong>: todos los documentos registrados, revisados y validados.
             </li>
           </ul>
         </section>
@@ -215,14 +216,14 @@ export default async function Inicio() {
                   <p className="text-lg font-bold">{p.nombre}</p>
                   <p className="mt-2 text-3xl font-extrabold">
                     {!p.disponible ? "Pronto" : p.dias_prueba ? "Gratis" : euros(p.precio_centimos)}
-                    {p.disponible && !p.dias_prueba ? <span className="text-base font-semibold opacity-80"> /mes sin IVA</span> : null}
+                    {p.disponible && !p.dias_prueba ? <span className="text-base font-semibold opacity-80"> /mes + IVA</span> : null}
                   </p>
                   <p className={`mt-3 text-sm ${p.id === "cuentapp" ? "opacity-90" : "text-marron"}`}>
                     {!p.disponible
                       ? "Para despachos y gestorías con varias empresas."
                       : p.dias_prueba
-                        ? `${p.dias_prueba} días · hasta ${p.limite_docs_total} documentos`
-                        : `Hasta ${p.limite_docs_mes} documentos al mes`}
+                        ? `${p.dias_prueba} días · hasta ${p.limite_docs_total} documentos. Sin tarjeta y sin cobro automático al terminar.`
+                        : `Hasta ${p.limite_docs_mes} documentos al mes. Renovación mensual hasta cancelación. ${AVISO.precioProvisional}`}
                   </p>
                   {p.disponible ? (
                     <Link

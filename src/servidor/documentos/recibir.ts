@@ -7,6 +7,7 @@
 // pero nunca una fila sin su original.
 
 import path from "node:path";
+import { AVISO } from "@/dominio/legal";
 import { TAMANO_MAXIMO, TEXTO_FORMATOS, type ResultadoArchivo } from "@/dominio/subida";
 import { detectarTipo, guardarOriginal } from "@/servidor/almacen/originales";
 import type { Repositorio } from "@/servidor/bd/repositorio";
@@ -34,7 +35,7 @@ export function recibirArchivo(
   const nombre = limpiarNombre(archivo.nombre);
   if (archivo.bytes.length === 0) return { nombre, ok: false, motivo: "El archivo está vacío." };
   if (archivo.bytes.length > TAMANO_MAXIMO) return { nombre, ok: false, motivo: "Ocupa más de 10 MB." };
-  if (!detectarTipo(archivo.bytes)) return { nombre, ok: false, motivo: `Formato no admitido. Sube ${TEXTO_FORMATOS}.` };
+  if (!detectarTipo(archivo.bytes)) return { nombre, ok: false, motivo: `${AVISO.archivoRechazado} Formatos admitidos: ${TEXTO_FORMATOS}.` };
 
   const original = guardarOriginal(repo.empresaId, archivo.bytes, carpeta);
   const previo = repo.buscarPorHash(original.hash)[0];

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { EstadoDocumento } from "@/componentes/EstadoDocumento";
 import { fechaHora } from "@/dominio/formato";
+import { AVISO } from "@/dominio/legal";
 import { repositorioActual } from "@/servidor/auth/sesion";
 import { FormCorreo } from "./FormCorreo";
 
@@ -14,10 +15,14 @@ export default async function Buzon() {
   return (
     <main className="mx-auto w-full max-w-4xl px-6 py-10">
       <h1 className="mb-2 text-4xl font-black uppercase tracking-tight">Buzón</h1>
-      <p className="mb-8 max-w-2xl">
-        Reenvía a <span className="font-mono font-semibold">{sesion.empresa.buzon}</span> los correos con facturas y
-        tickets: los adjuntos entran solos en tus documentos.
+      <p role="note" className="mb-4 inline-block rounded-full bg-lima px-4 py-1.5 text-sm font-bold">
+        <span aria-hidden="true">⚠ </span>
+        {AVISO.buzonSimulado}
       </p>
+      <p className="mb-2 max-w-2xl">
+        Reenvía tus facturas a <span className="font-mono font-semibold">{sesion.empresa.buzon}</span>.
+      </p>
+      <p className="mb-8 max-w-2xl text-marron">{AVISO.buzon}</p>
 
       <section aria-labelledby="simular" className="rounded-2xl border-2 border-dashed border-marron bg-white/60 p-6">
         <h2 id="simular" className="mb-1 text-xl font-bold">

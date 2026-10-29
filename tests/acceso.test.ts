@@ -20,7 +20,7 @@ import {
 } from "@/servidor/bd/cuentas";
 import { bdDePrueba } from "./ayudas";
 
-const registro = (email: string, empresa = "Empresa Nueva S.L.") => ({ empresa, nif: null, nombre: "Persona", email, hashContrasena: "x" });
+const registro = (email: string, empresa = "Empresa Nueva S.L.") => ({ empresa, nif: null, nombre: "Persona", email, hashContrasena: "x", versionLegal: "v-prueba" });
 
 describe("contraseñas", () => {
   it("verifica la correcta, rechaza las demás y nunca guarda la contraseña", async () => {
@@ -63,6 +63,21 @@ describe("registro", () => {
     expect(e.prueba_hasta).toBe("2026-11-12T10:00:00Z");
     expect(e.buzon).toMatch(/^bar-nandu-s-l-[0-9a-f]{4}@buzon\.cuentapp\.local$/);
     expect(empresasDeUsuario(bd, usuarioId)).toEqual([{ id: empresaId, nombre: "Bar Ñandú, S.L." }]);
+  });
+
+  it("guarda la aceptación de Condiciones y encargo con versión e instante; novedades solo si se marca", () => {
+    const bd = bdDePrueba();
+    const ahora = new Date("2026-10-29T10:00:00Z");
+    const sin = crearEmpresaConTitular(bd, registro("sin@ejemplo.es"), ahora);
+    const con = crearEmpresaConTitular(bd, { ...registro("con@ejemplo.es"), novedades: true }, ahora);
+    const de = (u: string) => bd.prepare("SELECT documento, version, aceptado_en FROM aceptaciones_legales WHERE usuario_id = ? ORDER BY documento").all(u);
+    expect(de(sin.usuarioId)).toEqual([
+      { documento: "condiciones", version: "v-prueba", aceptado_en: "2026-10-29T10:00:00Z" },
+      { documento: "encargo", version: "v-prueba", aceptado_en: "2026-10-29T10:00:00Z" },
+    ]);
+    expect(de(con.usuarioId).map((f) => (f as { documento: string }).documento)).toEqual(["condiciones", "encargo", "novedades"]);
+    // Una aceptación no se puede reescribir
+    expect(() => bd.prepare("UPDATE aceptaciones_legales SET version = 'otra'").run()).toThrow(/no se modifican/);
   });
 
   it("no admite dos cuentas con el mismo email (sin distinguir mayúsculas) y no deja restos", () => {

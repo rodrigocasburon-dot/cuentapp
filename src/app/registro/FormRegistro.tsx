@@ -29,16 +29,17 @@ export function FormRegistro() {
             aria-describedby={e.acepto ? "acepto-error" : undefined}
             className="mt-1 h-5 w-5 accent-marron-oscuro"
           />
+          {/* Texto de la guía legal (cap. 07): la casilla acepta el contrato, no «la privacidad» */}
           <label htmlFor="acepto">
-            Acepto los{" "}
-            <Link href="/legal/terminos" target="_blank" className="font-semibold underline underline-offset-4">
-              términos de uso
+            He leído y acepto las{" "}
+            <Link href="/legal/condiciones" target="_blank" className="font-semibold underline underline-offset-4">
+              Condiciones
             </Link>{" "}
-            y la{" "}
-            <Link href="/legal/privacidad" target="_blank" className="font-semibold underline underline-offset-4">
-              política de privacidad
-            </Link>
-            .
+            y el{" "}
+            <Link href="/legal/encargo" target="_blank" className="font-semibold underline underline-offset-4">
+              acuerdo de tratamiento
+            </Link>{" "}
+            en nombre de mi empresa.
           </label>
         </div>
         {e.acepto && (
@@ -48,6 +49,19 @@ export function FormRegistro() {
           </p>
         )}
       </div>
+      <div className="flex items-start gap-3">
+        <input id="novedades" name="novedades" type="checkbox" value="si" className="mt-1 h-5 w-5 accent-marron-oscuro" />
+        <label htmlFor="novedades">
+          (Opcional) Quiero recibir novedades y ofertas de Cuentapp por correo. Puedo darme de baja en cualquier momento.
+        </label>
+      </div>
+      <p className="text-sm text-marron">
+        Consulta cómo tratamos tus datos en la{" "}
+        <Link href="/legal/privacidad" target="_blank" className="font-semibold underline underline-offset-4">
+          Política de privacidad
+        </Link>
+        .
+      </p>
       <Boton type="submit" pendiente={pendiente}>
         {pendiente ? "Creando la cuenta…" : "Crear cuenta y empezar la prueba"}
       </Boton>

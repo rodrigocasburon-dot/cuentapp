@@ -38,6 +38,10 @@ export interface DatosRegistro {
   nombre: string;
   email: string;            // ya normalizado (minúsculas, sin espacios)
   hashContrasena: string;
+  /** Versión de las Condiciones y del acuerdo de encargo aceptados (obligatorio). */
+  versionLegal: string;
+  /** Casilla opcional de novedades comerciales (desmarcada por defecto). */
+  novedades?: boolean;
 }
 
 /** Dirección del buzón simulado: "panaderia-ejemplo-sl-3f9a@buzon.cuentapp.local". */
@@ -64,6 +68,10 @@ export function crearEmpresaConTitular(bd: Bd, d: DatosRegistro, ahora = new Dat
     );
     bd.prepare("INSERT INTO usuarios (id, email, hash_contrasena, nombre) VALUES (?, ?, ?, ?)").run(usuarioId, d.email, d.hashContrasena, d.nombre);
     bd.prepare("INSERT INTO membresias (usuario_id, empresa_id, rol) VALUES (?, ?, 'titular')").run(usuarioId, empresaId);
+    // Aceptación en la MISMA transacción: no puede haber cuenta sin aceptación (LEG-02)
+    const aceptar = bd.prepare("INSERT INTO aceptaciones_legales (id, usuario_id, empresa_id, documento, version, aceptado_en) VALUES (?, ?, ?, ?, ?, ?)");
+    const documentos = ["condiciones", "encargo", ...(d.novedades ? ["novedades"] : [])];
+    for (const doc of documentos) aceptar.run(randomUUID(), usuarioId, empresaId, doc, d.versionLegal, iso(ahora));
   });
 
   try {

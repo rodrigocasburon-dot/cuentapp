@@ -6,6 +6,7 @@
 // página «Buzón» o con `npm run buzon:simular`. En producción, un proveedor de
 // correo entrante llamaría a esta misma función (ver SUPUESTOS.md).
 
+import { AVISO } from "@/dominio/legal";
 import type { ResultadoArchivo } from "@/dominio/subida";
 import { MAX_ARCHIVOS_POR_SUBIDA } from "@/dominio/subida";
 import type { Bd } from "@/servidor/bd/conexion";
@@ -30,7 +31,7 @@ export function recibirCorreo(bd: Bd, correo: Correo, carpeta?: string, ahora = 
   const empresaId = empresaPorBuzon(bd, correo.para);
   // Mismo mensaje si no existe o está dada de baja: no revelamos qué direcciones existen
   if (!empresaId) return { ok: false, motivo: "No hay ningún buzón con esa dirección." };
-  if (correo.adjuntos.length === 0) return { ok: false, motivo: "El correo no trae adjuntos." };
+  if (correo.adjuntos.length === 0) return { ok: false, motivo: AVISO.correoSinAdjuntos };
 
   const repo = repositorioDeEmpresa(bd, empresaId);
   const de = limpio(correo.de, 200) || "remitente desconocido";

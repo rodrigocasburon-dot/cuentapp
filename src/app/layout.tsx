@@ -26,7 +26,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <nav aria-label="Información legal" className="flex flex-wrap gap-x-6 gap-y-2 text-marron">
               <Link href="/legal/aviso-legal" className="underline-offset-4 hover:text-marron-oscuro hover:underline">Aviso legal</Link>
               <Link href="/legal/privacidad" className="underline-offset-4 hover:text-marron-oscuro hover:underline">Privacidad</Link>
-              <Link href="/legal/terminos" className="underline-offset-4 hover:text-marron-oscuro hover:underline">Términos</Link>
+              <Link href="/legal/condiciones" className="underline-offset-4 hover:text-marron-oscuro hover:underline">Condiciones</Link>
+              <Link href="/legal/encargo" className="underline-offset-4 hover:text-marron-oscuro hover:underline">Acuerdo de tratamiento</Link>
               <Link href="/legal/cookies" className="underline-offset-4 hover:text-marron-oscuro hover:underline">Cookies</Link>
             </nav>
           </div>

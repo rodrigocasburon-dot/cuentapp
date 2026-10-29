@@ -20,7 +20,7 @@ const SRC = path.resolve(__dirname, "..", "src");
 describe("aislamiento por empresa (sesión → repositorio)", () => {
   it("con la sesión de A solo se llega a los datos de A, y viceversa", () => {
     const bd = bdDePrueba();
-    const registro = (email: string) => ({ empresa: email, nif: null, nombre: "X", email, hashContrasena: "x" });
+    const registro = (email: string) => ({ empresa: email, nif: null, nombre: "X", email, hashContrasena: "x", versionLegal: "v-prueba" });
     const a = crearEmpresaConTitular(bd, registro("a@a.es"));
     const b = crearEmpresaConTitular(bd, registro("b@b.es"));
     const sesionA = leerSesion(bd, crearSesion(bd, a.usuarioId, a.empresaId).token)!;

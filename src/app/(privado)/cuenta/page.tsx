@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { fecha, importe, mesDe } from "@/dominio/formato";
+import { AVISO } from "@/dominio/legal";
 import { repositorioActual } from "@/servidor/auth/sesion";
 import { cupoDisponible } from "@/servidor/documentos/limites";
 import { activarPlanAction } from "./acciones";
@@ -53,9 +54,11 @@ export default async function MiCuenta({ searchParams }: { searchParams: Promise
         {plan.id === "prueba" && (
           <form action={activarPlanAction.bind(null, "cuentapp")}>
             <button type="submit" className="rounded-full bg-marron-oscuro px-6 py-3 font-bold text-crema hover:bg-marron">
-              Activar plan Cuentapp · 20 € al mes
+              Activar plan Cuentapp · 20 € al mes + IVA
             </button>
-            <p className="mt-2 text-sm text-marron">Versión de demostración: no se cobra nada.</p>
+            <p className="mt-2 text-sm text-marron">
+              {AVISO.prueba} {AVISO.precioProvisional} Versión de demostración: no se cobra nada.
+            </p>
           </form>
         )}
       </section>

@@ -88,7 +88,7 @@ export function validar(ex: Extraccion, hoy = new Date(), contexto: Contexto = {
     if (!ex.nif_emisor.valor) av("falta_nif_emisor", "ambar", "Es una factura completa y no consta el NIF del emisor.", "nif_emisor");
     if (!ex.nif_receptor.valor) av("falta_nif_receptor", "ambar", "Es una factura completa y no consta tu NIF como receptor.", "nif_receptor");
   } else if (!ex.nif_receptor.valor) {
-    av("ticket_sin_nif_receptor", "info", "Ticket simplificado sin tu NIF: puede no servir para deducir el IVA.");
+    av("ticket_sin_nif_receptor", "info", "Ticket simplificado sin tu NIF. Consulta con tu gestoría si necesitas datos adicionales para deducir este gasto.");
   }
 
   // 3) Importes e IVA

@@ -29,6 +29,7 @@ export async function GET(peticion: Request) {
     trimestre,
     semaforo,
     documentos: docs,
+    incluirPendientes: url.searchParams.get("pendientes") === "1",
   });
 
   const nombreLimpio = sesion.empresa.nombre.toLowerCase().replace(/[^a-z0-9]/g, "_") || "empresa";
