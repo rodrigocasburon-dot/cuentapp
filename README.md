@@ -55,6 +55,20 @@ local), o crea una cuenta nueva en «Crear cuenta».
 > y no en el PATH. En PowerShell, antes de los comandos:
 > `$env:PATH = "C:\Users\rodri\tools\node-v24.22.1-win-x64;$env:PATH"`
 
+### Pago de planes con Stripe (opcional, modo de pruebas)
+
+Sin esto, cambiar de plan en «Mi cuenta» es inmediato y gratis. Para enseñar
+un pago de verdad sin mover dinero:
+
+1. Crea una cuenta en Stripe y copia la **clave secreta de pruebas**
+   (`sk_test_…`) de https://dashboard.stripe.com/test/apikeys.
+2. Copia `.env.example` como `.env.local` (no se sube a git) y ponla en
+   `STRIPE_SECRET_KEY`. Reinicia `npm run dev`.
+3. En «Mi cuenta», «Activar» lleva a la página de pago de Stripe. Paga con la
+   tarjeta de prueba `4242 4242 4242 4242`, cualquier fecha futura y cualquier CVC.
+
+Una clave real (`sk_live_…`) se ignora. Detalles y límites: D-60 en `SUPUESTOS.md`.
+
 ### Lectura automática (una sola vez)
 
 La app arranca sin esto, pero entonces los documentos pasan a revisión

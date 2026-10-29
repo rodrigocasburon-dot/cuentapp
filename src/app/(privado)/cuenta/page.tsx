@@ -5,18 +5,20 @@ import { repositorioActual } from "@/servidor/auth/sesion";
 import { bd } from "@/servidor/bd/conexion";
 import { estadoSistema } from "@/servidor/bd/sistema";
 import { cupoDisponible } from "@/servidor/documentos/limites";
+import { conIva, stripeActivo } from "@/servidor/pagos/stripe";
 import { activarPlanAction } from "./acciones";
 import { FormBaja, FormDatos } from "./FormCuenta";
 
 export const metadata: Metadata = { title: "Mi cuenta · Cuentapp" };
 
-export default async function MiCuenta({ searchParams }: { searchParams: Promise<{ plan?: string }> }) {
+export default async function MiCuenta({ searchParams }: { searchParams: Promise<{ plan?: string; pago?: string }> }) {
   const { repo, sesion } = await repositorioActual();
   const { usuario, empresa } = sesion;
   const plan = repo.plan();
   const cupo = cupoDisponible(repo);
   const usoMes = repo.usoDelMes(mesDe(new Date()));
-  const { plan: planCambiado } = await searchParams;
+  const { plan: planCambiado, pago } = await searchParams;
+  const conStripe = stripeActivo();
   const planesDePago = estadoSistema(bd()).planes.filter((p) => p.disponible && p.id !== "prueba");
 
   return (
@@ -33,6 +35,16 @@ export default async function MiCuenta({ searchParams }: { searchParams: Promise
         {planCambiado && (
           <p role="status" className="mb-3 rounded-lg border-2 border-marron-oscuro bg-crema-2 px-4 py-2 font-semibold">
             <span aria-hidden="true">✔ </span>Plan activado.
+          </p>
+        )}
+        {pago === "cancelado" && (
+          <p role="status" className="mb-3 rounded-lg border-2 border-marron-oscuro bg-crema-2 px-4 py-2 font-semibold">
+            <span aria-hidden="true">ℹ </span>Pago cancelado: tu plan no ha cambiado.
+          </p>
+        )}
+        {pago === "error" && (
+          <p role="alert" className="mb-3 rounded-lg border-2 border-rojo bg-white px-4 py-2 font-semibold text-rojo">
+            <span aria-hidden="true">⚠ </span>No se ha podido confirmar el pago y el plan no ha cambiado. Vuelve a intentarlo.
           </p>
         )}
         <ul className="mb-4 space-y-1 text-sm">
@@ -62,12 +74,21 @@ export default async function MiCuenta({ searchParams }: { searchParams: Promise
               <form key={p.id} action={activarPlanAction.bind(null, p.id)}>
                 <button type="submit" className="w-full rounded-full bg-marron-oscuro px-6 py-3 font-bold text-white hover:bg-black sm:w-auto">
                   {plan.id === "prueba" ? "Activar" : "Cambiar a"} {p.nombre} · {importe(p.precio_centimos)} al mes + IVA · {p.limite_docs_mes} documentos/mes
+                  {conStripe ? ` (${importe(conIva(p.precio_centimos))} con IVA)` : ""}
                 </button>
               </form>
             ))}
           <p className="text-sm text-marron">
             {plan.id === "prueba" ? `${AVISO.prueba} ` : ""}
-            {AVISO.precioProvisional} Versión de demostración: no se cobra nada.
+            {AVISO.precioProvisional}{" "}
+            {conStripe ? (
+              <>
+                <strong>Pago de prueba con Stripe:</strong> no se cobra dinero real. Usa la tarjeta 4242 4242 4242 4242, cualquier fecha
+                futura y cualquier CVC. Al cambiar de plan se cancela la suscripción anterior.
+              </>
+            ) : (
+              "Versión de demostración: no se cobra nada."
+            )}
           </p>
         </div>
       </section>

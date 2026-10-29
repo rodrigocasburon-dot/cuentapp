@@ -4,7 +4,7 @@ Comprobación de cada requisito frente a lo construido. **Aviso:** no tenemos
 el «documento de decisiones consolidado». Los códigos RF/FA siguen la tabla
 del prototipo HTML del equipo (D-52); los RNF son nuestra interpretación
 (ver `SUPUESTOS.md`, §5.1). «Prueba» = prueba
-automática (`npm test`, 16 ficheros, 154 pruebas en verde el 29/10/2026);
+automática (`npm test`, 17 ficheros, 162 pruebas en verde el 29/10/2026);
 «Navegador» = comprobado a mano en la app.
 
 ## Bloqueantes de la entrega
@@ -37,6 +37,7 @@ automática (`npm test`, 16 ficheros, 154 pruebas en verde el 29/10/2026);
 | FA-03 | Google Drive | Copia local por trimestre como sustituto (`buzon-copia-limites`) | Parcial: sin Drive (D-46) |
 | — | PWA | Manifiesto e icono | Parcial: sin service worker (D-49) |
 | — | Planes, límites, cambio de plan | `buzon-copia-limites` · «Mi cuenta» | ✔ sin cobro (D-47) |
+| — | Pago de planes con Stripe en modo de pruebas | `pagos-stripe` (clave solo de pruebas, importe con IVA, validación de la vuelta, pago no duplicado, aislamiento) · Navegador sin clave | Parcial: sin probar contra Stripe real (D-60) |
 | — | Página de precios (RFQ, «Modelo de negocio») | `/precios`: tarjetas, tabla comparativa y preguntas frecuentes · Navegador | ✔ (D-59) |
 | — | Panel con cifras: mes frente al anterior y gasto por categoría | `requisitos-rfq` (`resumenMes`, aislamiento) · Panel | ✔ (D-59) |
 | — | Avisos de trimestre a punto de cerrar y plazo del 303 | `requisitos-rfq` (`avisosDePlazo`, hora de España) | ✔ (D-59) |

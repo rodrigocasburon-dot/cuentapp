@@ -249,6 +249,47 @@ export function repositorioDeEmpresa(bd: Bd, empresaId: string) {
       return true;
     },
 
+    /**
+     * Pago confirmado con Stripe (D-60): lo guarda y cambia el plan, todo o
+     * nada. Si esa sesión de pago ya estaba registrada no hace nada y devuelve
+     * false (recargar la página de vuelta no aplica el pago dos veces).
+     */
+    registrarPago(d: { planId: string; stripeSesion: string; stripeSuscripcion: string | null; importeCentimos: number; moneda: string }): boolean {
+      return bd.transaction(() => {
+        const r = bd
+          .prepare(
+            `INSERT OR IGNORE INTO pagos (id, empresa_id, plan_id, stripe_sesion, stripe_suscripcion, importe_centimos, moneda)
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          )
+          .run(randomUUID(), empresaId, d.planId, d.stripeSesion, d.stripeSuscripcion, d.importeCentimos, d.moneda.toUpperCase());
+        if (r.changes === 0) return false;
+        bd.prepare("UPDATE empresas SET plan_id = ?, prueba_hasta = NULL WHERE id = ?").run(d.planId, empresaId);
+        return true;
+      })();
+    },
+
+    /** Suscripciones de Stripe de ESTA empresa aún sin cancelar, salvo la indicada. */
+    suscripcionesActivas(salvo: string | null = null): string[] {
+      return (
+        bd
+          .prepare("SELECT stripe_suscripcion FROM pagos WHERE empresa_id = ? AND cancelada_en IS NULL AND stripe_suscripcion IS NOT NULL")
+          .all(empresaId) as { stripe_suscripcion: string }[]
+      )
+        .map((f) => f.stripe_suscripcion)
+        .filter((s) => s !== salvo);
+    },
+
+    marcarSuscripcionCancelada(suscripcion: string, ahora = new Date()): void {
+      bd.prepare("UPDATE pagos SET cancelada_en = ? WHERE empresa_id = ? AND stripe_suscripcion = ? AND cancelada_en IS NULL").run(iso(ahora), empresaId, suscripcion);
+    },
+
+    /** Datos de un plan contratable (para cobrarlo), o undefined. */
+    planContratable(planId: string): { id: string; nombre: string; precio_centimos: number } | undefined {
+      return bd.prepare("SELECT id, nombre, precio_centimos FROM planes WHERE id = ? AND disponible = 1 AND id <> 'prueba'").get(planId) as
+        | { id: string; nombre: string; precio_centimos: number }
+        | undefined;
+    },
+
     /** Remitente y asunto de un documento llegado por el buzón (fase 8). */
     anotarCorreo(id: string, remitente: string, asunto: string): void {
       bd.prepare("UPDATE documentos SET correo_remitente = ?, correo_asunto = ? WHERE id = ? AND empresa_id = ?").run(remitente, asunto, id, empresaId);

@@ -5,11 +5,12 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { CUENTAS_DEMO } from "@/config";
+import { CUENTAS_DEMO, URL_PUBLICA } from "@/config";
 import { DatosCuentaSchema, erroresPorCampo, type EstadoFormulario } from "@/dominio/formularios-acceso";
 import { cerrarSesion, repositorioActual } from "@/servidor/auth/sesion";
 import { bd } from "@/servidor/bd/conexion";
 import { cambiarNombreUsuario, darDeBaja } from "@/servidor/bd/cuentas";
+import { cancelarSuscripcion, crearPagoPlan, stripeActivo } from "@/servidor/pagos/stripe";
 
 const texto = (f: FormData, campo: string) => String(f.get(campo) ?? "");
 
@@ -25,22 +26,58 @@ export async function guardarDatosCuenta(_previo: EstadoFormulario, f: FormData)
   return { hecho: "Datos guardados.", valores: { ...valores, nif: datos.data.nif ?? "" } };
 }
 
-/** Cambio de plan simulado (fase 9): en esta versión no hay cobro real. */
+/**
+ * Cambio de plan. Con Stripe de pruebas configurado (D-60), lleva a la página
+ * de pago de Stripe y el plan se activa al volver, cuando el servidor ha
+ * comprobado el pago (/cuenta/pago). Sin Stripe, cambio simulado sin cobro (D-47).
+ */
 export async function activarPlanAction(planId: string): Promise<void> {
   const { repo } = await repositorioActual();
-  repo.cambiarPlan(planId);
-  revalidatePath("/", "layout");
-  redirect("/cuenta?plan=1");
+  if (!stripeActivo()) {
+    repo.cambiarPlan(planId);
+    revalidatePath("/", "layout");
+    redirect("/cuenta?plan=1");
+  }
+
+  const plan = repo.planContratable(planId);
+  if (!plan) redirect("/cuenta");
+  let url: string | null;
+  try {
+    ({ url } = await crearPagoPlan({
+      empresaId: repo.empresaId,
+      plan,
+      urlVuelta: `${URL_PUBLICA}/cuenta/pago?session_id={CHECKOUT_SESSION_ID}`,
+      urlCancelar: `${URL_PUBLICA}/cuenta?pago=cancelado`,
+    }));
+  } catch (e) {
+    console.error(e);
+    url = null;
+  }
+  redirect(url ?? "/cuenta?pago=error"); // fuera del try: redirect() lanza una excepción
+}
+
+/** Cancela en Stripe las suscripciones de la empresa (al darse de baja). Si falla, se avisa en la consola. */
+async function cancelarSuscripciones(repo: Awaited<ReturnType<typeof repositorioActual>>["repo"]): Promise<void> {
+  if (!stripeActivo()) return;
+  for (const s of repo.suscripcionesActivas()) {
+    try {
+      await cancelarSuscripcion(s);
+      repo.marcarSuscripcionCancelada(s);
+    } catch (e) {
+      console.error(`[stripe] No se ha podido cancelar ${s}:`, e);
+    }
+  }
 }
 
 export async function darmeDeBaja(_previo: EstadoFormulario, f: FormData): Promise<EstadoFormulario> {
-  const { sesion } = await repositorioActual();
+  const { sesion, repo } = await repositorioActual();
   if (f.get("confirmo") !== "si") return { errores: { confirmo: "Marca la casilla para confirmar la baja." } };
   if (CUENTAS_DEMO.some((c) => c.email === sesion.usuario.email)) {
     return { mensaje: "Las cuentas de demostración no se pueden dar de baja: las usa todo el equipo." };
   }
   try {
     darDeBaja(bd(), sesion.usuario.id, sesion.empresa.id);
+    await cancelarSuscripciones(repo); // tras la baja: si la baja falla, se sigue cobrando
   } catch (e) {
     console.error(e);
     return { mensaje: "No se ha podido dar de baja la cuenta. Solo puede hacerlo el titular." };

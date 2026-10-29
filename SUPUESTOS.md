@@ -161,6 +161,12 @@ Revisado el enunciado (`RFQ herramienta de gestion de facturas.pdf`) frente a la
 | D-58 | **Compartir desde el móvil** (requisito 2, tercera vía): el manifiesto declara `share_target`; con la app instalada, «Compartir → Cuentapp» desde el correo o las descargas manda el PDF o la foto a `/compartir`, que aplica las mismas reglas que la subida (`src/servidor/documentos/subir.ts`). Sin sesión, a /entrar; un `Origin` ajeno recibe 403. | Solo Android (Chrome, Edge, Samsung Internet); Safari en iPhone no admite `share_target`: allí siguen el buzón y la foto. No probado en un móvil real `[A VERIFICAR]`; exige HTTPS fuera de localhost. |
 | D-59 | **Panel con cifras y avisos de plazo** (funciones adicionales «Panel con cifras» y «Avisos»): bloque del mes con documentos y gasto en euros **frente al mes anterior** (por fecha del documento, incluye pendientes) y gasto por categoría; aviso cuando faltan ≤ 15 días para cerrar el trimestre y durante el plazo general del modelo 303 (1-20 de abril, julio y octubre; 1-30 de enero), con el color del semáforo de ese trimestre. Nueva página **/precios** con tabla comparativa y preguntas frecuentes. | Plazos: los generales de la AEAT; con domiciliación el cargo se pide antes y puede haber prórrogas: el texto remite al gestor. «Cargo del banco sin justificante» exige conexión bancaria: descartado. |
 
+### Cobro con Stripe en modo de pruebas (29/10/2026)
+
+| # | Decisión | Motivo / estado |
+|---|---|---|
+| D-60 | **Stripe Checkout en modo de pruebas**, opcional. Con `STRIPE_SECRET_KEY=sk_test_…` en `.env.local`, «Activar / Cambiar a» en «Mi cuenta» lleva a la página de pago de Stripe (suscripción mensual, precio del plan **+ 21 % de IVA**: 24,20 € y 48,40 €); al volver, `/cuenta/pago` **pide la sesión a Stripe** y solo activa el plan si es de esta empresa, está pagada y coinciden plan e importe. Cada pago queda en `pagos` (migración 11, sesión UNIQUE: recargar no lo aplica dos veces). Al cambiar de plan se cancela la suscripción anterior; al darse de baja, todas. **Una clave `sk_live_` se ignora**. Sin clave, cambio sin cobro como en D-47. API REST con `fetch`, sin dependencias nuevas; no se envían a Stripe ni el email ni el nombre. | IVA del 21 % para todos: supuesto `[A VERIFICAR]` (clientes de Canarias, Ceuta, Melilla o de otro país de la UE con NIF-IVA tributan distinto). Sin prorrateo ni webhooks: si se cancela o falla una renovación desde Stripe, la app no se entera; en producción, webhooks firmados. No probado contra Stripe real (falta una cuenta con clave de pruebas): probado con respuestas simuladas. |
+
 ## 3. Consecuencias de D-01 (SQLite) que el equipo debe conocer
 
 - **No hay RLS.** El aislamiento entre empresas se impone en tres capas:
@@ -233,7 +239,7 @@ Revisado el enunciado (`RFQ herramienta de gestion de facturas.pdf`) frente a la
 | Correo entrante | Buzón simulado + subida de adjuntos + compartir desde el móvil | Proveedor de correo entrante (fuera de alcance) |
 | Correo saliente | Fichero en `datos/correos-salientes/` (recuperación de contraseña) | Proveedor transaccional con SPF/DKIM/DMARC |
 | Copia "Drive" | Carpeta local año/trimestre/categoría | Google Drive con OAuth `[A VERIFICAR]` |
-| Cobro | Planes y límites aplicados, sin cobro real | Stripe |
+| Cobro | Planes y límites; sin clave, cambio sin cobro; con `STRIPE_SECRET_KEY=sk_test_…`, Stripe Checkout en modo de pruebas (D-60) | Stripe en modo real, con webhooks, facturas e impuestos |
 | Alojamiento | `npm run dev` en el portátil | Vercel |
 
 En el código, `src/config.ts` define `MODO` (`local` o `produccion`). Solo

@@ -98,9 +98,11 @@ npm run lectura:probar # banco sintético por la lectura real (~136/144 campos)
 Después de la fase 10 (29-10-2026): planes de D-55 y los requisitos del RFQ
 que faltaban (D-56 categoría del gasto, D-57 recuperación de contraseña con
 correo simulado en `datos/correos-salientes/`, D-58 compartir desde el móvil,
-D-59 cifras del mes, avisos de plazo y página `/precios`).
+D-59 cifras del mes, avisos de plazo y página `/precios`) y D-60, cobro con
+Stripe en modo de pruebas (opcional: `STRIPE_SECRET_KEY=sk_test_…` en
+`.env.local`, ver `.env.example`).
 
-Esquema en la versión 10. Lo que queda abierto está en `SUPUESTOS.md` (D-48 a
+Esquema en la versión 11. Lo que queda abierto está en `SUPUESTOS.md` (D-48 a
 D-51, D-54, D-55 y las marcas `[A VERIFICAR]`).
 
 ## Pendiente fuera del código
