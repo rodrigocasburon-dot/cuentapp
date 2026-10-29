@@ -10,6 +10,7 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "db:reset": "tsx scripts/bd-reset.ts",
+    "cuentas:listar": "tsx scripts/listar-cuentas.ts",
     "db:migrar": "tsx scripts/bd-migrar.ts",
     "banco:generar": "tsx scripts/generar-banco.ts",
     "comparar": "tsx comparativa/comparar.ts",
