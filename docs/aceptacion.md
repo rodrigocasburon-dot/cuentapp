@@ -1,8 +1,9 @@
 ﻿# Aceptación — Cuentapp (fase 10)
 
 Comprobación de cada requisito frente a lo construido. **Aviso:** no tenemos
-el «documento de decisiones consolidado», así que el texto de cada RF/RNF es
-nuestra interpretación (ver `SUPUESTOS.md`, §5.1). «Prueba» = prueba
+el «documento de decisiones consolidado». Los códigos RF/FA siguen la tabla
+del prototipo HTML del equipo (D-52); los RNF son nuestra interpretación
+(ver `SUPUESTOS.md`, §5.1). «Prueba» = prueba
 automática (`npm test`, 15 ficheros, 138 pruebas en verde el 29/10/2026);
 «Navegador» = comprobado a mano en la app.
 
@@ -18,22 +19,23 @@ automática (`npm test`, 15 ficheros, 138 pruebas en verde el 29/10/2026);
 | RF | Qué | Evidencia | Estado |
 |---|---|---|---|
 | RF-01 | Registro, entrada, sesión, aislamiento | `acceso`, `aislamiento`, `seguridad` (Server Actions con sesión) · Navegador | ✔ |
-| RF-02 | Subida de PDF, JPG, PNG, WebP y SVG; límites de tamaño y plan | `originales`, `buzon-copia-limites` · Navegador | ✔ |
-| RF-03 | Ver y descargar el original | `originales` (cabeceras, 404 entre empresas) · Navegador | ✔ |
+| RF-02 | Foto desde el móvil (cámara trasera) | Botón «Hacer una foto» en Documentos (`capture="environment"`) | ✔ sin probar en un móvil real |
+| RF-03 | Arrastrar o elegir PDF/imagen; formatos y 10 MB | `originales`, `buzon-copia-limites` · zona de arrastre · Navegador | ✔ |
+| RF-04 | Reenvío por correo | Buzón simulado (`buzon-copia-limites`, página «Buzón») | ✔ simulado (D-45) |
 | RF-05 | Lectura automática y validaciones | `procesar`, `validaciones`, `analizar-texto`, `banco`; `npm run lectura:probar` 136/144 campos | ✔ con banco sintético; sin tickets reales |
 | RF-06 | Corrección manual, historial y «Validar» | `correccion-duplicados` · Navegador | ✔ |
 | RF-07 | Duplicados exactos y lógicos | `correccion-duplicados`, `papelera-cuenta` | ✔ |
-| RF-08 | Original inmutable y comprobado | `originales`, `migraciones` (triggers tras migrar) | ✔ |
-| RF-09 | Semáforo del trimestre y Excel para el gestor | `semaforo-excel` · Navegador | ✔ |
-| RF-04 | (sin definir en lo que tenemos) | — | `[A VERIFICAR]` con el documento consolidado |
+| RF-08 | Original conservado, inmutable y comprobado; ver y descargar | `originales`, `migraciones` (triggers tras migrar) · Navegador | ✔ |
+| RF-09 | Excel para la gestoría | `semaforo-excel` · Navegador | ✔ |
 
 ## Funcionalidades adicionales
 
 | | Qué | Evidencia | Estado |
 |---|---|---|---|
-| FA-02 | Buzón de correo (simulado) | `buzon-copia-limites` · página «Buzón» | ✔ simulado (D-45) |
-| — | Copia local por trimestre | `buzon-copia-limites` | ✔ (D-46) |
-| FA-03 | PWA | Manifiesto e icono | Parcial: sin service worker (D-49) |
+| FA-01 | Semáforo, panel y avisos con enlace a cada documento | `semaforo-excel` · Panel | ✔ |
+| FA-02 | Buzón empresarial | `buzon-copia-limites` · página «Buzón» | ✔ simulado (D-45) |
+| FA-03 | Google Drive | Copia local por trimestre como sustituto (`buzon-copia-limites`) | Parcial: sin Drive (D-46) |
+| — | PWA | Manifiesto e icono | Parcial: sin service worker (D-49) |
 | — | Planes, límites, cambio de plan | `buzon-copia-limites` · «Mi cuenta» | ✔ sin cobro (D-47) |
 | — | Textos legales | Pie con enlaces a `/legal/*` | Contenido pendiente del equipo (D-48) |
 
@@ -50,7 +52,8 @@ automática (`npm test`, 15 ficheros, 138 pruebas en verde el 29/10/2026);
 
 ## Lo que falta o queda fuera
 
-- Documento de decisiones consolidado (RF-04, RNF-01..07 y PL-01..04 oficiales).
+- Documento de decisiones consolidado (RNF-01..07 y PL-01..04 oficiales).
+- Recuperación de contraseña (RF-01 en el prototipo): necesita enviar correos, fuera del MVP local (S-09).
 - Validación de la lectura con tickets reales (15-20 fotos de móvil).
 - Contenido de los textos legales (lo aporta el equipo); tipografías propias; service worker.
 - Servidor de correo real, Google Drive, cobro con Stripe y despliegue (solo documentados).

@@ -8,6 +8,7 @@ import {
   TEXTO_SEMAFORO,
   type ColorSemaforo,
 } from "@/dominio/semaforo";
+import type { Aviso } from "@/dominio/validaciones";
 import { repositorioActual } from "@/servidor/auth/sesion";
 import { copiarTrimestreAction } from "./acciones";
 
@@ -50,6 +51,24 @@ export default async function Panel({
 
   const semaforo = repo.resumenTrimestre(anioSel, trimSel);
   const docsTrimestre = repo.documentosDelTrimestre(anioSel, trimSel);
+
+  // Un aviso por documento: primero los que bloquean (incidencias abiertas),
+  // después los que esperan revisión (sin validar, con o sin avisos ámbar)
+  const incidencias = repo.incidenciasAbiertasPorDocumento();
+  const NOMBRE_INCIDENCIA: Record<string, string> = { duplicado: "posible duplicado", ilegible: "ilegible", documental: "problema documental", campo_dudoso: "campo dudoso", falta_nif: "falta un NIF" };
+  const avisosTrimestre = docsTrimestre
+    .filter((d) => d.estado !== "validado" || incidencias.has(d.id))
+    .map((d) => {
+      const abiertas = incidencias.get(d.id) ?? [];
+      const ambar: Aviso[] = (d.avisos_json ? (JSON.parse(d.avisos_json) as Aviso[]) : []).filter((a) => a.nivel === "ambar");
+      const texto = abiertas.length
+        ? `Incidencia: ${abiertas.map((t) => NOMBRE_INCIDENCIA[t] ?? t).join(", ")}`
+        : ambar.length
+          ? ambar.map((a) => a.texto).slice(0, 2).join(" ")
+          : "Pendiente de validar.";
+      return { id: d.id, documento: d.nombre_emisor ?? d.nombre_original, texto, bloquea: abiertas.length > 0 };
+    })
+    .sort((a, b) => Number(b.bloquea) - Number(a.bloquea));
 
   return (
     <main className="mx-auto w-full max-w-5xl px-6 py-10">
@@ -210,6 +229,30 @@ export default async function Panel({
           </p>
         )}
       </section>
+
+      {/* Avisos del trimestre con enlace a cada documento (idea del prototipo HTML) */}
+      {avisosTrimestre.length > 0 && (
+        <section aria-labelledby="titulo-avisos" className="mt-8 rounded-3xl border border-black/5 bg-white p-6">
+          <h3 id="titulo-avisos" className="text-lg font-bold">
+            Qué falta para ponerlo en verde ({avisosTrimestre.length})
+          </h3>
+          <ul className="mt-4 divide-y divide-crema-2">
+            {avisosTrimestre.slice(0, 10).map((a) => (
+              <li key={a.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                <span>
+                  <span aria-hidden="true">{a.bloquea ? "🔴 " : "🟡 "}</span>
+                  <span className="font-semibold">{a.documento}</span>
+                  <span className="block text-sm text-marron">{a.texto}</span>
+                </span>
+                <Link href={`/documentos/${a.id}`} className="rounded-full bg-marron-oscuro px-4 py-1.5 text-sm font-semibold text-white hover:bg-black">
+                  Revisar
+                </Link>
+              </li>
+            ))}
+          </ul>
+          {avisosTrimestre.length > 10 && <p className="mt-3 text-sm text-marron">Y {avisosTrimestre.length - 10} más en la lista de documentos.</p>}
+        </section>
+      )}
 
       {/* Desglose de IVA agrupado del trimestre */}
       {semaforo.desgloseIva.length > 0 && (

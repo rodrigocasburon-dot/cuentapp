@@ -131,6 +131,12 @@ Sigue pendiente repetirlo con tickets reales.
 | D-50 | **Revisión de seguridad** (agente, solo lectura): sin hallazgos críticos ni altos ni fugas entre empresas. Arreglados: resolución manual solo de duplicados abiertos (M1), líneas de IVA validadas y acotadas (M2), intento de acceso apuntado antes de verificar y límite global de 20 altas / 15 min (M4), tope de píxeles en OCR (M5), `allowedOrigins` del propio codespace (B1), nombres sin caracteres bidi y con extensión real (B3), cabeceras de seguridad (B4), empresas de baja (B5), errores internos ocultos (B7). | Prueba estática nueva: toda Server Action comprueba la sesión. |
 | D-51 | **Riesgos aceptados para el MVP local**, a resolver en producción: el límite de 101 MB de las Server Actions vale también para entrar/registrarse (M3; en producción, subida por un route handler con sesión previa y límite global bajo); sin límite por IP (no hay IP fiable en local); sesiones caducadas que no se purgan (B6, sin impacto). En Codespaces, **no hacer público el puerto 3000** (B2): el acceso de demostración dejaría entrar a cualquiera. | |
 
+### Ideas del prototipo HTML del equipo (29/10/2026)
+
+| # | Decisión | Motivo / estado |
+|---|---|---|
+| D-52 | El prototipo HTML (`cuentapp-main.zip`, sin backend, datos en `localStorage`) aporta: la **numeración de requisitos** (RF-02 foto desde el móvil, RF-03 arrastrar archivo, RF-04 reenvío por correo, FA-01 semáforo y avisos, FA-02 buzón, **FA-03 Google Drive**, no PWA) y los **casos PL-01..PL-04** (gasolinera arrugada = campo dudoso; supermercado con IVA 4/10/21 %; factura de Figma en inglés y USD; bar torcido y oscuro sin NIF del emisor). Incorporado: botón «Hacer una foto», zona de arrastre, búsqueda y filtros en Documentos, avisos con enlace en el panel y el fondo topográfico. | Nuestros PL-01..04 de la fase 2 eran umbrales definidos por nosotros (D-13); los casos del prototipo son **otra definición** `[A VERIFICAR]` con el documento consolidado. El banco sintético ya cubre casos parecidos (multi-IVA, USD, sin NIF). No se ha copiado su capa de datos ni su `localStorage`: aquí ya hay base de datos real. |
+
 ## 3. Consecuencias de D-01 (SQLite) que el equipo debe conocer
 
 - **No hay RLS.** El aislamiento entre empresas se impone en tres capas:

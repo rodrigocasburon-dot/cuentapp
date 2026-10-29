@@ -3,6 +3,7 @@ import Link from "next/link";
 import { after } from "next/server";
 import { EstadoDocumento } from "@/componentes/EstadoDocumento";
 import { Refresco } from "@/componentes/Refresco";
+import { ESTADOS, ETIQUETA_ESTADO, type Estado } from "@/dominio/estados";
 import { fecha, fechaHora, importe } from "@/dominio/formato";
 import type { Aviso } from "@/dominio/validaciones";
 import { repositorioActual } from "@/servidor/auth/sesion";
@@ -44,11 +45,25 @@ export default async function Documentos({ searchParams }: { searchParams: Promi
   const { repo } = await repositorioActual();
   const p = await searchParams;
   const papelera = p.ver === "papelera";
-  const documentos = repo.listarDocumentos({ papelera });
-  const enPapelera = papelera ? documentos.length : repo.listarDocumentos({ papelera: true }).length;
-  const leyendo = documentos.some((d) => d.estado === "recibido" || d.estado === "procesando");
+  const todos = repo.listarDocumentos({ papelera });
+  const enPapelera = papelera ? todos.length : repo.listarDocumentos({ papelera: true }).length;
+
+  // Búsqueda y filtros (por GET, para que el enlace se pueda compartir o recargar)
+  const q = (p.q ?? "").trim().toLowerCase();
+  const filtroEstado = ESTADOS.includes(p.estado as Estado) ? (p.estado as Estado) : "";
+  const trimestreDe = (f: string | null) => (f ? `${f.slice(0, 4)}-${Math.ceil(Number(f.slice(5, 7)) / 3)}` : "sin-fecha");
+  const trimestresConDocs = [...new Set(todos.map((d) => trimestreDe(d.fecha_emision)))].sort().reverse();
+  const filtroTrimestre = trimestresConDocs.includes(p.trimestre ?? "") ? p.trimestre! : "";
+  const documentos = todos.filter(
+    (d) =>
+      (!q || [d.nombre_original, d.nombre_emisor, d.numero, d.nif_emisor].some((t) => t?.toLowerCase().includes(q))) &&
+      (!filtroEstado || d.estado === filtroEstado) &&
+      (!filtroTrimestre || trimestreDe(d.fecha_emision) === filtroTrimestre),
+  );
+  const filtrando = Boolean(q || filtroEstado || filtroTrimestre);
+  const leyendo = todos.some((d) => d.estado === "recibido" || d.estado === "procesando");
   // Si quedan pendientes (p. ej. tras reiniciar el servidor), retomar la cola
-  if (documentos.some((d) => d.estado === "recibido")) after(lanzarCola);
+  if (todos.some((d) => d.estado === "recibido")) after(lanzarCola);
   const mensaje = resultado(p);
   const incidencias = repo.incidenciasAbiertasPorDocumento();
 
@@ -73,8 +88,40 @@ export default async function Documentos({ searchParams }: { searchParams: Promi
         </nav>
 
         <h2 id="lista" className="mb-3 text-xl font-bold">
-          {papelera ? "En la papelera" : "Recibidos"} ({documentos.length})
+          {papelera ? "En la papelera" : "Recibidos"} ({filtrando ? `${documentos.length} de ${todos.length}` : documentos.length})
         </h2>
+
+        <form role="search" aria-label="Buscar documentos" className="mb-4 flex flex-wrap items-end gap-3">
+          {papelera && <input type="hidden" name="ver" value="papelera" />}
+          <div className="flex min-w-48 flex-1 flex-col gap-1">
+            <label htmlFor="q" className="text-sm font-semibold">Buscar</label>
+            <input id="q" name="q" type="search" defaultValue={p.q ?? ""} placeholder="Emisor, número, NIF o archivo" className="rounded-full border border-black/15 bg-white px-4 py-2" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="estado" className="text-sm font-semibold">Estado</label>
+            <select id="estado" name="estado" defaultValue={filtroEstado} className="rounded-full border border-black/15 bg-white px-4 py-2">
+              <option value="">Todos</option>
+              {ESTADOS.map((e) => (
+                <option key={e} value={e}>{ETIQUETA_ESTADO[e]}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="trimestre" className="text-sm font-semibold">Trimestre</label>
+            <select id="trimestre" name="trimestre" defaultValue={filtroTrimestre} className="rounded-full border border-black/15 bg-white px-4 py-2">
+              <option value="">Todos</option>
+              {trimestresConDocs.map((t) => (
+                <option key={t} value={t}>{t === "sin-fecha" ? "Sin fecha" : `${t.slice(5)}T ${t.slice(0, 4)}`}</option>
+              ))}
+            </select>
+          </div>
+          <button type="submit" className="rounded-full bg-marron-oscuro px-5 py-2 font-semibold text-white hover:bg-black">Filtrar</button>
+          {filtrando && (
+            <Link href={papelera ? "/documentos?ver=papelera" : "/documentos"} className="py-2 text-sm font-semibold underline underline-offset-4">
+              Quitar filtros
+            </Link>
+          )}
+        </form>
         {papelera && (
           <p className="mb-3 text-sm text-marron">
             No cuentan en el semáforo ni en el Excel. El original se conserva y puedes recuperarlos cuando quieras.
@@ -93,7 +140,11 @@ export default async function Documentos({ searchParams }: { searchParams: Promi
         )}
         {documentos.length === 0 ? (
           <p className="text-marron">
-            {papelera ? "La papelera está vacía." : "Todavía no hay documentos. Sube el primero con el formulario de arriba."}
+            {filtrando
+              ? "Ningún documento coincide con la búsqueda."
+              : papelera
+                ? "La papelera está vacía."
+                : "Todavía no hay documentos. Sube el primero con el formulario de arriba."}
           </p>
         ) : (
           <form action={accionEnBloque}>
