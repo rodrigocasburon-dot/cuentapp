@@ -1,6 +1,9 @@
-// Página provisional de la fase 1: comprueba que la app arranca y que la
-// base de datos responde. La landing de verdad llega en la fase 9.
+// Portada provisional. La landing de verdad (diseño, líneas topográficas,
+// página de precios) llega en la fase 9.
 
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { sesionActual } from "@/servidor/auth/sesion";
 import { bd } from "@/servidor/bd/conexion";
 import { estadoSistema, type EstadoSistema } from "@/servidor/bd/sistema";
 
@@ -10,26 +13,32 @@ function leerEstado(): EstadoSistema | null {
   try {
     return estadoSistema(bd());
   } catch {
-    return null; // base de datos sin crear: se explica en pantalla
+    return null; // base de datos sin crear o de otra versión: se explica en pantalla
   }
 }
 
-export default function Inicio() {
+export default async function Inicio() {
   const estado = leerEstado();
+  if (estado && (await sesionActual())) redirect("/panel");
   const euros = (c: number) => (c / 100).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
 
   return (
     <main className="mx-auto w-full max-w-2xl px-6 py-16">
       <h1 className="text-5xl font-black uppercase tracking-tight">Cuentapp</h1>
-      <p className="mt-2 text-lg text-marron">El semáforo del trimestre.</p>
+      <p className="mt-2 text-lg text-marron">El semáforo del trimestre: tus facturas y tickets, listos para el gestor.</p>
 
-      <section className="mt-10 rounded-2xl bg-crema-2 p-6" aria-labelledby="estado">
-        <h2 id="estado" className="text-xl font-bold">Estado del entorno (fase 1)</h2>
-        {estado ? (
-          <>
-            <p className="mt-3">
-              <span aria-hidden="true">✔ </span>Base de datos conectada · {estado.empresas} empresas de prueba
-            </p>
+      {estado ? (
+        <>
+          <div className="mt-8 flex flex-wrap gap-4">
+            <Link href="/registro" className="rounded-full bg-marron-oscuro px-6 py-3 font-bold text-crema hover:bg-marron">
+              Crear cuenta
+            </Link>
+            <Link href="/entrar" className="rounded-full border-2 border-marron-oscuro px-6 py-3 font-bold hover:bg-crema-2">
+              Entrar
+            </Link>
+          </div>
+          <section className="mt-12 rounded-2xl bg-crema-2 p-6" aria-labelledby="planes">
+            <h2 id="planes" className="text-xl font-bold">Planes</h2>
             <ul className="mt-3 space-y-1">
               {estado.planes.map((p) => (
                 <li key={p.id}>
@@ -42,13 +51,14 @@ export default function Inicio() {
                 </li>
               ))}
             </ul>
-          </>
-        ) : (
-          <p className="mt-3">
-            <span aria-hidden="true">✖ </span>No hay base de datos. Ejecuta <code>npm run db:reset</code> y recarga.
-          </p>
-        )}
-      </section>
+          </section>
+        </>
+      ) : (
+        <p className="mt-10 rounded-2xl bg-crema-2 p-6">
+          <span aria-hidden="true">✖ </span>La base de datos no existe o es de una versión anterior. Ejecuta{" "}
+          <code>npm run db:reset</code> y recarga.
+        </p>
+      )}
     </main>
   );
 }

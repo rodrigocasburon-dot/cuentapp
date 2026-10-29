@@ -4,8 +4,55 @@
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { crearEmpresaConTitular, crearSesion, leerSesion } from "@/servidor/bd/cuentas";
 import { repositorioDeEmpresa } from "@/servidor/bd/repositorio";
 import { bdDePrueba, ORIGINAL } from "./ayudas";
+
+/** Todos los .ts/.tsx de una carpeta, recursivamente. */
+function ficheros(dir: string): string[] {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
+    const ruta = path.join(dir, e.name);
+    return e.isDirectory() ? ficheros(ruta) : /\.(ts|tsx)$/.test(e.name) ? [ruta] : [];
+  });
+}
+const SRC = path.resolve(__dirname, "..", "src");
+
+describe("aislamiento por empresa (sesión → repositorio)", () => {
+  it("con la sesión de A solo se llega a los datos de A, y viceversa", () => {
+    const bd = bdDePrueba();
+    const registro = (email: string) => ({ empresa: email, nif: null, nombre: "X", email, hashContrasena: "x" });
+    const a = crearEmpresaConTitular(bd, registro("a@a.es"));
+    const b = crearEmpresaConTitular(bd, registro("b@b.es"));
+    const sesionA = leerSesion(bd, crearSesion(bd, a.usuarioId, a.empresaId).token)!;
+    const sesionB = leerSesion(bd, crearSesion(bd, b.usuarioId, b.empresaId).token)!;
+
+    const repoA = repositorioDeEmpresa(bd, sesionA.empresa.id);
+    const repoB = repositorioDeEmpresa(bd, sesionB.empresa.id);
+    const idA = repoA.crearDocumento(ORIGINAL);
+
+    expect(repoA.listarDocumentos().map((d) => d.id)).toEqual([idA]);
+    expect(repoB.listarDocumentos()).toEqual([]);
+    expect(repoB.obtenerDocumento(idA)).toBeUndefined();
+  });
+});
+
+describe("las páginas no se saltan la sesión", () => {
+  // Las páginas y acciones (src/app) obtienen los datos con repositorioActual(),
+  // que saca la empresa de la sesión. Si importan el repositorio directamente,
+  // podrían usar una empresa que venga del navegador.
+  it("src/app no importa el repositorio ni lo construye a mano", () => {
+    const infractores = ficheros(path.join(SRC, "app")).filter((f) => /repositorio"|repositorioDeEmpresa/.test(fs.readFileSync(f, "utf8")));
+    expect(infractores.map((f) => path.relative(SRC, f))).toEqual([]);
+  });
+
+  it("los componentes de cliente no importan código de servidor", () => {
+    const infractores = ficheros(SRC).filter((f) => {
+      const t = fs.readFileSync(f, "utf8");
+      return /^["']use client["']/m.test(t) && /@\/servidor\//.test(t);
+    });
+    expect(infractores.map((f) => path.relative(SRC, f))).toEqual([]);
+  });
+});
 
 describe("aislamiento por empresa (repositorio)", () => {
   it("B no ve, no lee y no modifica los documentos de A", () => {

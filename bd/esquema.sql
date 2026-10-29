@@ -15,6 +15,11 @@
 
 PRAGMA foreign_keys = ON;
 
+-- Versión del esquema. Súbela cada vez que cambies este fichero: el servidor
+-- se niega a arrancar con una base de datos de otra versión (ver conexion.ts).
+-- 1 = fase 1 · 2 = fase 3 (sesiones con hash, intentos de acceso)
+PRAGMA user_version = 2;
+
 -- ---------------------------------------------------------------------
 -- Planes de suscripción (datos de referencia, no pertenecen a ninguna empresa)
 -- ---------------------------------------------------------------------
@@ -60,14 +65,25 @@ CREATE TABLE membresias (
   PRIMARY KEY (usuario_id, empresa_id)
 );
 
--- Sesiones de acceso (RF-01, fase 3). El identificador es aleatorio y opaco.
+-- Sesiones de acceso (RF-01). El navegador guarda un token aleatorio en una
+-- cookie; aquí solo guardamos su SHA-256. Si alguien copia la base de datos,
+-- no puede usar estas filas para entrar.
+-- La sesión vale solo mientras exista la membresía (usuario, empresa).
 CREATE TABLE sesiones (
-  id          TEXT PRIMARY KEY,
+  id          TEXT PRIMARY KEY CHECK (length(id) = 64),  -- sha256(token) en hexadecimal
   usuario_id  TEXT NOT NULL REFERENCES usuarios(id),
   empresa_id  TEXT NOT NULL REFERENCES empresas(id),
   expira_en   TEXT NOT NULL,
   creada_en   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );
+
+-- Intentos de acceso fallidos, para frenar a quien prueba contraseñas.
+CREATE TABLE intentos_acceso (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  clave      TEXT NOT NULL,                        -- email normalizado
+  creado_en  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+);
+CREATE INDEX intentos_acceso_clave ON intentos_acceso (clave, creado_en);
 
 -- ---------------------------------------------------------------------
 -- Periodos (trimestres) por empresa

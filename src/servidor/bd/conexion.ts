@@ -40,9 +40,20 @@ export function insertarPlanes(bd: Bd): void {
   insertar.run({ id: "despacho", nombre: "Despacho", precio_centimos: 0, limite_docs_mes: null, limite_docs_total: null, dias_prueba: null, disponible: 0 });
 }
 
+/** Debe coincidir con "PRAGMA user_version" de bd/esquema.sql. */
+export const VERSION_ESQUEMA = 2;
+
 // Una sola conexión compartida por el servidor de Next.js
 let compartida: Bd | undefined;
 export function bd(): Bd {
-  compartida ??= abrirBd(RUTA_BD, false);
+  if (!compartida) {
+    const nueva = abrirBd(RUTA_BD, false);
+    const version = nueva.pragma("user_version", { simple: true });
+    if (version !== VERSION_ESQUEMA) {
+      nueva.close();
+      throw new Error(`La base de datos es de la versión ${version} y el código espera la ${VERSION_ESQUEMA}. Ejecuta npm run db:reset.`);
+    }
+    compartida = nueva;
+  }
   return compartida;
 }

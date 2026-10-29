@@ -5,7 +5,7 @@ Registro vivo de supuestos, decisiones y dudas. Cada entrada indica si está
 instalado) o es **supuesta** (pendiente de confirmar). `[A VERIFICAR]` marca
 lo que alguien del equipo debe comprobar antes de darlo por bueno.
 
-Última actualización: 29/10/2026 (fase 2).
+Última actualización: 29/10/2026 (fase 3).
 
 ---
 
@@ -51,6 +51,24 @@ instalar (`.venv-ocr`); el README lo explicará. Si eso pesa demasiado,
 Tesseract (A) funciona dentro de Node sin nada más, a costa de peor lectura
 de fotos.
 
+### Fase 3 (29/10/2026) · RF-01 acceso
+
+| # | Decisión | Motivo / estado |
+|---|---|---|
+| D-14 | Autenticación propia: contraseñas con **scrypt** (N=2^17, r=8, p=1, parámetros de OWASP); sesión de **7 días fijos**; en la BD solo el **SHA-256 del token**; cookie `HttpOnly`, `SameSite=Lax`, `Secure` en producción. | Sin Supabase Auth (D-01). Cada inicio de sesión tarda ~0,45 s en este portátil (medido). |
+| D-15 | Freno a la fuerza bruta: **5 fallos en 15 minutos por email** bloquean ese email 15 minutos. | Riesgo aceptado: un tercero puede bloquear una cuenta durante 15 min escribiendo mal su contraseña. En producción, añadir límite por IP. |
+| D-16 | La entrada no revela si un email existe (mismo mensaje y tiempo similar). **El registro sí** ("ya hay una cuenta con ese email"). | Usabilidad frente a privacidad; habitual. Revisable. |
+| D-17 | La empresa activa sale **siempre de la sesión**: las páginas solo obtienen datos con `repositorioActual()`. Dos pruebas estáticas lo vigilan (src/app no importa el repositorio; los componentes de cliente no importan código de servidor). | Equivalente funcional de la RLS en la capa de aplicación. |
+| D-18 | Protección CSRF: la de las Server Actions de Next (compara `Origin` con `Host`). | Verificado en la documentación de Next 16.4.3 (`node_modules/next/dist/docs/01-app/02-guides/server-actions.md`). |
+| D-19 | **Versión de esquema** (`PRAGMA user_version`, ahora 2). El servidor no arranca con otra versión y pide `npm run db:reset`. | Sin migraciones todavía. **A partir de la fase 4 habrá originales**: `db:reset` se negará a borrar y harán falta migraciones de verdad. |
+| S-09 | Sin recuperación de contraseña ni verificación de email. | Requieren enviar correos: fuera del MVP local. |
+
+**Telemetría de Next.js.** Al arrancar, Next avisa de que envía telemetría
+anónima de uso a Vercel. No incluye documentos, pero contradice el espíritu
+"local". Se desactiva con `npx next telemetry disable` (ajuste por usuario
+en este equipo) o con la variable `NEXT_TELEMETRY_DISABLED=1`.
+**Pendiente de decisión del equipo.**
+
 ## 3. Consecuencias de D-01 (SQLite) que el equipo debe conocer
 
 - **No hay RLS.** El aislamiento entre empresas se impone en tres capas:
@@ -63,9 +81,7 @@ de fotos.
   Es más débil que la RLS de Postgres: una consulta mal escrita dentro del
   repositorio no la para la base de datos. Por eso cada función nueva del
   repositorio debe venir con su prueba de aislamiento.
-- **No hay Supabase Auth.** La autenticación se programa en la fase 3:
-  contraseñas con `scrypt` (incluido en Node), sesión en cookie `HttpOnly`,
-  `SameSite=Lax` y `Secure` en producción.
+- **No hay Supabase Auth.** La autenticación es propia (fase 3, ver D-14).
 - **No hay Supabase Storage.** Los originales irán a
   `datos/originales/<empresa_id>/<sha256>.<ext>`, escritos una sola vez y
   marcados como solo lectura (fase 4).

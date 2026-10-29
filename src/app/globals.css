@@ -3,13 +3,15 @@
 /* Paleta provisional (guía visual; se confirma en la fase 9).
    Contraste calculado sobre crema (#FDEEDC):
      marron-oscuro ≈ 10,9:1 · marron ≈ 6,9:1 → válidos para texto (AA).
-     arena ≈ 2,0:1 → NO apto para texto sobre crema; solo decoración. */
+     arena ≈ 2,0:1 → NO apto para texto sobre crema; solo decoración.
+     rojo (errores) ≈ 6,6:1 sobre crema y 7,6:1 sobre blanco. */
 @theme {
   --color-crema: #fdeedc;
   --color-crema-2: #f6e4ce;
   --color-marron-oscuro: #4b2e12;
   --color-marron: #6f4a25;
   --color-arena: #d1a468;
+  --color-rojo: #9b2c1f;
 }
 
 body {
