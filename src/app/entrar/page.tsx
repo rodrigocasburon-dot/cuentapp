@@ -8,15 +8,20 @@ import { FormEntrar } from "./FormEntrar";
 
 export const metadata: Metadata = { title: "Entrar · Cuentapp" };
 
-export default async function Entrar({ searchParams }: { searchParams: Promise<{ baja?: string }> }) {
+export default async function Entrar({ searchParams }: { searchParams: Promise<{ baja?: string; restablecida?: string }> }) {
   if (await sesionActual()) redirect("/panel");
-  const { baja } = await searchParams;
+  const { baja, restablecida } = await searchParams;
   return (
     <main className="mx-auto w-full max-w-md px-6 py-12">
       <h1 className="mb-8 text-4xl font-black uppercase tracking-tight">Entrar</h1>
       {baja && (
         <p role="status" className="mb-8 rounded-lg border-2 border-marron-oscuro bg-crema-2 px-4 py-3 font-semibold">
           <span aria-hidden="true">✔ </span>La cuenta se ha dado de baja y la sesión se ha cerrado.
+        </p>
+      )}
+      {restablecida && (
+        <p role="status" className="mb-8 rounded-lg border-2 border-marron-oscuro bg-crema-2 px-4 py-3 font-semibold">
+          <span aria-hidden="true">✔ </span>Contraseña cambiada. Ya puedes entrar con la nueva.
         </p>
       )}
       {ACCESO_DEMO && (
@@ -38,6 +43,11 @@ export default async function Entrar({ searchParams }: { searchParams: Promise<{
         </section>
       )}
       <FormEntrar />
+      <p className="mt-4">
+        <Link href="/recuperar" className="font-semibold underline underline-offset-4">
+          ¿Has olvidado tu contraseña?
+        </Link>
+      </p>
       <p className="mt-8">
         ¿Aún no tienes cuenta?{" "}
         <Link href="/registro" className="font-semibold underline underline-offset-4">

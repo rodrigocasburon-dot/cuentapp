@@ -186,3 +186,64 @@ export function registrarIntentoFallido(bd: Bd, clave: string, ahora = new Date(
 export function olvidarIntentos(bd: Bd, clave: string): void {
   bd.prepare("DELETE FROM intentos_acceso WHERE clave = ?").run(clave);
 }
+
+// ---------------------------------------------------------------------------
+// Recuperación de contraseña (RFQ, requisito 1; D-57)
+// ---------------------------------------------------------------------------
+
+export const DURACION_RECUPERACION_MS = 30 * 60 * 1000; // 30 minutos
+
+/** Usuario activo por email (para la recuperación); undefined si no existe o está de baja. */
+export function usuarioPorEmail(bd: Bd, email: string): { id: string; nombre: string; email: string } | undefined {
+  return bd.prepare("SELECT id, nombre, email FROM usuarios WHERE email = ? AND baja_en IS NULL").get(email) as
+    | { id: string; nombre: string; email: string }
+    | undefined;
+}
+
+/**
+ * Crea un enlace de recuperación y devuelve el token EN CLARO (solo viaja en
+ * el correo). Invalida los enlaces anteriores del usuario sin usar: vale el último.
+ */
+export function crearRecuperacion(bd: Bd, usuarioId: string, ahora = new Date()): string {
+  const token = randomBytes(32).toString("base64url");
+  bd.transaction(() => {
+    bd.prepare("DELETE FROM recuperaciones WHERE usuario_id = ? AND usada_en IS NULL").run(usuarioId);
+    bd.prepare("INSERT INTO recuperaciones (id, usuario_id, expira_en, creada_en) VALUES (?, ?, ?, ?)").run(
+      hashToken(token), usuarioId, iso(new Date(ahora.getTime() + DURACION_RECUPERACION_MS)), iso(ahora),
+    );
+  })();
+  return token;
+}
+
+/** ¿El enlace existe, no se ha usado, no ha caducado y el usuario sigue activo? */
+export function recuperacionValida(bd: Bd, token: string, ahora = new Date()): boolean {
+  return !!bd
+    .prepare(
+      `SELECT 1 FROM recuperaciones r JOIN usuarios u ON u.id = r.usuario_id
+       WHERE r.id = ? AND r.usada_en IS NULL AND r.expira_en > ? AND u.baja_en IS NULL`,
+    )
+    .get(hashToken(token), iso(ahora));
+}
+
+/**
+ * Cambia la contraseña con un enlace válido, todo o nada: marca el enlace como
+ * usado, cierra TODAS las sesiones del usuario (por si alguien entró con la
+ * contraseña antigua) y olvida sus intentos fallidos. Devuelve false si el
+ * enlace no vale (usado, caducado, inexistente o usuario de baja).
+ */
+export function usarRecuperacion(bd: Bd, token: string, hashContrasena: string, ahora = new Date()): boolean {
+  return bd.transaction(() => {
+    const fila = bd
+      .prepare(
+        `SELECT r.usuario_id, u.email FROM recuperaciones r JOIN usuarios u ON u.id = r.usuario_id
+         WHERE r.id = ? AND r.usada_en IS NULL AND r.expira_en > ? AND u.baja_en IS NULL`,
+      )
+      .get(hashToken(token), iso(ahora)) as { usuario_id: string; email: string } | undefined;
+    if (!fila) return false;
+    bd.prepare("UPDATE recuperaciones SET usada_en = ? WHERE id = ?").run(iso(ahora), hashToken(token));
+    bd.prepare("UPDATE usuarios SET hash_contrasena = ? WHERE id = ?").run(hashContrasena, fila.usuario_id);
+    bd.prepare("DELETE FROM sesiones WHERE usuario_id = ?").run(fila.usuario_id);
+    bd.prepare("DELETE FROM intentos_acceso WHERE clave = ?").run(fila.email);
+    return true;
+  })();
+}

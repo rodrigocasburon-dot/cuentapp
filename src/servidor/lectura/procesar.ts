@@ -6,6 +6,7 @@
 
 import path from "node:path";
 import { CARPETA_ORIGINALES } from "@/config";
+import { sugerirCategoria } from "@/dominio/categorias";
 import { validar, type Aviso } from "@/dominio/validaciones";
 import { extraccionVacia } from "@/lectura/esquema";
 import { leerOriginal, MIME_SVG } from "@/servidor/almacen/originales";
@@ -103,7 +104,8 @@ export async function procesarDocumento(repo: Repositorio, id: string, deps: Dep
   // 4) Guardar y decidir el estado (la validación final siempre es manual)
   const incidenciasAbiertas = repo.incidencias(id).filter((i) => i.bloqueante === 1 && i.estado === "abierta");
   const estado = avisos.some((a) => a.nivel === "rojo") || incidenciasAbiertas.length > 0 ? "incidencia" : "pendiente_revision";
-  repo.guardarLectura(id, { extraccion: ex, motor: lectura.motor, avisos, cambio, estado, ahora: ahora() });
+  const categoria = sugerirCategoria(ex.nombre_emisor.valor, lectura.texto);
+  repo.guardarLectura(id, { extraccion: ex, motor: lectura.motor, avisos, cambio, estado, ahora: ahora(), categoria });
   return estado;
 }
 

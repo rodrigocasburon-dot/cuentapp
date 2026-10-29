@@ -7,6 +7,7 @@ import {
   parsearImporteACentimos,
   type EstadoFormularioCorreccion,
 } from "@/dominio/correccion";
+import { CATEGORIAS, ETIQUETA_CATEGORIA } from "@/dominio/categorias";
 import { ETIQUETA_TIPO, type Estado, type TipoDocumento, type TipoIncidencia } from "@/dominio/estados";
 import { fechaHora } from "@/dominio/formato";
 import { CONFIANZA_DUDOSA, type Aviso, type Nivel } from "@/dominio/validaciones";
@@ -55,6 +56,7 @@ interface FormFichaProps {
     fecha_emision: string | null;
     moneda: string | null;
     total_centimos: number | null;
+    categoria: string | null;
     total_eur_centimos: number | null;
     tipo_cambio: number | null;
     fecha_cambio: string | null;
@@ -70,6 +72,20 @@ interface FormFichaProps {
   lineasIniciales: { tipo_iva: number; base_centimos: number; cuota_centimos: number }[];
   correcciones: PropsCorreccion[];
 }
+
+/** Nombre legible de cada campo en el historial de correcciones. */
+const NOMBRE_CAMPO: Record<string, string> = {
+  tipo: "Tipo",
+  nombre_emisor: "Emisor",
+  nif_emisor: "NIF del emisor",
+  nif_receptor: "NIF del receptor",
+  numero: "Número",
+  fecha_emision: "Fecha",
+  moneda: "Moneda",
+  total_centimos: "Total (céntimos)",
+  categoria: "Categoría",
+  lineas_iva: "Desglose de IVA",
+};
 
 const ICONO_NIVEL: Record<Nivel, string> = { rojo: "✖", ambar: "⚠", info: "ℹ" };
 const TEXTO_NIVEL: Record<Nivel, string> = { rojo: "Bloquea", ambar: "Revisar", info: "Aviso" };
@@ -302,6 +318,7 @@ export function FormFichaDocumento({
         <form action={formAction} className="mt-6 space-y-5" noValidate>
           <input type="hidden" name="lineas_iva_json" value={lineasIvaSerializadas} />
 
+          <div className="grid gap-4 sm:grid-cols-2">
           {/* Tipo de documento */}
           <div>
             <label htmlFor="tipo" className="block text-sm font-bold">
@@ -326,6 +343,37 @@ export function FormFichaDocumento({
                 {estadoForm.errores.tipo}
               </p>
             )}
+          </div>
+
+          {/* Categoría del gasto (sugerida por palabras clave, D-56) */}
+          <div>
+            <label htmlFor="categoria" className="block text-sm font-bold">
+              Categoría del gasto
+            </label>
+            <select
+              id="categoria"
+              name="categoria"
+              defaultValue={documento.categoria ?? ""}
+              aria-describedby={estadoForm.errores?.categoria ? "categoria-error categoria-ayuda" : "categoria-ayuda"}
+              aria-invalid={!!estadoForm.errores?.categoria}
+              className="mt-1 w-full max-w-sm rounded-lg border-2 border-crema-2 bg-white px-3 py-2 font-medium"
+            >
+              <option value="">Sin categoría</option>
+              {CATEGORIAS.map((c) => (
+                <option key={c} value={c}>
+                  {ETIQUETA_CATEGORIA[c]}
+                </option>
+              ))}
+            </select>
+            <p id="categoria-ayuda" className="mt-1 text-xs text-marron">
+              Se propone según el emisor y el texto leído. Cámbiala si no es la correcta.
+            </p>
+            {estadoForm.errores?.categoria && (
+              <p id="categoria-error" className="mt-1 text-xs text-rojo">
+                {estadoForm.errores.categoria}
+              </p>
+            )}
+          </div>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -657,7 +705,7 @@ export function FormFichaDocumento({
               <tbody>
                 {correcciones.map((c) => (
                   <tr key={c.id} className="border-b border-crema-2">
-                    <td className="py-1 font-semibold">{c.campo}</td>
+                    <td className="py-1 font-semibold">{NOMBRE_CAMPO[c.campo] ?? c.campo}</td>
                     <td className="py-1 text-marron font-mono text-xs max-w-[12rem] truncate">
                       {c.valor_anterior ?? "—"}
                     </td>

@@ -24,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <span aria-hidden="true">🚦 </span>Cuentapp
             </p>
             <nav aria-label="Información legal" className="flex flex-wrap gap-x-6 gap-y-2 text-marron">
+              <Link href="/precios" className="underline-offset-4 hover:text-marron-oscuro hover:underline">Precios</Link>
               <Link href="/legal/aviso-legal" className="underline-offset-4 hover:text-marron-oscuro hover:underline">Aviso legal</Link>
               <Link href="/legal/privacidad" className="underline-offset-4 hover:text-marron-oscuro hover:underline">Privacidad</Link>
               <Link href="/legal/condiciones" className="underline-offset-4 hover:text-marron-oscuro hover:underline">Condiciones</Link>

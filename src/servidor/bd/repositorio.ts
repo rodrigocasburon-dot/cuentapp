@@ -71,6 +71,7 @@ export interface FilaDocumento {
   descartado_por: string | null;
   correo_remitente: string | null;
   correo_asunto: string | null;
+  categoria: string | null;
   creado_en: string;
   actualizado_en: string;
 }
@@ -117,6 +118,7 @@ export interface DatosCorreccion {
   fecha_emision?: string | null;
   moneda?: string | null;
   total_centimos?: number | null;
+  categoria?: string | null;
   lineas_iva?: { tipo_iva: number; base_centimos: number; cuota_centimos: number }[];
 }
 
@@ -128,6 +130,8 @@ export interface DatosLectura {
   cambio: TipoCambio | null;
   estado: Estado;
   ahora: Date;
+  /** Sugerida con palabras clave (src/dominio/categorias.ts); null = sin categoría. */
+  categoria?: string | null;
 }
 
 export interface NuevoDocumento {
@@ -356,7 +360,7 @@ export function repositorioDeEmpresa(bd: Bd, empresaId: string) {
                fecha_emision = ?, moneda = ?, base_centimos = ?, cuota_centimos = ?, total_centimos = ?,
                tipo_cambio = ?, fecha_cambio = ?, total_eur_centimos = ?,
                extraccion_json = ?, confianza_json = ?, motor_lectura = ?, avisos_json = ?,
-               periodo_id = ?, estado = ?, procesado_en = ?, procesando_desde = NULL
+               periodo_id = ?, estado = ?, procesado_en = ?, procesando_desde = NULL, categoria = ?
              WHERE id = ? AND empresa_id = ? AND estado = 'procesando'`,
           )
           .run(
@@ -364,7 +368,7 @@ export function repositorioDeEmpresa(bd: Bd, empresaId: string) {
             ex.fecha_emision.valor, moneda, suma((l) => l.base_centimos), suma((l) => l.cuota_centimos), total,
             moneda === "EUR" ? null : (d.cambio?.valor ?? null), moneda === "EUR" ? null : (d.cambio?.fecha_bce ?? null), totalEur,
             JSON.stringify(ex), JSON.stringify(confianza), d.motor, JSON.stringify(d.avisos),
-            periodo, d.estado, iso(d.ahora),
+            periodo, d.estado, iso(d.ahora), d.categoria ?? null,
             id, empresaId,
           );
         if (r.changes === 0) throw new Error("El documento no está en 'procesando' o no es de esta empresa");
@@ -521,6 +525,7 @@ export function repositorioDeEmpresa(bd: Bd, empresaId: string) {
         if (datos.fecha_emision !== undefined) registrarSiCambia("fecha_emision", doc.fecha_emision, datos.fecha_emision);
         if (datos.moneda !== undefined) registrarSiCambia("moneda", doc.moneda, datos.moneda);
         if (datos.total_centimos !== undefined) registrarSiCambia("total_centimos", doc.total_centimos, datos.total_centimos);
+        if (datos.categoria !== undefined) registrarSiCambia("categoria", doc.categoria, datos.categoria);
 
         // 2) Líneas de IVA
         let lineasFinales: FilaLineaIva[];
@@ -559,6 +564,7 @@ export function repositorioDeEmpresa(bd: Bd, empresaId: string) {
         const fecha_emision = datos.fecha_emision !== undefined ? datos.fecha_emision : doc.fecha_emision;
         const moneda = datos.moneda !== undefined ? datos.moneda : doc.moneda;
         const total_centimos = datos.total_centimos !== undefined ? datos.total_centimos : doc.total_centimos;
+        const categoria = datos.categoria !== undefined ? datos.categoria : doc.categoria;
 
         let total_eur_centimos = doc.total_eur_centimos;
         if (moneda === "EUR") {
@@ -670,13 +676,13 @@ export function repositorioDeEmpresa(bd: Bd, empresaId: string) {
           `UPDATE documentos SET
              tipo = ?, nombre_emisor = ?, nif_emisor = ?, nif_receptor = ?, numero = ?,
              fecha_emision = ?, moneda = ?, base_centimos = ?, cuota_centimos = ?, total_centimos = ?,
-             total_eur_centimos = ?, periodo_id = ?, avisos_json = ?,
+             total_eur_centimos = ?, periodo_id = ?, avisos_json = ?, categoria = ?,
              estado = ?, validado_en = NULL, validado_por = NULL
            WHERE id = ? AND empresa_id = ?`,
         ).run(
           tipo, nombre_emisor, nif_emisor, nif_receptor, numero,
           fecha_emision, moneda, sumaBase, sumaCuota, total_centimos,
-          total_eur_centimos, periodoId, JSON.stringify(avisos),
+          total_eur_centimos, periodoId, JSON.stringify(avisos), categoria,
           nuevoEstado,
           id, empresaId,
         );
@@ -782,6 +788,32 @@ export function repositorioDeEmpresa(bd: Bd, empresaId: string) {
       );
 
       return calcularSemaforo(docsParaSemaforo, todasLineas);
+    },
+
+    /**
+     * Cifras de un mes ("AAAA-MM") por FECHA DEL DOCUMENTO, para el panel:
+     * cuántos documentos, cuánto suman en euros y cuánto por categoría.
+     * Cuenta los activos, validados o no (el panel lo indica); los que aún no
+     * tienen importe en euros cuentan como documento pero no suman.
+     */
+    resumenMes(mes: string): { documentos: number; sinImporte: number; totalEurCentimos: number; porCategoria: { categoria: string | null; documentos: number; totalEurCentimos: number }[] } {
+      if (!/^\d{4}-\d{2}$/.test(mes)) throw new Error("Mes no válido");
+      const porCategoria = bd
+        .prepare(
+          `SELECT categoria, COUNT(*) AS documentos, COALESCE(SUM(total_eur_centimos), 0) AS totalEurCentimos,
+                  SUM(total_eur_centimos IS NULL) AS sinImporte
+           FROM documentos
+           WHERE empresa_id = ? AND descartado_en IS NULL AND substr(fecha_emision, 1, 7) = ?
+           GROUP BY categoria
+           ORDER BY totalEurCentimos DESC, documentos DESC`,
+        )
+        .all(empresaId, mes) as { categoria: string | null; documentos: number; totalEurCentimos: number; sinImporte: number }[];
+      return {
+        documentos: porCategoria.reduce((s, c) => s + c.documentos, 0),
+        sinImporte: porCategoria.reduce((s, c) => s + c.sinImporte, 0),
+        totalEurCentimos: porCategoria.reduce((s, c) => s + c.totalEurCentimos, 0),
+        porCategoria: porCategoria.map(({ categoria, documentos, totalEurCentimos }) => ({ categoria, documentos, totalEurCentimos })),
+      };
     },
 
     /**

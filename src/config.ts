@@ -25,3 +25,14 @@ export const RUTA_BD = path.join(CARPETA_DATOS, "cuentapp.db");
 export const CARPETA_ORIGINALES = path.join(CARPETA_DATOS, "originales");
 // Copia local ordenada para el gestor (fase 8). En producción: Google Drive.
 export const CARPETA_COPIA = process.env.CUENTAPP_COPIA ?? path.join(CARPETA_DATOS, "copia");
+// Correos salientes simulados (recuperación de contraseña, D-57). En producción: proveedor de correo.
+export const CARPETA_CORREOS = process.env.CUENTAPP_CORREOS ?? path.join(CARPETA_DATOS, "correos-salientes");
+
+// Dirección pública de la app, para los enlaces de los correos. Se fija aquí y
+// NO se toma de la cabecera Host de la petición: un atacante podría falsearla
+// y hacer que el enlace de recuperación apunte a su web (password reset poisoning).
+export const URL_PUBLICA =
+  process.env.CUENTAPP_URL ??
+  (process.env.CODESPACES && process.env.CODESPACE_NAME
+    ? `https://${process.env.CODESPACE_NAME}-3000.${process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN ?? "app.github.dev"}`
+    : "http://localhost:3000");

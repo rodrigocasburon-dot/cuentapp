@@ -41,6 +41,25 @@ function resultado(p: Record<string, string | undefined>): string | null {
   return hechos < total && p.accion === "validar" ? `${texto} Los demás tienen incidencias bloqueantes o ya estaban validados.` : texto;
 }
 
+/** Mensaje tras «compartir» desde el móvil (/compartir, D-58). */
+function resultadoCompartir(p: Record<string, string | undefined>): { texto: string; error: boolean } | null {
+  if (p.compartir === "hecho") {
+    const recibidos = Number(p.recibidos) || 0;
+    const rechazados = Number(p.rechazados) || 0;
+    const texto = `Compartido: ${recibidos} ${recibidos === 1 ? "documento recibido" : "documentos recibidos"}.`;
+    return { texto: rechazados ? `${texto} ${rechazados} no se ha${rechazados === 1 ? "" : "n"} podido subir (formato, tamaño o límite del plan).` : texto, error: rechazados > 0 && recibidos === 0 };
+  }
+  const errores: Record<string, string> = {
+    grande: "Lo compartido ocupa demasiado. Comparte los archivos de uno en uno.",
+    vacio: "No ha llegado ningún archivo. Comparte un PDF o una foto.",
+    limite: "No se ha subido: has llegado al límite de tu plan.",
+    error: "No se ha podido recibir lo compartido. Vuelve a probar.",
+  };
+  if (p.compartir === "error") return { texto: errores[p.motivo ?? ""] ?? errores.error, error: true };
+  if (p.compartir === "grande") return { texto: errores.grande, error: true };
+  return null;
+}
+
 export default async function Documentos({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const { repo } = await repositorioActual();
   const p = await searchParams;
@@ -65,6 +84,7 @@ export default async function Documentos({ searchParams }: { searchParams: Promi
   // Si quedan pendientes (p. ej. tras reiniciar el servidor), retomar la cola
   if (todos.some((d) => d.estado === "recibido")) after(lanzarCola);
   const mensaje = resultado(p);
+  const compartido = resultadoCompartir(p);
   const incidencias = repo.incidenciasAbiertasPorDocumento();
 
   const pestana = (activa: boolean) =>
@@ -75,6 +95,15 @@ export default async function Documentos({ searchParams }: { searchParams: Promi
     <main className="mx-auto w-full max-w-5xl px-6 py-10">
       <Refresco activo={leyendo} />
       <h1 className="mb-6 text-4xl font-black uppercase tracking-tight">Documentos</h1>
+      {compartido && (
+        <p
+          role={compartido.error ? "alert" : "status"}
+          className={`mb-6 rounded-lg border-2 bg-white px-4 py-3 font-semibold ${compartido.error ? "border-rojo text-rojo" : "border-marron-oscuro"}`}
+        >
+          <span aria-hidden="true">{compartido.error ? "⚠ " : "✔ "}</span>
+          {compartido.texto}
+        </p>
+      )}
       {!papelera && <FormSubida />}
 
       <section className="mt-10" aria-labelledby="lista">

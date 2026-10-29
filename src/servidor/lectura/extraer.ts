@@ -11,6 +11,8 @@ export interface ResultadoLectura {
   extraccion: Extraccion;
   motor: string;     // se guarda en documentos.motor_lectura
   segundos: number;
+  /** Texto leído en bruto: solo para sugerir la categoría; no se guarda. */
+  texto?: string;
 }
 
 /**
@@ -33,5 +35,6 @@ export async function extractInvoice(rutaOriginal: string): Promise<ResultadoLec
     extraccion: ExtraccionSchema.parse(analizarTexto(l.texto, l.confianza)),
     motor: l.fuente === "pdf-texto" ? "pdf-texto + analizador" : "rapidocr-3.10 + analizador",
     segundos: l.segundos,
+    texto: l.texto,
   };
 }

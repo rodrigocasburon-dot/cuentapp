@@ -8,14 +8,22 @@ import {
   TEXTO_SEMAFORO,
   type ColorSemaforo,
 } from "@/dominio/semaforo";
+import { etiquetaCategoria } from "@/dominio/categorias";
 import { AVISO } from "@/dominio/legal";
+import { avisosDePlazo, mesAnterior, nombreMes } from "@/dominio/plazos";
 import type { Aviso } from "@/dominio/validaciones";
 import { repositorioActual } from "@/servidor/auth/sesion";
 import { copiarTrimestreAction } from "./acciones";
 
 export const metadata: Metadata = { title: "Panel · Cuentapp" };
 
-const NOMBRE_PLAN: Record<string, string> = { prueba: "Prueba", cuentapp: "Cuentapp", despacho: "Despacho" };
+/** Comparación con el mes anterior, con flecha Y texto (no solo color). */
+function comparacion(actual: number, anterior: number): string {
+  if (anterior === 0) return actual === 0 ? "Igual que el mes pasado" : "El mes pasado no hubo";
+  const cambio = Math.round(((actual - anterior) / anterior) * 100);
+  if (cambio === 0) return "= Igual que el mes pasado";
+  return `${cambio > 0 ? "▲" : "▼"} ${Math.abs(cambio)} % ${cambio > 0 ? "más" : "menos"} que el mes pasado`;
+}
 
 function diasHasta(fechaIso: string): number {
   return Math.max(0, Math.ceil((new Date(fechaIso).getTime() - Date.now()) / 86_400_000));
@@ -37,6 +45,19 @@ export default async function Panel({
   const { empresa } = sesion;
   const documentos = repo.listarDocumentos();
   const usoMes = repo.usoDelMes(mesDe(new Date()));
+  const plan = repo.plan();
+
+  // Cifras del mes frente al anterior, por fecha del documento (RFQ, «Panel con cifras»)
+  const mes = mesDe(new Date());
+  const cifras = repo.resumenMes(mes);
+  const cifrasAnterior = repo.resumenMes(mesAnterior(mes));
+  const mayorCategoria = Math.max(1, ...cifras.porCategoria.map((c) => c.totalEurCentimos));
+
+  // Avisos de calendario; el de presentación muestra el color de ese trimestre
+  const plazos = avisosDePlazo().map((a) => ({
+    ...a,
+    color: a.tipo === "presentacion" ? repo.resumenTrimestre(a.anio, a.trimestre).color : null,
+  }));
 
   // Trimestres y selección del trimestre para el semáforo (Fase 7)
   const trimestres = repo.listarTrimestres();
@@ -95,7 +116,7 @@ export default async function Panel({
         <div className="rounded-2xl bg-crema-2 p-5">
           <dt className="text-sm text-marron">Plan</dt>
           <dd className="mt-1 text-xl font-bold">
-            {NOMBRE_PLAN[empresa.plan_id] ?? empresa.plan_id}
+            {plan.nombre}
             {empresa.plan_id === "prueba" && empresa.prueba_hasta && (
               <span className="block text-base font-normal">Quedan {diasHasta(empresa.prueba_hasta)} días</span>
             )}
@@ -116,6 +137,76 @@ export default async function Panel({
           </dd>
         </div>
       </dl>
+
+      {/* Avisos de calendario (D-59): trimestre a punto de cerrar y plazo de presentación */}
+      {plazos.length > 0 && (
+        <section aria-label="Avisos de plazos" className="mt-6 flex flex-col gap-3">
+          {plazos.map((a) => (
+            <p key={a.tipo} role="status" className="rounded-2xl border-2 border-arena bg-white px-5 py-4 text-sm font-semibold text-marron-oscuro">
+              <span aria-hidden="true">⏰ </span>
+              {a.texto}
+              {a.tipo === "presentacion" && a.color && (
+                <>
+                  {" "}
+                  Su semáforo: {ICONO_SEMAFORO[a.color]} {TEXTO_SEMAFORO[a.color]}.{" "}
+                  <Link href={`/panel?anio=${a.anio}&trimestre=${a.trimestre}`} className="underline underline-offset-4">
+                    Ver el {a.trimestre}T {a.anio}
+                  </Link>
+                </>
+              )}
+            </p>
+          ))}
+        </section>
+      )}
+
+      {/* Cifras del mes (RFQ, «Panel con cifras»): cuántos, cuánto, en qué y frente al mes pasado */}
+      <section aria-labelledby="titulo-mes" className="mt-8 rounded-3xl border border-black/5 bg-white p-6">
+        <h2 id="titulo-mes" className="text-lg font-bold first-letter:uppercase">
+          {nombreMes(mes)}
+        </h2>
+        <p className="text-sm text-marron">Por fecha del documento. Incluye los pendientes de validar.</p>
+        <dl className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div className="rounded-2xl bg-crema-2 p-5">
+            <dt className="text-sm text-marron">Documentos</dt>
+            <dd className="mt-1 text-2xl font-black">
+              {cifras.documentos}
+              <span className="block text-sm font-semibold">{comparacion(cifras.documentos, cifrasAnterior.documentos)}</span>
+            </dd>
+          </div>
+          <div className="rounded-2xl bg-crema-2 p-5">
+            <dt className="text-sm text-marron">Gastado (en euros, IVA incluido)</dt>
+            <dd className="mt-1 text-2xl font-black">
+              {importe(cifras.totalEurCentimos)}
+              <span className="block text-sm font-semibold">{comparacion(cifras.totalEurCentimos, cifrasAnterior.totalEurCentimos)}</span>
+              {cifras.sinImporte > 0 && (
+                <span className="block text-sm font-normal text-marron">
+                  {cifras.sinImporte} {cifras.sinImporte === 1 ? "documento" : "documentos"} aún sin importe
+                </span>
+              )}
+            </dd>
+          </div>
+        </dl>
+        {cifras.porCategoria.length > 0 && (
+          <>
+            <h3 className="mt-6 font-bold">En qué</h3>
+            <ul className="mt-3 flex flex-col gap-3">
+              {cifras.porCategoria.map((c) => (
+                <li key={c.categoria ?? "sin"}>
+                  <div className="flex justify-between gap-3 text-sm">
+                    <span className="font-semibold">{etiquetaCategoria(c.categoria)}</span>
+                    <span className="font-mono">
+                      {importe(c.totalEurCentimos)} · {c.documentos} doc.
+                    </span>
+                  </div>
+                  <div className="mt-1 h-2 rounded-full bg-crema-2" aria-hidden="true">
+                    <div className="h-2 rounded-full bg-marron-oscuro" style={{ width: `${Math.round((c.totalEurCentimos / mayorCategoria) * 100)}%` }} />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </section>
 
       {/* Selector de trimestres */}
       <nav aria-label="Selector de trimestres" className="mt-10">

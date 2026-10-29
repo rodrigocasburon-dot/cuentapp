@@ -10,7 +10,7 @@ import { dimensiones, imagenDemasiadoGrande } from "@/servidor/lectura/dimension
 
 describe("Server Actions: todas comprueban la sesión", () => {
   // Acciones públicas a propósito (antes de tener sesión)
-  const PUBLICAS = new Set(["registrar", "entrar", "entrarDemo", "salir"]);
+  const PUBLICAS = new Set(["registrar", "entrar", "entrarDemo", "salir", "pedirRecuperacion", "restablecerContrasena"]);
 
   const ficheros = (dir: string): string[] =>
     fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? ficheros(path.join(dir, e.name)) : [path.join(dir, e.name)]));

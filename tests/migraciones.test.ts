@@ -34,7 +34,7 @@ describe("migraciones", () => {
     ).run();
     expect(bd.pragma("user_version", { simple: true })).toBe(2);
 
-    expect(migrar(bd)).toEqual(["003-lectura.sql", "004-correccion-duplicados.sql", "005-baja-cuentas.sql", "006-buzon.sql", "007-aceptaciones-legales.sql", "008-planes.sql"]);
+    expect(migrar(bd)).toEqual(["003-lectura.sql", "004-correccion-duplicados.sql", "005-baja-cuentas.sql", "006-buzon.sql", "007-aceptaciones-legales.sql", "008-planes.sql", "009-categoria.sql", "010-recuperar-contrasena.sql"]);
     expect(bd.pragma("user_version", { simple: true })).toBe(VERSION_ESQUEMA);
     const doc = bd.prepare("SELECT nombre_original, avisos_json FROM documentos WHERE id = 'd1'").get();
     expect(doc).toEqual({ nombre_original: "x.png", avisos_json: null });

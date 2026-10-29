@@ -28,6 +28,12 @@ export const RegistroSchema = z.object({
 /** «Mi cuenta»: mismas reglas que el registro para nombre de empresa, NIF y nombre. */
 export const DatosCuentaSchema = RegistroSchema.pick({ empresa: true, nif: true, nombre: true });
 
+/** Recuperación de contraseña: primero el email, luego la nueva contraseña dos veces. */
+export const RecuperarSchema = z.object({ email });
+export const NuevaContrasenaSchema = z
+  .object({ contrasena: RegistroSchema.shape.contrasena, repetir: z.string() })
+  .refine((d) => d.contrasena === d.repetir, { error: "Las dos contraseñas no coinciden.", path: ["repetir"] });
+
 export const EntradaSchema = z.object({
   email,
   contrasena: z.string().min(1, { error: "Escribe tu contraseña." }).max(200),

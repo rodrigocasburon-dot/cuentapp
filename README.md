@@ -21,14 +21,18 @@ apaga sola tras 30 minutos sin uso. Sube solo documentos de prueba.
 ## Qué hace
 
 - **Documentos**: subida (PDF, JPG, PNG, WebP; SVG solo se guarda y descarga),
-  lectura automática local, avisos de datos que faltan o no cuadran,
-  duplicados, corrección con historial, validación manual, papelera y
-  acciones sobre varios a la vez.
-- **Panel**: el semáforo de cada trimestre, totales y desglose de IVA, Excel
-  para el gestor y copia local ordenada de los originales validados.
+  lectura automática local con categoría del gasto sugerida, avisos de datos
+  que faltan o no cuadran, duplicados, corrección con historial, validación
+  manual, papelera y acciones sobre varios a la vez.
+- **Panel**: cifras del mes frente al anterior y por categoría, avisos de
+  cierre de trimestre, el semáforo de cada trimestre, totales y desglose de
+  IVA, Excel para el gestor y copia local ordenada de los originales validados.
 - **Buzón** (simulado): los adjuntos de un correo a la dirección de la
-  empresa entran como documentos.
+  empresa entran como documentos. Con la app instalada en Android, también
+  «Compartir → Cuentapp».
 - **Mi cuenta**: plan y uso, cambio de plan (sin cobro), datos de la empresa y baja.
+- **Precios** (`/precios`) y **recuperación de contraseña**. En local el
+  correo no se envía: el enlace queda en un `.txt` de `datos/correos-salientes/`.
 
 Qué se ha comprobado y qué falta: [`docs/aceptacion.md`](docs/aceptacion.md).
 

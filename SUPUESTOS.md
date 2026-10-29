@@ -61,7 +61,7 @@ de fotos.
 | D-17 | La empresa activa sale **siempre de la sesión**: las páginas solo obtienen datos con `repositorioActual()`. Dos pruebas estáticas lo vigilan (src/app no importa el repositorio; los componentes de cliente no importan código de servidor). | Equivalente funcional de la RLS en la capa de aplicación. |
 | D-18 | Protección CSRF: la de las Server Actions de Next (compara `Origin` con `Host`). | Verificado en la documentación de Next 16.4.3 (`node_modules/next/dist/docs/01-app/02-guides/server-actions.md`). |
 | D-19 | **Versión de esquema** (`PRAGMA user_version`, ahora 2). El servidor no arranca con otra versión y pide `npm run db:reset`. | Sin migraciones todavía. **A partir de la fase 4 habrá originales**: `db:reset` se negará a borrar y harán falta migraciones de verdad. |
-| S-09 | Sin recuperación de contraseña ni verificación de email. | Requieren enviar correos: fuera del MVP local. |
+| S-09 | Sin verificación de email. La recuperación de contraseña sí existe desde el 29/10/2026, con correo simulado (D-57). | La verificación requiere enviar correos: fuera del MVP local. |
 
 **Telemetría de Next.js.** Al arrancar, Next avisa de que envía telemetría
 anónima de uso a Vercel. No incluye documentos, pero contradice el espíritu
@@ -142,13 +142,24 @@ Sigue pendiente repetirlo con tickets reales.
 | # | Decisión | Motivo / estado |
 |---|---|---|
 | D-53 | Aplicado de la guía (`CUENTAPP_guia_legal_implementacion.pdf`) lo que cabe en la demo académica: **aceptación** de Condiciones y acuerdo de encargo con casilla propia, comprobada en servidor y **guardada con versión e instante UTC** en `aceptaciones_legales` (migración 7, inmutable, sin IP); casilla **opcional** de novedades; rutas `/legal/{aviso-legal,privacidad,condiciones,encargo,cookies}` en pie y registro; textos en contexto (subida, archivo rechazado, lectura, buzón simulado, correo sin adjuntos, copia local sin Drive, semáforo «registrados revisados» y su descargo, ticket sin NIF, Excel, prueba sin tarjeta, precio «+ IVA» provisional); **Excel solo con validados por defecto** (opción explícita para incluir pendientes con su estado), columnas de moneda, total original, tipo de cambio BCE y referencia, y **protección de fórmulas** en textos de terceros. | Las páginas legales siguen «Texto pendiente»: la guía prohíbe publicarlas sin titular, NIF, domicilio y canal reales (PV-03). La versión aceptada es `pendiente-2026-10-29` hasta tener los textos. |
-| D-54 | **Discrepancias con la guía, pendientes de decisión del equipo:** (1) **Baja**: la guía (art. 28.3.g RGPD) pide devolver o suprimir los documentos del cliente al terminar, con ventana de exportación (P: 30 días); D-42 los conserva indefinidamente → hay que decidir plazo y borrado. (2) Límites de subida: la guía propone PDF/JPEG/PNG, 15 MB y 20 páginas; aquí 10 MB, 3 páginas leídas y además WebP y SVG (solo descarga). (3) Verificación de email y recuperación de contraseña: requieren envío de correo, fuera del MVP local. (4) La guía cita «sin categoría» como motivo de ámbar: no hay campo categoría. (5) Los textos de lectura de la guía hablan de OCR **e IA**; aquí la lectura es OCR local sin IA, y el texto se ha adaptado. | Ninguna se ha cambiado sin el equipo. |
+| D-54 | **Discrepancias con la guía, pendientes de decisión del equipo:** (1) **Baja**: la guía (art. 28.3.g RGPD) pide devolver o suprimir los documentos del cliente al terminar, con ventana de exportación (P: 30 días); D-42 los conserva indefinidamente → hay que decidir plazo y borrado. (2) Límites de subida: la guía propone PDF/JPEG/PNG, 15 MB y 20 páginas; aquí 10 MB, 3 páginas leídas y además WebP y SVG (solo descarga). (3) Verificación de email: requiere envío de correo, fuera del MVP local (la recuperación de contraseña ya existe con correo simulado, D-57). (4) La guía cita «sin categoría» como motivo de ámbar: ya hay campo categoría (D-56), pero un documento sin categoría **no** cambia el semáforo hasta que el equipo lo decida. (5) Los textos de lectura de la guía hablan de OCR **e IA**; aquí la lectura es OCR local sin IA, y el texto se ha adaptado. | Ninguna se ha cambiado sin el equipo. |
 
 ### Planes (29/10/2026)
 
 | # | Decisión | Motivo / estado |
 |---|---|---|
 | D-55 | **Planes:** Prueba (14 días, 30 documentos), **Cuentapp 20 €/mes + IVA con 100 documentos al mes** (antes 250) y **Cuentapp Pro 40 €/mes + IVA con 300 documentos al mes** (nuevo); Despacho, próximamente. Migración 8 para bases existentes. El límite cuenta **documentos** (facturas completas y tickets), no solo facturas. Desde «Mi cuenta» se puede pasar de un plan de pago a otro (sin cobro en esta versión). | Decisión del equipo. Tratamiento del IVA, prorrateo al cambiar de plan a mitad de mes y qué pasa si se baja de Pro a Cuentapp con más de 100 documentos ese mes: `[A VERIFICAR]` (hoy: el cupo se recalcula al momento; lo ya subido no se toca). |
+
+### Requisitos del RFQ que faltaban (29/10/2026)
+
+Revisado el enunciado (`RFQ herramienta de gestion de facturas.pdf`) frente a la web. Solo se ha hecho lo que es código; la prueba con tickets reales, la justificación del modelo de negocio y la normativa van en los entregables del equipo.
+
+| # | Decisión | Motivo / estado |
+|---|---|---|
+| D-56 | **Categoría del gasto** (requisito 3): columna `documentos.categoria` (migración 9) con una lista cerrada de 10 categorías (`src/dominio/categorias.ts`). La lectura la **sugiere** con palabras clave deterministas, primero por el emisor y después por el texto leído (sin IA, regla 5 de privacidad); si nada encaja queda «Sin categoría». Se corrige en la ficha, queda en el historial y sale en el Excel (columna «Categoría» y hoja «Por categoría») y en el panel. | La precisión de las palabras clave no está medida con tickets reales `[A VERIFICAR]`. Un documento sin categoría no cambia el semáforo (D-54.4). |
+| D-57 | **Recuperación de contraseña** (requisito 1): «¿Has olvidado tu contraseña?» en /entrar → /recuperar → enlace de un solo uso que caduca en **30 minutos** (tabla `recuperaciones`, migración 10, solo el SHA-256 del token). Mismo mensaje exista o no la cuenta; freno de 3 peticiones por email y 30 globales cada 15 min; al cambiarla se **cierran todas las sesiones**. El enlace usa `URL_PUBLICA` (`src/config.ts`), nunca la cabecera Host. **MVP local: el correo no se envía**: se guarda en `datos/correos-salientes/` y se avisa en la consola del servidor. | En producción, proveedor de correo transaccional (SPF/DKIM/DMARC). Riesgo aceptado: el freno es global, sin IP (como el registro, D-51); y hay una pequeña diferencia de tiempo entre email existente (escribe el fichero) e inexistente. |
+| D-58 | **Compartir desde el móvil** (requisito 2, tercera vía): el manifiesto declara `share_target`; con la app instalada, «Compartir → Cuentapp» desde el correo o las descargas manda el PDF o la foto a `/compartir`, que aplica las mismas reglas que la subida (`src/servidor/documentos/subir.ts`). Sin sesión, a /entrar; un `Origin` ajeno recibe 403. | Solo Android (Chrome, Edge, Samsung Internet); Safari en iPhone no admite `share_target`: allí siguen el buzón y la foto. No probado en un móvil real `[A VERIFICAR]`; exige HTTPS fuera de localhost. |
+| D-59 | **Panel con cifras y avisos de plazo** (funciones adicionales «Panel con cifras» y «Avisos»): bloque del mes con documentos y gasto en euros **frente al mes anterior** (por fecha del documento, incluye pendientes) y gasto por categoría; aviso cuando faltan ≤ 15 días para cerrar el trimestre y durante el plazo general del modelo 303 (1-20 de abril, julio y octubre; 1-30 de enero), con el color del semáforo de ese trimestre. Nueva página **/precios** con tabla comparativa y preguntas frecuentes. | Plazos: los generales de la AEAT; con domiciliación el cargo se pide antes y puede haber prórrogas: el texto remite al gestor. «Cargo del banco sin justificante» exige conexión bancaria: descartado. |
 
 ## 3. Consecuencias de D-01 (SQLite) que el equipo debe conocer
 
@@ -219,7 +230,8 @@ Sigue pendiente repetirlo con tickets reales.
 | Base de datos | SQLite (`datos/cuentapp.db`) | Supabase Postgres con RLS por empresa |
 | Autenticación | Propia: scrypt + cookie de sesión | Supabase Auth |
 | Originales | Carpeta `datos/originales/` | Supabase Storage con políticas por empresa |
-| Correo entrante | Buzón simulado + subida de adjuntos | Proveedor de correo entrante (fuera de alcance) |
+| Correo entrante | Buzón simulado + subida de adjuntos + compartir desde el móvil | Proveedor de correo entrante (fuera de alcance) |
+| Correo saliente | Fichero en `datos/correos-salientes/` (recuperación de contraseña) | Proveedor transaccional con SPF/DKIM/DMARC |
 | Copia "Drive" | Carpeta local año/trimestre/categoría | Google Drive con OAuth `[A VERIFICAR]` |
 | Cobro | Planes y límites aplicados, sin cobro real | Stripe |
 | Alojamiento | `npm run dev` en el portátil | Vercel |

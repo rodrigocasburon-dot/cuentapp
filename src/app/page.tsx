@@ -6,6 +6,7 @@
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { TarjetasPlanes } from "@/componentes/TarjetasPlanes";
 import { AVISO } from "@/dominio/legal";
 import { sesionActual } from "@/servidor/auth/sesion";
 import { bd } from "@/servidor/bd/conexion";
@@ -20,8 +21,6 @@ function leerEstado(): EstadoSistema | null {
     return null; // base de datos sin crear o de otra versión: se explica en pantalla
   }
 }
-
-const euros = (c: number) => (c / 100).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
 
 /** Botón píldora oscuro con flecha en círculo (segunda referencia). */
 function BotonFlecha({ href, children, claro = false }: { href: string; children: React.ReactNode; claro?: boolean }) {
@@ -140,7 +139,7 @@ export default async function Inicio() {
         <nav aria-label="Portada" className="flex items-center gap-2 text-sm font-semibold sm:gap-4">
           <a href="#inicio" className="hidden rounded-full bg-lima px-4 py-1.5 sm:inline">Inicio</a>
           <a href="#funciones" className="hidden rounded-full px-3 py-1.5 hover:bg-crema-2 sm:inline">Funciones</a>
-          <a href="#planes" className="hidden rounded-full px-3 py-1.5 hover:bg-crema-2 sm:inline">Planes</a>
+          <Link href="/precios" className="rounded-full px-3 py-1.5 hover:bg-crema-2">Precios</Link>
           <Link href="/entrar" className="rounded-full px-3 py-1.5 hover:bg-crema-2">Entrar</Link>
           <Link href="/registro" className="whitespace-nowrap rounded-full bg-marron-oscuro px-5 py-2.5 text-white hover:bg-black">
             Crear cuenta
@@ -265,35 +264,12 @@ export default async function Inicio() {
             <h2 id="planes-titulo" className="text-center text-3xl font-extrabold tracking-tight sm:text-4xl">
               Planes
             </h2>
-            <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {estado.planes.map((p) => (
-                <li
-                  key={p.id}
-                  className={`flex flex-col rounded-3xl p-6 ${p.id === "cuentapp" ? "bg-marron-oscuro text-white shadow-2xl shadow-black/20" : "border border-black/5 bg-white"}`}
-                >
-                  <p className="text-lg font-bold">{p.nombre}</p>
-                  <p className="mt-2 text-3xl font-extrabold">
-                    {!p.disponible ? "Pronto" : p.dias_prueba ? "Gratis" : euros(p.precio_centimos)}
-                    {p.disponible && !p.dias_prueba ? <span className="text-base font-semibold opacity-80"> /mes + IVA</span> : null}
-                  </p>
-                  <p className={`mt-3 text-sm ${p.id === "cuentapp" ? "opacity-90" : "text-marron"}`}>
-                    {!p.disponible
-                      ? "Para despachos y gestorías con varias empresas."
-                      : p.dias_prueba
-                        ? `${p.dias_prueba} días · hasta ${p.limite_docs_total} documentos. Sin tarjeta y sin cobro automático al terminar.`
-                        : `Hasta ${p.limite_docs_mes} documentos al mes. Renovación mensual hasta cancelación. ${AVISO.precioProvisional}`}
-                  </p>
-                  {p.disponible ? (
-                    <Link
-                      href="/registro"
-                      className={`mt-6 rounded-full px-5 py-2.5 text-center font-semibold ${p.id === "cuentapp" ? "bg-lima text-marron-oscuro hover:bg-white" : "bg-marron-oscuro text-white hover:bg-black"}`}
-                    >
-                      {p.dias_prueba ? "Probar gratis" : "Empezar"}
-                    </Link>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
+            <TarjetasPlanes planes={estado.planes} />
+            <p className="mt-8 text-center">
+              <Link href="/precios" className="font-semibold underline underline-offset-4">
+                Comparar los planes y preguntas frecuentes
+              </Link>
+            </p>
           </section>
         )}
       </main>

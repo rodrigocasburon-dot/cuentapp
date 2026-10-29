@@ -2,6 +2,7 @@
 // Mensajes de error en español y aptos para asociarse a campos con aria-describedby.
 
 import { z } from "zod";
+import { esCategoria } from "./categorias";
 import { TIPOS_DOCUMENTO } from "./estados";
 
 export function parsearImporteACentimos(texto: string | null | undefined): number | null {
@@ -89,6 +90,14 @@ export const esquemaCorreccion = z.object({
     })
     .transform((v) => (v ? v.toUpperCase() : null)),
   total_centimos: z.number().int("El total debe ser un importe válido.").min(-1e11).max(1e11).nullable().optional(),
+  categoria: z
+    .string()
+    .trim()
+    .nullable()
+    .optional()
+    // Sin el campo (undefined) no se toca; vacío = «sin categoría»
+    .transform((v) => (v === undefined ? undefined : v || null))
+    .refine((v) => v === undefined || v === null || esCategoria(v), { message: "Elige una categoría de la lista." }),
   lineas_iva: z.array(esquemaLineaIva).max(MAX_LINEAS_IVA, `Como máximo ${MAX_LINEAS_IVA} líneas de IVA.`).optional(),
 });
 

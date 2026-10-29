@@ -3,6 +3,7 @@
 // su estado (guía legal, cap. 13). Los totales se calculan con lo exportado.
 
 import ExcelJS from "exceljs";
+import { etiquetaCategoria } from "@/dominio/categorias";
 import { ETIQUETA_ESTADO, ETIQUETA_TIPO, type TipoDocumento } from "@/dominio/estados";
 import { AVISO } from "@/dominio/legal";
 import type { ResultadoSemaforo } from "@/dominio/semaforo";
@@ -50,7 +51,7 @@ export async function generarExcelTrimestre(datos: DatosExportacionTrimestre): P
   const ws = wb.addWorksheet(`Documentos ${datos.trimestre}T ${datos.anio}`, { views: [{ showGridLines: true }] });
 
   // 1) Cabecera
-  ws.mergeCells("A1:O1");
+  ws.mergeCells("A1:P1");
   const titulo = ws.getCell("A1");
   titulo.value = "CUENTAPP — RESUMEN DEL TRIMESTRE";
   titulo.font = { bold: true, size: 14, color: { argb: "FFFFFF" } };
@@ -80,8 +81,8 @@ export async function generarExcelTrimestre(datos: DatosExportacionTrimestre): P
   celdaSemaforo.alignment = { horizontal: "center" };
   ws.getCell("G4").value = "Diagnóstico:";
   ws.getCell("H4").value = datos.semaforo.motivo;
-  ws.mergeCells("H4:O4");
-  ws.mergeCells("A6:O6");
+  ws.mergeCells("H4:P4");
+  ws.mergeCells("A6:P6");
   ws.getCell("A6").value = AVISO.excel;
   ws.getCell("A6").font = { italic: true, color: { argb: "4A4F57" } };
   ["A3", "A4", "A5", "D3", "D4"].forEach((c) => (ws.getCell(c).font = { bold: true, color: { argb: "4A4F57" } }));
@@ -91,7 +92,7 @@ export async function generarExcelTrimestre(datos: DatosExportacionTrimestre): P
   const columnas = [
     ["Fecha", 12], ["Tipo", 20], ["Número", 16], ["Emisor", 28], ["NIF emisor", 14], ["NIF receptor", 14],
     ["Base (€)", 13], ["Tipo IVA", 10], ["Cuota (€)", 13], ["Total (€)", 14],
-    ["Moneda", 9], ["Total original", 14], ["Tipo de cambio", 14], ["Estado", 20], ["Referencia", 12],
+    ["Moneda", 9], ["Total original", 14], ["Tipo de cambio", 14], ["Estado", 20], ["Referencia", 12], ["Categoría", 26],
   ] as const;
   const cabecera = ws.getRow(filaInicio);
   columnas.forEach(([nombre, ancho], i) => {
@@ -106,6 +107,7 @@ export async function generarExcelTrimestre(datos: DatosExportacionTrimestre): P
   let fila = filaInicio + 1;
   let base = 0, cuota = 0, total = 0;
   const desglose = new Map<number, { base: number; cuota: number }>();
+  const porCategoria = new Map<string, { documentos: number; base: number; cuota: number; total: number }>();
 
   for (const d of docs) {
     // En euros: si es moneda extranjera, base y cuota se convierten con el mismo tipo que el total
@@ -113,6 +115,11 @@ export async function generarExcelTrimestre(datos: DatosExportacionTrimestre): P
     const eur = (c: number) => Math.round(c / cambio);
     const totalEur = d.total_eur_centimos ?? d.total_centimos ?? 0;
     total += totalEur;
+    const categoria = etiquetaCategoria(d.categoria);
+    const cat = porCategoria.get(categoria) ?? { documentos: 0, base: 0, cuota: 0, total: 0 };
+    cat.documentos++;
+    cat.total += totalEur;
+    porCategoria.set(categoria, cat);
     const lineas = d.lineasIva.length ? d.lineasIva : [{ tipo_iva: null, base_centimos: d.base_centimos ?? 0, cuota_centimos: d.cuota_centimos ?? 0 }];
 
     lineas.forEach((l, i) => {
@@ -120,6 +127,8 @@ export async function generarExcelTrimestre(datos: DatosExportacionTrimestre): P
       const b = eur(l.base_centimos), q = eur(l.cuota_centimos);
       base += b;
       cuota += q;
+      cat.base += b;
+      cat.cuota += q;
       if (l.tipo_iva !== null) {
         const acc = desglose.get(l.tipo_iva) ?? { base: 0, cuota: 0 };
         desglose.set(l.tipo_iva, { base: acc.base + b, cuota: acc.cuota + q });
@@ -140,6 +149,7 @@ export async function generarExcelTrimestre(datos: DatosExportacionTrimestre): P
         i === 0 && d.tipo_cambio ? `${d.tipo_cambio} (BCE ${d.fecha_cambio ?? "—"})` : "",
         ETIQUETA_ESTADO[d.estado] ?? d.estado,
         d.id.slice(0, 8),
+        categoria,
       ];
       [7, 9, 10, 12].forEach((c) => (r.getCell(c).numFmt = c === 12 ? "#,##0.00" : EUROS));
     });
@@ -181,6 +191,27 @@ export async function generarExcelTrimestre(datos: DatosExportacionTrimestre): P
     h.getRow(f).font = { bold: true };
     h.getRow(f).getCell(2).numFmt = EUROS;
     h.getRow(f).getCell(3).numFmt = EUROS;
+  }
+
+  // 5) Hoja 3: gasto por categoría (RFQ, «Informes»)
+  if (porCategoria.size > 0) {
+    const h = wb.addWorksheet("Por categoría");
+    h.mergeCells("A1:E1");
+    h.getCell("A1").value = `GASTO POR CATEGORÍA — ${datos.trimestre}T ${datos.anio}`;
+    h.getCell("A1").font = { bold: true, size: 12, color: { argb: "FFFFFF" } };
+    h.getCell("A1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: "15171C" } };
+    h.getRow(3).values = ["Categoría", "Documentos", "Base imponible (€)", "Cuota IVA (€)", "Total (€)"];
+    h.getRow(3).font = { bold: true };
+    [32, 13, 20, 18, 16].forEach((w, i) => (h.getColumn(i + 1).width = w));
+    let f = 4;
+    for (const [nombre, v] of [...porCategoria].sort((a, b) => b[1].total - a[1].total)) {
+      h.getRow(f).values = [nombre, v.documentos, v.base / 100, v.cuota / 100, v.total / 100];
+      [3, 4, 5].forEach((c) => (h.getRow(f).getCell(c).numFmt = EUROS));
+      f++;
+    }
+    h.getRow(f).values = ["TOTAL", docs.length, base / 100, cuota / 100, total / 100];
+    h.getRow(f).font = { bold: true };
+    [3, 4, 5].forEach((c) => (h.getRow(f).getCell(c).numFmt = EUROS));
   }
 
   return new Uint8Array(await wb.xlsx.writeBuffer());
