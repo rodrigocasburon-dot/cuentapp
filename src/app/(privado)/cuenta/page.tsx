@@ -1,11 +1,20 @@
 import type { Metadata } from "next";
-import { exigirSesion } from "@/servidor/auth/sesion";
+import { fecha, importe, mesDe } from "@/dominio/formato";
+import { repositorioActual } from "@/servidor/auth/sesion";
+import { cupoDisponible } from "@/servidor/documentos/limites";
+import { activarPlanAction } from "./acciones";
 import { FormBaja, FormDatos } from "./FormCuenta";
 
 export const metadata: Metadata = { title: "Mi cuenta · Cuentapp" };
 
-export default async function MiCuenta() {
-  const { usuario, empresa } = await exigirSesion();
+export default async function MiCuenta({ searchParams }: { searchParams: Promise<{ plan?: string }> }) {
+  const { repo, sesion } = await repositorioActual();
+  const { usuario, empresa } = sesion;
+  const plan = repo.plan();
+  const cupo = cupoDisponible(repo);
+  const usoMes = repo.usoDelMes(mesDe(new Date()));
+  const { plan: planCambiado } = await searchParams;
+
   return (
     <main className="mx-auto w-full max-w-xl px-6 py-10">
       <h1 className="mb-2 text-4xl font-black uppercase tracking-tight">Mi cuenta</h1>
@@ -13,7 +22,45 @@ export default async function MiCuenta() {
         Entras como <span className="font-semibold">{usuario.email}</span>. El email no se puede cambiar.
       </p>
 
-      <section aria-labelledby="datos" className="rounded-2xl border-2 border-crema-2 bg-white p-6">
+      <section aria-labelledby="plan" className="rounded-2xl border-2 border-crema-2 bg-white p-6">
+        <h2 id="plan" className="mb-2 text-xl font-bold">
+          Plan: {plan.nombre}
+        </h2>
+        {planCambiado && (
+          <p role="status" className="mb-3 rounded-lg border-2 border-marron-oscuro bg-crema-2 px-4 py-2 font-semibold">
+            <span aria-hidden="true">✔ </span>Plan activado.
+          </p>
+        )}
+        <ul className="mb-4 space-y-1 text-sm">
+          {plan.limite_docs_total !== null && (
+            <li>
+              {repo.usoTotal()} de {plan.limite_docs_total} documentos usados
+              {plan.prueba_hasta ? ` · la prueba acaba el ${fecha(plan.prueba_hasta.slice(0, 10))}` : ""}
+            </li>
+          )}
+          {plan.limite_docs_mes !== null && (
+            <li>
+              {usoMes} de {plan.limite_docs_mes} documentos este mes · {importe(plan.precio_centimos)} al mes sin IVA
+            </li>
+          )}
+          {cupo.disponibles === 0 && cupo.motivo && (
+            <li className="font-semibold text-rojo">
+              <span aria-hidden="true">⚠ </span>
+              {cupo.motivo}
+            </li>
+          )}
+        </ul>
+        {plan.id === "prueba" && (
+          <form action={activarPlanAction.bind(null, "cuentapp")}>
+            <button type="submit" className="rounded-full bg-marron-oscuro px-6 py-3 font-bold text-crema hover:bg-marron">
+              Activar plan Cuentapp · 20 € al mes
+            </button>
+            <p className="mt-2 text-sm text-marron">Versión de demostración: no se cobra nada.</p>
+          </form>
+        )}
+      </section>
+
+      <section aria-labelledby="datos" className="mt-10 rounded-2xl border-2 border-crema-2 bg-white p-6">
         <h2 id="datos" className="mb-4 text-xl font-bold">
           Datos
         </h2>

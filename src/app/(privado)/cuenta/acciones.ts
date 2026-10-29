@@ -25,6 +25,14 @@ export async function guardarDatosCuenta(_previo: EstadoFormulario, f: FormData)
   return { hecho: "Datos guardados.", valores: { ...valores, nif: datos.data.nif ?? "" } };
 }
 
+/** Cambio de plan simulado (fase 9): en esta versión no hay cobro real. */
+export async function activarPlanAction(planId: string): Promise<void> {
+  const { repo } = await repositorioActual();
+  repo.cambiarPlan(planId);
+  revalidatePath("/", "layout");
+  redirect("/cuenta?plan=1");
+}
+
 export async function darmeDeBaja(_previo: EstadoFormulario, f: FormData): Promise<EstadoFormulario> {
   const { sesion } = await repositorioActual();
   if (f.get("confirmo") !== "si") return { errores: { confirmo: "Marca la casilla para confirmar la baja." } };

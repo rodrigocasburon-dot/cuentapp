@@ -1,5 +1,4 @@
-// Portada provisional. La landing de verdad (diseño, líneas topográficas,
-// página de precios) llega en la fase 9.
+// Portada: qué es Cuentapp, el semáforo y los planes con sus precios (fase 9).
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -37,6 +36,29 @@ export default async function Inicio() {
               Entrar
             </Link>
           </div>
+          <section className="mt-12" aria-labelledby="como">
+            <h2 id="como" className="text-xl font-bold">Cómo funciona</h2>
+            <ol className="mt-3 list-decimal space-y-1 pl-6">
+              <li>Sube tus facturas y tickets, o reenvíalos a tu buzón de Cuentapp.</li>
+              <li>Cuentapp lee los datos en tu propio equipo y te avisa de lo que falta o no cuadra.</li>
+              <li>Revisas, validas y descargas el Excel del trimestre para tu gestor.</li>
+            </ol>
+            <ul className="mt-6 grid gap-3 sm:grid-cols-3">
+              <li className="rounded-2xl border-2 border-rojo bg-white p-4">
+                <span aria-hidden="true">🔴 </span>
+                <strong>Rojo</strong>: hay un duplicado, un documento ilegible o a nombre de otra empresa.
+              </li>
+              <li className="rounded-2xl border-2 border-arena bg-white p-4">
+                <span aria-hidden="true">🟡 </span>
+                <strong>Ámbar</strong>: faltan datos o quedan documentos por validar.
+              </li>
+              <li className="rounded-2xl border-2 border-verde bg-white p-4">
+                <span aria-hidden="true">🟢 </span>
+                <strong>Verde</strong>: todo validado, listo para el gestor.
+              </li>
+            </ul>
+          </section>
+
           <section className="mt-12 rounded-2xl bg-crema-2 p-6" aria-labelledby="planes">
             <h2 id="planes" className="text-xl font-bold">Planes</h2>
             <ul className="mt-3 space-y-1">

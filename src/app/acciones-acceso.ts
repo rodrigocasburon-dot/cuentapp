@@ -24,7 +24,9 @@ const texto = (f: FormData, campo: string) => String(f.get(campo) ?? "");
 export async function registrar(_previo: EstadoFormulario, f: FormData): Promise<EstadoFormulario> {
   const valores = { empresa: texto(f, "empresa"), nif: texto(f, "nif"), nombre: texto(f, "nombre"), email: texto(f, "email") };
   const datos = RegistroSchema.safeParse({ ...valores, contrasena: texto(f, "contrasena") });
-  if (!datos.success) return { errores: erroresPorCampo(datos.error), valores };
+  const errores: Record<string, string> = datos.success ? {} : erroresPorCampo(datos.error);
+  if (texto(f, "acepto") !== "si") errores.acepto = "Para crear la cuenta tienes que aceptar los términos y la política de privacidad.";
+  if (!datos.success || errores.acepto) return { errores, valores };
 
   let usuarioId: string, empresaId: string;
   try {
