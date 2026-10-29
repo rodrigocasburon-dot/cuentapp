@@ -352,8 +352,11 @@ for (const c of casos()) {
   } else {
     capturar(paginaHtml(c), png, 800, 820);
   }
-  const { formato, degradacion, conceptos, direccion_emisor, copia_de, ...verdad } = c;
-  void formato; void degradacion; void conceptos; void direccion_emisor; void copia_de;
+  // La verdad lleva lo que un lector debe extraer, más la degradación y la
+  // copia (las usa la comparativa para agrupar). Formato, conceptos y
+  // dirección solo sirven para dibujar.
+  const { formato, conceptos, direccion_emisor, ...verdad } = c;
+  void formato; void conceptos; void direccion_emisor;
   fs.writeFileSync(path.join(SALIDA, `${c.id}.json`), JSON.stringify(verdad, null, 2) + "\n", "utf8");
   indice.push({ id: c.id, descripcion: c.descripcion, imagen: `${c.id}.png`, verdad: `${c.id}.json` });
   console.log(`✓ ${c.id}`);

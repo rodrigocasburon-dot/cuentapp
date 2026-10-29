@@ -1,6 +1,7 @@
 {
   "id": "f11-nif-erroneo",
   "descripcion": "Factura con NIF de emisor con dígito de control incorrecto",
+  "degradacion": "ninguna",
   "tipo": "factura_completa",
   "nombre_emisor": "Reformas Irreales S.L.",
   "nif_emisor": "B40219571",

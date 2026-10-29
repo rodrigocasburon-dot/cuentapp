@@ -27,6 +27,7 @@ Abre http://localhost:3000.
 |---|---|
 | `npm test` | Pruebas (esquema, aislamiento entre empresas, NIF, banco) |
 | `npm run banco:generar` | Regenera el banco de documentos sintéticos con Edge |
+| `npm run comparar` | Comparativa de motores de lectura (ver `docs/pruebas-lectura.md`) |
 | `npm run lint` | ESLint |
 
 ## Estructura
@@ -35,6 +36,9 @@ Abre http://localhost:3000.
 bd/esquema.sql              Tablas, CHECK de estados y triggers de integridad
 src/config.ts               Modo local / producción y rutas de datos
 src/dominio/                Reglas puras: estados, NIF... (sin BD)
+src/lectura/                Contrato de lectura (zod) y analizador de texto OCR
+comparativa/                Script independiente que compara motores (fase 2)
+docs/                       Pruebas de lectura PL-01..PL-04 y su resultado
 src/servidor/bd/            ÚNICO sitio que toca la base de datos
   repositorio.ts            Acceso a datos SIEMPRE filtrado por empresa
 src/app/                    Páginas (Next.js App Router)

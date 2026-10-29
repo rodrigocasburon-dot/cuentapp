@@ -1,6 +1,7 @@
 {
   "id": "t08-ilegible",
   "descripcion": "Ticket muy desenfocado: debe acabar como incidencia 'ilegible' (rojo)",
+  "degradacion": "ilegible",
   "tipo": "ticket_simplificado",
   "nombre_emisor": "Ferretería Supuesta",
   "nif_emisor": "B11877305",

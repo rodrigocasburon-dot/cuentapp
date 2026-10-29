@@ -1,6 +1,7 @@
 {
   "id": "f04-asesoria",
   "descripcion": "Factura completa correcta con NIF de emisor y receptor",
+  "degradacion": "ninguna",
   "tipo": "factura_completa",
   "nombre_emisor": "Asesores de Mentira S.L.",
   "nif_emisor": "B61200754",

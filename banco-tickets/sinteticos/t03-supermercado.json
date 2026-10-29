@@ -1,6 +1,7 @@
 {
   "id": "t03-supermercado",
   "descripcion": "Ticket con tres tipos de IVA (4, 10 y 21 %)",
+  "degradacion": "ninguna",
   "tipo": "ticket_simplificado",
   "nombre_emisor": "Supermercados Imaginarios S.A.",
   "nif_emisor": "A77314029",

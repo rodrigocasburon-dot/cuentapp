@@ -5,7 +5,7 @@ Registro vivo de supuestos, decisiones y dudas. Cada entrada indica si está
 instalado) o es **supuesta** (pendiente de confirmar). `[A VERIFICAR]` marca
 lo que alguien del equipo debe comprobar antes de darlo por bueno.
 
-Última actualización: 29/10/2026 (fase 1).
+Última actualización: 29/10/2026 (fase 2).
 
 ---
 
@@ -33,6 +33,23 @@ lo que alguien del equipo debe comprobar antes de darlo por bueno.
 | D-05 | Banco sintético rasterizado con **Edge headless** | No hay Pillow ni librería gráfica; Edge viene con Windows. |
 | D-06 | Documentos **no borrables** en el MVP (trigger en BD) | Perder un original bloquea la entrega. Un "archivado" lógico, si hace falta, en fases posteriores. |
 | D-07 | Tests con **Vitest**; scripts con **tsx** | Sin configuración extra para TypeScript. |
+
+### Fase 2 (29/10/2026)
+
+| # | Decisión | Motivo |
+|---|---|---|
+| D-08 | Motor B = **RapidOCR 3.10** (modelos PP-OCRv6 de PaddleOCR sobre ONNX Runtime) en lugar de PaddleOCR oficial | 100 MB frente a 300-500 MB; mismos modelos; el equipo autorizó solo esta descarga. |
+| D-09 | Motor C (Ollama) **no medido** | Descarga de ~7,5 GB no autorizada. El adaptador existe (`comparativa/motores/ollama.ts`) y se activa solo si Ollama está en marcha. SmolVLM2 no existe en la biblioteca oficial de Ollama (comprobado: 404). |
+| D-10 | Motor D (API de pago) **no implementado** | Coste cero y sin claves en el repositorio. |
+| D-11 | Elección **provisional**: motor B | Ver `docs/pruebas-lectura.md`. Pendiente de tickets reales y del documento consolidado. |
+| D-12 | Los motores OCR comparten un analizador de texto (`src/lectura/analizar-texto.ts`) | Comparación justa; mejorar el analizador mejora a A y B por igual. |
+| D-13 | PL-01..PL-04 definidas por nosotros | Falta el documento consolidado (ver §5.1). |
+
+Consecuencia de D-08 para la fase 5: la app tendrá que llamar a Python
+desde Node (proceso hijo, como hace la comparativa). Es una pieza más que
+instalar (`.venv-ocr`); el README lo explicará. Si eso pesa demasiado,
+Tesseract (A) funciona dentro de Node sin nada más, a costa de peor lectura
+de fotos.
 
 ## 3. Consecuencias de D-01 (SQLite) que el equipo debe conocer
 
@@ -85,9 +102,9 @@ lo que alguien del equipo debe comprobar antes de darlo por bueno.
    esperar del orden de decenas de segundos a minutos por documento.
    `[A VERIFICAR]` en la fase 2 (medir, no suponer). SmolVLM2 será más rápido
    y probablemente menos preciso.
-4. **Ollama y PaddleOCR no están instalados.** Instalarlos es trabajo del
-   día 2 y puede necesitar permisos de administrador (Ollama trae
-   instalador). Tesseract tampoco está instalado.
+4. **Instalación de motores (resuelto en la fase 2):** Tesseract va como
+   paquete npm (tesseract.js, datos de español incluidos) y RapidOCR en el
+   entorno virtual `.venv-ocr`. Ollama sigue sin instalar (ver D-09).
 5. **El banco sintético sobrestima la precisión:** son imágenes limpias,
    generadas por ordenador. Para elegir motor hacen falta **tickets reales**
    (mínimo recomendado: 15-20, fotografiados con móvil, en

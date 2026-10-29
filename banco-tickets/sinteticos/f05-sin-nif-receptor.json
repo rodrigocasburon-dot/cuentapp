@@ -1,6 +1,7 @@
 {
   "id": "f05-sin-nif-receptor",
   "descripcion": "Factura completa SIN NIF de receptor (debe dar ámbar)",
+  "degradacion": "ninguna",
   "tipo": "factura_completa",
   "nombre_emisor": "Suministros Inexistentes S.L.",
   "nif_emisor": "B33091844",

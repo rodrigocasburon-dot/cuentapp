@@ -1,6 +1,7 @@
 {
   "id": "t09-duplicado-t02",
   "descripcion": "Copia exacta (mismo fichero) de t02: debe detectarse como duplicado",
+  "degradacion": "ninguna",
   "tipo": "ticket_simplificado",
   "nombre_emisor": "Estación de Servicio Ficticia",
   "nif_emisor": "A28509131",
@@ -23,5 +24,6 @@
     ],
     "semaforo": "rojo",
     "avisos": []
-  }
+  },
+  "copia_de": "t02-gasolinera"
 }

@@ -1,6 +1,7 @@
 {
   "id": "t07-foto-torcida",
   "descripcion": "Ticket fotografiado: girado, con ruido y poco contraste",
+  "degradacion": "foto",
   "tipo": "ticket_simplificado",
   "nombre_emisor": "Restaurante El Plato Ficticio",
   "nif_emisor": "B90451261",

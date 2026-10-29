@@ -1,0 +1,3386 @@
+[
+  {
+    "motor": {
+      "id": "A",
+      "nombre": "Tesseract 5 (tesseract.js, español)",
+      "local": true
+    },
+    "carga_segundos": 0.6703423999999999,
+    "veredictos": [
+      {
+        "prueba": "PL-01",
+        "supera": true,
+        "medida": "98 % campos correctos en 9 docs (umbral 90 %)"
+      },
+      {
+        "prueba": "PL-02",
+        "supera": false,
+        "medida": "fotos: 56 % campos correctos (umbral 75 %) · ilegibles: 0 errores confiados (umbral 0)"
+      },
+      {
+        "prueba": "PL-03",
+        "supera": false,
+        "medida": "total 90 % · desglose IVA 90 % · tipo 100 % (umbrales 95 % / 80 % / 90 %)"
+      },
+      {
+        "prueba": "PL-04",
+        "supera": true,
+        "medida": "0.5 s/doc de media (umbral 15 s) · coste 0.00 € · local"
+      }
+    ],
+    "documentos": [
+      {
+        "id": "f04-asesoria",
+        "segundos": 0.8218126999999997,
+        "puntuacion": {
+          "id": "f04-asesoria",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "factura_completa",
+              "leido": "factura_completa",
+              "confianza": 0.77
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Asesores de Mentira S.L.",
+              "leido": "Asesores de Mentira S.L.",
+              "confianza": 0.68
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "B61200754",
+              "leido": "B61200754",
+              "confianza": 0.86
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": "B00000000",
+              "leido": "B00000000",
+              "confianza": 0.86
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "F2026-0187",
+              "leido": "F2026-0187",
+              "confianza": 0.73
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-07-31",
+              "leido": "2026-07-31",
+              "confianza": 0.82
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.82
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 151250,
+              "leido": 151250,
+              "confianza": 0.88
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 125000,
+                  "cuota_centimos": 26250
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 125000,
+                  "cuota_centimos": 26250
+                }
+              ],
+              "confianza": 0.86
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "factura_completa",
+            "confianza": 0.77
+          },
+          "nombre_emisor": {
+            "valor": "Asesores de Mentira S.L.",
+            "confianza": 0.68
+          },
+          "nif_emisor": {
+            "valor": "B61200754",
+            "confianza": 0.86
+          },
+          "nif_receptor": {
+            "valor": "B00000000",
+            "confianza": 0.86
+          },
+          "numero": {
+            "valor": "F2026-0187",
+            "confianza": 0.73
+          },
+          "fecha_emision": {
+            "valor": "2026-07-31",
+            "confianza": 0.82
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.82
+          },
+          "total_centimos": {
+            "valor": 151250,
+            "confianza": 0.88
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 21,
+                "base_centimos": 125000,
+                "cuota_centimos": 26250
+              }
+            ],
+            "confianza": 0.86
+          }
+        },
+        "texto": "Asesores de Mentira S.L. FACTURA\nPza. Ficción 1, 08000 Barcelona 'N? F2026-0187\nNIF: B61200754 Fecha: 31/07/2026\nCliente\nPanadería Ejemplo S.L.\nNIF: B00000000\nConcepto Importe (€)\nServicios de asesoría fiscal, julio 2026 1250,00\nBase imponible 1250,00€\nIVA 21% sobre 1250,00 262,50€\nTOTAL 1512,50€\nForma de pago: transferencia a 30 días. Documento ficticio generado para pruebas.\n"
+      },
+      {
+        "id": "f05-sin-nif-receptor",
+        "segundos": 0.5962853999999997,
+        "puntuacion": {
+          "id": "f05-sin-nif-receptor",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "factura_completa",
+              "leido": "factura_completa",
+              "confianza": 0.77
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Suministros Inexistentes S.L.",
+              "leido": "Suministros Inexistentes S.L.",
+              "confianza": 0.68
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "B33091844",
+              "leido": "B33091844",
+              "confianza": 0.86
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "numero",
+              "resultado": "vacio",
+              "real": "A-5521",
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-08-19",
+              "leido": "2026-08-19",
+              "confianza": 0.82
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.82
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 10769,
+              "leido": 10769,
+              "confianza": 0.88
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 8900,
+                  "cuota_centimos": 1869
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 8900,
+                  "cuota_centimos": 1869
+                }
+              ],
+              "confianza": 0.86
+            }
+          ],
+          "correctos": 8,
+          "errores": 0,
+          "vacios": 1,
+          "errores_confiados": 0,
+          "correcciones": 1,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "factura_completa",
+            "confianza": 0.77
+          },
+          "nombre_emisor": {
+            "valor": "Suministros Inexistentes S.L.",
+            "confianza": 0.68
+          },
+          "nif_emisor": {
+            "valor": "B33091844",
+            "confianza": 0.86
+          },
+          "nif_receptor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "numero": {
+            "valor": null,
+            "confianza": 0
+          },
+          "fecha_emision": {
+            "valor": "2026-08-19",
+            "confianza": 0.82
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.82
+          },
+          "total_centimos": {
+            "valor": 10769,
+            "confianza": 0.88
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 21,
+                "base_centimos": 8900,
+                "cuota_centimos": 1869
+              }
+            ],
+            "confianza": 0.86
+          }
+        },
+        "texto": "Suministros Inexistentes S.L. FACTURA\nPol. Ind. Hipotético 7, 50000 Zaragoza N9A-5521\nNIF: B33091844 Fecha: 19/08/2026\nCliente\nPanadería Ejemplo S.L.\nConcepto Importe (€)\nHarina de trigo, 4 sacos 89,00\nBase imponible 89,00€\nIVA 21% sobre 89,00 18,69€\nTOTAL 107,69€\nForma de pago: transferencia a 30 días. Documento ficticio generado para pruebas.\n"
+      },
+      {
+        "id": "f06-dolares",
+        "segundos": 0.5356232,
+        "puntuacion": {
+          "id": "f06-dolares",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "factura_completa",
+              "leido": "factura_completa",
+              "confianza": 0.77
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Imaginary Software Inc.",
+              "leido": "Imaginary Software Inc.",
+              "confianza": 0.68
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": "B00000000",
+              "leido": "B00000000",
+              "confianza": 0.86
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "INV-90412",
+              "leido": "INV-90412",
+              "confianza": 0.73
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-09-03",
+              "leido": "2026-09-03",
+              "confianza": 0.82
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "USD",
+              "leido": "USD",
+              "confianza": 0.77
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 4999,
+              "leido": 4999,
+              "confianza": 0.88
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 0,
+                  "base_centimos": 4999,
+                  "cuota_centimos": 0
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 0,
+                  "base_centimos": 4999,
+                  "cuota_centimos": 0
+                }
+              ],
+              "confianza": 0.86
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "factura_completa",
+            "confianza": 0.77
+          },
+          "nombre_emisor": {
+            "valor": "Imaginary Software Inc.",
+            "confianza": 0.68
+          },
+          "nif_emisor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "nif_receptor": {
+            "valor": "B00000000",
+            "confianza": 0.86
+          },
+          "numero": {
+            "valor": "INV-90412",
+            "confianza": 0.73
+          },
+          "fecha_emision": {
+            "valor": "2026-09-03",
+            "confianza": 0.82
+          },
+          "moneda": {
+            "valor": "USD",
+            "confianza": 0.77
+          },
+          "total_centimos": {
+            "valor": 4999,
+            "confianza": 0.88
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 0,
+                "base_centimos": 4999,
+                "cuota_centimos": 0
+              }
+            ],
+            "confianza": 0.86
+          }
+        },
+        "texto": "Imaginary Software Inc. FACTURA\n100 Example St, Springfield, USA NP INV-90412\nFecha: 03/09/2026\nCliente\nPanadería Ejemplo S.L.\nNIF: B00000000\nConcepto Importe (USD)\nSoftware subscription (annual) 49,99\nBase imponible 49,99 USD\nIVA 0% sobre 49,99 0,00 USD\nTOTAL 49,99 USD\nForma de pago: transferencia a 30 días. Documento ficticio generado para pruebas.\n"
+      },
+      {
+        "id": "f11-nif-erroneo",
+        "segundos": 0.5498149000000003,
+        "puntuacion": {
+          "id": "f11-nif-erroneo",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "factura_completa",
+              "leido": "factura_completa",
+              "confianza": 0.72
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Reformas Irreales S.L.",
+              "leido": "Reformas Irreales S.L.",
+              "confianza": 0.64
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "B40219571",
+              "leido": "B40219571",
+              "confianza": 0.68
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": "B00000000",
+              "leido": "B00000000",
+              "confianza": 0.81
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "R-2026-044",
+              "leido": "R-2026-044",
+              "confianza": 0.68
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-09-15",
+              "leido": "2026-09-15",
+              "confianza": 0.77
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.77
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 36300,
+              "leido": 36300,
+              "confianza": 0.82
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 30000,
+                  "cuota_centimos": 6300
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 30000,
+                  "cuota_centimos": 6300
+                }
+              ],
+              "confianza": 0.81
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "factura_completa",
+            "confianza": 0.72
+          },
+          "nombre_emisor": {
+            "valor": "Reformas Irreales S.L.",
+            "confianza": 0.64
+          },
+          "nif_emisor": {
+            "valor": "B40219571",
+            "confianza": 0.68
+          },
+          "nif_receptor": {
+            "valor": "B00000000",
+            "confianza": 0.81
+          },
+          "numero": {
+            "valor": "R-2026-044",
+            "confianza": 0.68
+          },
+          "fecha_emision": {
+            "valor": "2026-09-15",
+            "confianza": 0.77
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.77
+          },
+          "total_centimos": {
+            "valor": 36300,
+            "confianza": 0.82
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 21,
+                "base_centimos": 30000,
+                "cuota_centimos": 6300
+              }
+            ],
+            "confianza": 0.81
+          }
+        },
+        "texto": "Reformas Irreales S.L. FACTURA\nC/ Andamio 33, 33000 Oviedo No R-2026-044\nNIF: B40219571 Fecha: 15/09/2026\nCliente\nPanadería Ejemplo S.L.\nNIF: B00000000\nConcepto Importe (€)\nReparación de homo, mano de obra 300,00\nBase imponible 300,00 €\nIVA 21% sobre 300,00 63,00 €\nTOTAL 363,00 €\nForma de pago: transferencia a 30 días. Documento ficticio generado para pruebas.\n"
+      },
+      {
+        "id": "t01-cafeteria",
+        "segundos": 0.44560910000000015,
+        "puntuacion": {
+          "id": "t01-cafeteria",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "ticket_simplificado",
+              "leido": "ticket_simplificado",
+              "confianza": 0.83
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Cafetería La Taza Inventada",
+              "leido": "Cafetería La Taza Inventada",
+              "confianza": 0.69
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "B44173813",
+              "leido": "B44173813",
+              "confianza": 0.87
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "T-000231",
+              "leido": "T-000231",
+              "confianza": 0.74
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-07-14",
+              "leido": "2026-07-14",
+              "confianza": 0.83
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.83
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 370,
+              "leido": 370,
+              "confianza": 0.89
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 10,
+                  "base_centimos": 336,
+                  "cuota_centimos": 34
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 10,
+                  "base_centimos": 336,
+                  "cuota_centimos": 34
+                }
+              ],
+              "confianza": 0.87
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "ticket_simplificado",
+            "confianza": 0.83
+          },
+          "nombre_emisor": {
+            "valor": "Cafetería La Taza Inventada",
+            "confianza": 0.69
+          },
+          "nif_emisor": {
+            "valor": "B44173813",
+            "confianza": 0.87
+          },
+          "nif_receptor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "numero": {
+            "valor": "T-000231",
+            "confianza": 0.74
+          },
+          "fecha_emision": {
+            "valor": "2026-07-14",
+            "confianza": 0.83
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.83
+          },
+          "total_centimos": {
+            "valor": 370,
+            "confianza": 0.89
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 10,
+                "base_centimos": 336,
+                "cuota_centimos": 34
+              }
+            ],
+            "confianza": 0.87
+          }
+        },
+        "texto": "Cafetería La Taza Inventada\nC/ Imaginaria 12, 28000 Madrid\nNIF: B44173813\nFACTURA SIMPLIFICADA\nNe: T-000231\nFecha: 14/07/2026 13:42\n2 Café con leche 2,60\n1 Tostada 1,10\nTOTAL € 3,70\nBASE CUOTA\nIVA 10% 3,36 0,34\nPago con tarjeta\nGracias por su visita\nDocumento ficticio generado para pruebas\n"
+      },
+      {
+        "id": "t02-gasolinera",
+        "segundos": 0.44654629999999995,
+        "puntuacion": {
+          "id": "t02-gasolinera",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "ticket_simplificado",
+              "leido": "ticket_simplificado",
+              "confianza": 0.84
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Estación de Servicio Ficticia",
+              "leido": "Estación de Servicio Ficticia",
+              "confianza": 0.7
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "A28509131",
+              "leido": "A28509131",
+              "confianza": 0.88
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "0042-118734",
+              "leido": "0042-118734",
+              "confianza": 0.74
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-08-02",
+              "leido": "2026-08-02",
+              "confianza": 0.84
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.84
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 5000,
+              "leido": 5000,
+              "confianza": 0.9
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 4132,
+                  "cuota_centimos": 868
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 4132,
+                  "cuota_centimos": 868
+                }
+              ],
+              "confianza": 0.88
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "ticket_simplificado",
+            "confianza": 0.84
+          },
+          "nombre_emisor": {
+            "valor": "Estación de Servicio Ficticia",
+            "confianza": 0.7
+          },
+          "nif_emisor": {
+            "valor": "A28509131",
+            "confianza": 0.88
+          },
+          "nif_receptor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "numero": {
+            "valor": "0042-118734",
+            "confianza": 0.74
+          },
+          "fecha_emision": {
+            "valor": "2026-08-02",
+            "confianza": 0.84
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.84
+          },
+          "total_centimos": {
+            "valor": 5000,
+            "confianza": 0.9
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 21,
+                "base_centimos": 4132,
+                "cuota_centimos": 868
+              }
+            ],
+            "confianza": 0.88
+          }
+        },
+        "texto": "Estación de Servicio Ficticia\nCtra. Supuesta km 4, 41000 Sevilla\nNIF: A28509131\n\nFACTURA SIMPLIFICADA\n\nNe: 0042-118734\n\nFecha: 02/08/2026 13:42\n\nGasóleo A 31,25 L x 1,600 50,00\n\nTOTAL € 50,00\nBASE CUOTA\n\nIVA 21% 41,32 8,68\n\nPago con tarjeta\nGracias por su visita\nDocumento ficticio generado para pruebas\n"
+      },
+      {
+        "id": "t03-supermercado",
+        "segundos": 0.6526976000000004,
+        "puntuacion": {
+          "id": "t03-supermercado",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "ticket_simplificado",
+              "leido": "ticket_simplificado",
+              "confianza": 0.83
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Supermercados Imaginarios S.A.",
+              "leido": "Supermercados Imaginarios S.A.",
+              "confianza": 0.69
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "A77314029",
+              "leido": "A77314029",
+              "confianza": 0.87
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "2026/11/004512",
+              "leido": "2026/11/004512",
+              "confianza": 0.74
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-09-21",
+              "leido": "2026-09-21",
+              "confianza": 0.83
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.83
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 2663,
+              "leido": 2663,
+              "confianza": 0.89
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 4,
+                  "base_centimos": 289,
+                  "cuota_centimos": 12
+                },
+                {
+                  "tipo_iva": 10,
+                  "base_centimos": 1245,
+                  "cuota_centimos": 125
+                },
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 820,
+                  "cuota_centimos": 172
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 4,
+                  "base_centimos": 289,
+                  "cuota_centimos": 12
+                },
+                {
+                  "tipo_iva": 10,
+                  "base_centimos": 1245,
+                  "cuota_centimos": 125
+                },
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 820,
+                  "cuota_centimos": 172
+                }
+              ],
+              "confianza": 0.87
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "ticket_simplificado",
+            "confianza": 0.83
+          },
+          "nombre_emisor": {
+            "valor": "Supermercados Imaginarios S.A.",
+            "confianza": 0.69
+          },
+          "nif_emisor": {
+            "valor": "A77314029",
+            "confianza": 0.87
+          },
+          "nif_receptor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "numero": {
+            "valor": "2026/11/004512",
+            "confianza": 0.74
+          },
+          "fecha_emision": {
+            "valor": "2026-09-21",
+            "confianza": 0.83
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.83
+          },
+          "total_centimos": {
+            "valor": 2663,
+            "confianza": 0.89
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 4,
+                "base_centimos": 289,
+                "cuota_centimos": 12
+              },
+              {
+                "tipo_iva": 10,
+                "base_centimos": 1245,
+                "cuota_centimos": 125
+              },
+              {
+                "tipo_iva": 21,
+                "base_centimos": 820,
+                "cuota_centimos": 172
+              }
+            ],
+            "confianza": 0.87
+          }
+        },
+        "texto": "Supermercados Imaginarios S.A.\nAv. de Prueba 3, 46000 Valencia\nNIF: A77314029\nFACTURA SIMPLIFICADA\nNe: 2026/11/004512\nFecha: 21/09/2026 13:42\nPan de molde 1,50\nLeche entera 6 u. 1,51\nAceite de oliva 11 3,70\nFruta variada 5,00\nDetergente 9,92\nTOTAL € 26,63\nBASE CUOTA\nIVA 4% 2,89 0,12\nIVA 10% 12,45 1,25\nIVA 21% 8,20 1,72\nPago con tarjeta\nGracias por su visita\nDocumento ficticio generado para pruebas\n"
+      },
+      {
+        "id": "t07-foto-torcida",
+        "segundos": 0.42341779999999923,
+        "puntuacion": {
+          "id": "t07-foto-torcida",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "ticket_simplificado",
+              "leido": "ticket_simplificado",
+              "confianza": 0.67
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "erroneo",
+              "real": "Restaurante El Plato Ficticio",
+              "leido": "nestaurante El Pisto FAEtICIO",
+              "confianza": 0.55
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "B90451261",
+              "leido": "B90451261",
+              "confianza": 0.7
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "numero",
+              "resultado": "erroneo",
+              "real": "M12-00877",
+              "leido": "MI2-00877",
+              "confianza": 0.59
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-07-25",
+              "leido": "2026-07-25",
+              "confianza": 0.67
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.67
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "vacio",
+              "real": 2002,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "vacio",
+              "real": [
+                {
+                  "tipo_iva": 10,
+                  "base_centimos": 1820,
+                  "cuota_centimos": 182
+                }
+              ],
+              "leido": [],
+              "confianza": 0
+            }
+          ],
+          "correctos": 5,
+          "errores": 2,
+          "vacios": 2,
+          "errores_confiados": 0,
+          "correcciones": 4,
+          "total_ok": false,
+          "desglose_ok": false,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "ticket_simplificado",
+            "confianza": 0.67
+          },
+          "nombre_emisor": {
+            "valor": "nestaurante El Pisto FAEtICIO",
+            "confianza": 0.55
+          },
+          "nif_emisor": {
+            "valor": "B90451261",
+            "confianza": 0.7
+          },
+          "nif_receptor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "numero": {
+            "valor": "MI2-00877",
+            "confianza": 0.59
+          },
+          "fecha_emision": {
+            "valor": "2026-07-25",
+            "confianza": 0.67
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.67
+          },
+          "total_centimos": {
+            "valor": null,
+            "confianza": 0
+          },
+          "lineas_iva": {
+            "valor": [],
+            "confianza": 0
+          }
+        },
+        "texto": "nestaurante El Pisto FAEtICIO\nC/ inventada 45, 20008 Mélert\nNIF: B90451261\nFACTURA SIMPLIFICADA\nNe: MI2-00877\nFecha: 25/07/2026 13:47\nMenú del día x2 20,07\nTOTAL € 20,072\nBASE CUOTA\n1vA 19% 18,20 1,82\npago con tarjeta\nGracias por su visita\npocumento ficticio generado para pruebes\n"
+      },
+      {
+        "id": "t08-ilegible",
+        "segundos": 0.08595950000000084,
+        "puntuacion": {
+          "id": "t08-ilegible",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "ticket_simplificado",
+              "leido": "ticket_simplificado",
+              "confianza": 0.15
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "vacio",
+              "real": "Ferretería Supuesta",
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "vacio",
+              "real": "B11877305",
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "numero",
+              "resultado": "vacio",
+              "real": "000915",
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "vacio",
+              "real": "2026-08-11",
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.19
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "vacio",
+              "real": 3000,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "vacio",
+              "real": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 2479,
+                  "cuota_centimos": 521
+                }
+              ],
+              "leido": [],
+              "confianza": 0
+            }
+          ],
+          "correctos": 3,
+          "errores": 0,
+          "vacios": 6,
+          "errores_confiados": 0,
+          "correcciones": 6,
+          "total_ok": false,
+          "desglose_ok": false,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "ticket_simplificado",
+            "confianza": 0.15
+          },
+          "nombre_emisor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "nif_emisor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "nif_receptor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "numero": {
+            "valor": null,
+            "confianza": 0
+          },
+          "fecha_emision": {
+            "valor": null,
+            "confianza": 0
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.19
+          },
+          "total_centimos": {
+            "valor": null,
+            "confianza": 0
+          },
+          "lineas_iva": {
+            "valor": [],
+            "confianza": 0
+          }
+        },
+        "texto": "E\nEL...\n"
+      },
+      {
+        "id": "t09-duplicado-t02",
+        "segundos": 0.6345837000000001,
+        "puntuacion": {
+          "id": "t09-duplicado-t02",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "ticket_simplificado",
+              "leido": "ticket_simplificado",
+              "confianza": 0.84
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Estación de Servicio Ficticia",
+              "leido": "Estación de Servicio Ficticia",
+              "confianza": 0.7
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "A28509131",
+              "leido": "A28509131",
+              "confianza": 0.88
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "0042-118734",
+              "leido": "0042-118734",
+              "confianza": 0.74
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-08-02",
+              "leido": "2026-08-02",
+              "confianza": 0.84
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.84
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 5000,
+              "leido": 5000,
+              "confianza": 0.9
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 4132,
+                  "cuota_centimos": 868
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 4132,
+                  "cuota_centimos": 868
+                }
+              ],
+              "confianza": 0.88
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "ticket_simplificado",
+            "confianza": 0.84
+          },
+          "nombre_emisor": {
+            "valor": "Estación de Servicio Ficticia",
+            "confianza": 0.7
+          },
+          "nif_emisor": {
+            "valor": "A28509131",
+            "confianza": 0.88
+          },
+          "nif_receptor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "numero": {
+            "valor": "0042-118734",
+            "confianza": 0.74
+          },
+          "fecha_emision": {
+            "valor": "2026-08-02",
+            "confianza": 0.84
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.84
+          },
+          "total_centimos": {
+            "valor": 5000,
+            "confianza": 0.9
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 21,
+                "base_centimos": 4132,
+                "cuota_centimos": 868
+              }
+            ],
+            "confianza": 0.88
+          }
+        },
+        "texto": "Estación de Servicio Ficticia\nCtra. Supuesta km 4, 41000 Sevilla\nNIF: A28509131\n\nFACTURA SIMPLIFICADA\n\nNe: 0042-118734\n\nFecha: 02/08/2026 13:42\n\nGasóleo A 31,25 L x 1,600 50,00\n\nTOTAL € 50,00\nBASE CUOTA\n\nIVA 21% 41,32 8,68\n\nPago con tarjeta\nGracias por su visita\nDocumento ficticio generado para pruebas\n"
+      },
+      {
+        "id": "t10-descuadre",
+        "segundos": 0.5259181000000008,
+        "puntuacion": {
+          "id": "t10-descuadre",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "ticket_simplificado",
+              "leido": "ticket_simplificado",
+              "confianza": 0.84
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Kiosco Hipotético",
+              "leido": "Kiosco Hipotético",
+              "confianza": 0.7
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "B55620181",
+              "leido": "B55620181",
+              "confianza": 0.88
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "K-3390",
+              "leido": "K-3390",
+              "confianza": 0.74
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-09-08",
+              "leido": "2026-09-08",
+              "confianza": 0.84
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.84
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 1915,
+              "leido": 1915,
+              "confianza": 0.56
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 1500,
+                  "cuota_centimos": 315
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 1500,
+                  "cuota_centimos": 315
+                }
+              ],
+              "confianza": 0.56
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "ticket_simplificado",
+            "confianza": 0.84
+          },
+          "nombre_emisor": {
+            "valor": "Kiosco Hipotético",
+            "confianza": 0.7
+          },
+          "nif_emisor": {
+            "valor": "B55620181",
+            "confianza": 0.88
+          },
+          "nif_receptor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "numero": {
+            "valor": "K-3390",
+            "confianza": 0.74
+          },
+          "fecha_emision": {
+            "valor": "2026-09-08",
+            "confianza": 0.84
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.84
+          },
+          "total_centimos": {
+            "valor": 1915,
+            "confianza": 0.56
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 21,
+                "base_centimos": 1500,
+                "cuota_centimos": 315
+              }
+            ],
+            "confianza": 0.56
+          }
+        },
+        "texto": "Kiosco Hipotético\nC/ Periódico 2, 37000 Salamanca\nNIF: B55620181\nFACTURA SIMPLIFICADA\nNe: K-3390\nFecha: 08/09/2026 13:42\nPrensa y revistas 18,15\nTOTAL € 19,15\nBASE CUOTA\nIVA 21% 15,00 3,15\nPago con tarjeta\nGracias por su visita\nDocumento ficticio generado para pruebas\n"
+      },
+      {
+        "id": "t12-fecha-futura",
+        "segundos": 0.42064080000000015,
+        "puntuacion": {
+          "id": "t12-fecha-futura",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "ticket_simplificado",
+              "leido": "ticket_simplificado",
+              "confianza": 0.82
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Librería Imaginada",
+              "leido": "Librería Imaginada",
+              "confianza": 0.68
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "48213077V",
+              "leido": "48213077V",
+              "confianza": 0.86
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "numero",
+              "resultado": "erroneo",
+              "real": "L-771",
+              "leido": "1-771",
+              "confianza": 0.73
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2031-02-28",
+              "leido": "2031-02-28",
+              "confianza": 0.82
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.82
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 1045,
+              "leido": 1045,
+              "confianza": 0.88
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 10,
+                  "base_centimos": 950,
+                  "cuota_centimos": 95
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 10,
+                  "base_centimos": 950,
+                  "cuota_centimos": 95
+                }
+              ],
+              "confianza": 0.86
+            }
+          ],
+          "correctos": 8,
+          "errores": 1,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 1,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "ticket_simplificado",
+            "confianza": 0.82
+          },
+          "nombre_emisor": {
+            "valor": "Librería Imaginada",
+            "confianza": 0.68
+          },
+          "nif_emisor": {
+            "valor": "48213077V",
+            "confianza": 0.86
+          },
+          "nif_receptor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "numero": {
+            "valor": "1-771",
+            "confianza": 0.73
+          },
+          "fecha_emision": {
+            "valor": "2031-02-28",
+            "confianza": 0.82
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.82
+          },
+          "total_centimos": {
+            "valor": 1045,
+            "confianza": 0.88
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 10,
+                "base_centimos": 950,
+                "cuota_centimos": 95
+              }
+            ],
+            "confianza": 0.86
+          }
+        },
+        "texto": "Librería Imaginada\nC/ Página 8, 47000 Valladolid\nNIF: 48213077V\nFACTURA SIMPLIFICADA\nNe: 1-771\nFecha: 28/02/2031 13:42\nCuaderno A4 10,45\nTOTAL € 10,45\nBASE CUOTA\nIVA 10% 9,50 0,95\nPago con tarjeta\nGracias por su visita\nDocumento ficticio generado para pruebas\n"
+      }
+    ]
+  },
+  {
+    "motor": {
+      "id": "B",
+      "nombre": "RapidOCR 3.10 (PP-OCRv6 en ONNX, CPU)",
+      "local": true
+    },
+    "carga_segundos": 3.302,
+    "veredictos": [
+      {
+        "prueba": "PL-01",
+        "supera": true,
+        "medida": "100 % campos correctos en 9 docs (umbral 90 %)"
+      },
+      {
+        "prueba": "PL-02",
+        "supera": true,
+        "medida": "fotos: 100 % campos correctos (umbral 75 %) · ilegibles: 0 errores confiados (umbral 0)"
+      },
+      {
+        "prueba": "PL-03",
+        "supera": true,
+        "medida": "total 100 % · desglose IVA 100 % · tipo 100 % (umbrales 95 % / 80 % / 90 %)"
+      },
+      {
+        "prueba": "PL-04",
+        "supera": true,
+        "medida": "2.2 s/doc de media (umbral 15 s) · coste 0.00 € · local"
+      }
+    ],
+    "documentos": [
+      {
+        "id": "f04-asesoria",
+        "segundos": 2.847,
+        "puntuacion": {
+          "id": "f04-asesoria",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "factura_completa",
+              "leido": "factura_completa",
+              "confianza": 0.85
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Asesores de Mentira S.L.",
+              "leido": "Asesores de Mentira S.L.",
+              "confianza": 0.75
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "B61200754",
+              "leido": "B61200754",
+              "confianza": 0.95
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": "B00000000",
+              "leido": "B00000000",
+              "confianza": 0.95
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "F2026-0187",
+              "leido": "F2026-0187",
+              "confianza": 0.8
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-07-31",
+              "leido": "2026-07-31",
+              "confianza": 0.9
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.9
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 151250,
+              "leido": 151250,
+              "confianza": 0.97
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 125000,
+                  "cuota_centimos": 26250
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 125000,
+                  "cuota_centimos": 26250
+                }
+              ],
+              "confianza": 0.95
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "factura_completa",
+            "confianza": 0.85
+          },
+          "nombre_emisor": {
+            "valor": "Asesores de Mentira S.L.",
+            "confianza": 0.75
+          },
+          "nif_emisor": {
+            "valor": "B61200754",
+            "confianza": 0.95
+          },
+          "nif_receptor": {
+            "valor": "B00000000",
+            "confianza": 0.95
+          },
+          "numero": {
+            "valor": "F2026-0187",
+            "confianza": 0.8
+          },
+          "fecha_emision": {
+            "valor": "2026-07-31",
+            "confianza": 0.9
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.9
+          },
+          "total_centimos": {
+            "valor": 151250,
+            "confianza": 0.97
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 21,
+                "base_centimos": 125000,
+                "cuota_centimos": 26250
+              }
+            ],
+            "confianza": 0.95
+          }
+        },
+        "texto": "Asesores de Mentira S.L. FACTURA\nPza. Ficción 1, 08000 Barcelona Nº F2026-0187\nNIF: B61200754 Fecha: 31/07/2026\nCliente\nPanadería Ejemplo S.L.\nNIF: B00000000\nConcepto Importe (€)\nServicios de asesoría fiscal, julio 2026 1250,00\nBase imponible 1250,00 €\nIVA 21% sobre 1250,00 262,50 €\nTOTAL 1512,50 €\nForma de pago: transferencia a 30 días. Documento ficticio generado para pruebas."
+      },
+      {
+        "id": "f05-sin-nif-receptor",
+        "segundos": 1.893,
+        "puntuacion": {
+          "id": "f05-sin-nif-receptor",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "factura_completa",
+              "leido": "factura_completa",
+              "confianza": 0.84
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Suministros Inexistentes S.L.",
+              "leido": "Suministros Inexistentes S.L.",
+              "confianza": 0.74
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "B33091844",
+              "leido": "B33091844",
+              "confianza": 0.94
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "A-5521",
+              "leido": "A-5521",
+              "confianza": 0.79
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-08-19",
+              "leido": "2026-08-19",
+              "confianza": 0.89
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.89
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 10769,
+              "leido": 10769,
+              "confianza": 0.96
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 8900,
+                  "cuota_centimos": 1869
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 8900,
+                  "cuota_centimos": 1869
+                }
+              ],
+              "confianza": 0.94
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "factura_completa",
+            "confianza": 0.84
+          },
+          "nombre_emisor": {
+            "valor": "Suministros Inexistentes S.L.",
+            "confianza": 0.74
+          },
+          "nif_emisor": {
+            "valor": "B33091844",
+            "confianza": 0.94
+          },
+          "nif_receptor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "numero": {
+            "valor": "A-5521",
+            "confianza": 0.79
+          },
+          "fecha_emision": {
+            "valor": "2026-08-19",
+            "confianza": 0.89
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.89
+          },
+          "total_centimos": {
+            "valor": 10769,
+            "confianza": 0.96
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 21,
+                "base_centimos": 8900,
+                "cuota_centimos": 1869
+              }
+            ],
+            "confianza": 0.94
+          }
+        },
+        "texto": "Suministros Inexistentes S.L. FACTURA\nPol. Ind. Hipotético 7, 50000 Zaragoza N°A-5521\nNIF: B33091844 Fecha: 19/08/2026\nCliente\nPanadería Ejemplo S.L.\nConcepto Importe (€)\nHarina de trigo, 4 sacos 89,00\nBase imponible 89,00 €\nIVA 21% sobre 89,00 18,69 €\nTOTAL 107,69 €\nForma de pago: transferencia a 30 días. Documento ficticio generado para pruebas."
+      },
+      {
+        "id": "f06-dolares",
+        "segundos": 1.808,
+        "puntuacion": {
+          "id": "f06-dolares",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "factura_completa",
+              "leido": "factura_completa",
+              "confianza": 0.85
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Imaginary Software Inc.",
+              "leido": "Imaginary Software Inc.",
+              "confianza": 0.75
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": "B00000000",
+              "leido": "B00000000",
+              "confianza": 0.95
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "INV-90412",
+              "leido": "INV-90412",
+              "confianza": 0.8
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-09-03",
+              "leido": "2026-09-03",
+              "confianza": 0.9
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "USD",
+              "leido": "USD",
+              "confianza": 0.85
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 4999,
+              "leido": 4999,
+              "confianza": 0.97
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 0,
+                  "base_centimos": 4999,
+                  "cuota_centimos": 0
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 0,
+                  "base_centimos": 4999,
+                  "cuota_centimos": 0
+                }
+              ],
+              "confianza": 0.95
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "factura_completa",
+            "confianza": 0.85
+          },
+          "nombre_emisor": {
+            "valor": "Imaginary Software Inc.",
+            "confianza": 0.75
+          },
+          "nif_emisor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "nif_receptor": {
+            "valor": "B00000000",
+            "confianza": 0.95
+          },
+          "numero": {
+            "valor": "INV-90412",
+            "confianza": 0.8
+          },
+          "fecha_emision": {
+            "valor": "2026-09-03",
+            "confianza": 0.9
+          },
+          "moneda": {
+            "valor": "USD",
+            "confianza": 0.85
+          },
+          "total_centimos": {
+            "valor": 4999,
+            "confianza": 0.97
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 0,
+                "base_centimos": 4999,
+                "cuota_centimos": 0
+              }
+            ],
+            "confianza": 0.95
+          }
+        },
+        "texto": "Imaginary Software Inc. FACTURA\n100 Example St, Springfield, USA Nº INV-90412\nFecha: 03/09/2026\nCliente\nPanadería Ejemplo S.L.\nNIF: B00000000\nConcepto Importe (USD)\nSoftware subscription (annual) 49,99\nBase imponible 49,99 USD\nIVA 0% sobre 49,99 0,00 USD\nTOTAL 49,99 USD\nForma de pago: transferencia a 30 días. Documento ficticio generado para pruebas."
+      },
+      {
+        "id": "f11-nif-erroneo",
+        "segundos": 2.256,
+        "puntuacion": {
+          "id": "f11-nif-erroneo",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "factura_completa",
+              "leido": "factura_completa",
+              "confianza": 0.84
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Reformas Irreales S.L.",
+              "leido": "Reformas Irreales S.L.",
+              "confianza": 0.74
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "B40219571",
+              "leido": "B40219571",
+              "confianza": 0.79
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": "B00000000",
+              "leido": "B00000000",
+              "confianza": 0.94
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "R-2026-044",
+              "leido": "R-2026-044",
+              "confianza": 0.79
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-09-15",
+              "leido": "2026-09-15",
+              "confianza": 0.89
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.89
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 36300,
+              "leido": 36300,
+              "confianza": 0.96
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 30000,
+                  "cuota_centimos": 6300
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 30000,
+                  "cuota_centimos": 6300
+                }
+              ],
+              "confianza": 0.94
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "factura_completa",
+            "confianza": 0.84
+          },
+          "nombre_emisor": {
+            "valor": "Reformas Irreales S.L.",
+            "confianza": 0.74
+          },
+          "nif_emisor": {
+            "valor": "B40219571",
+            "confianza": 0.79
+          },
+          "nif_receptor": {
+            "valor": "B00000000",
+            "confianza": 0.94
+          },
+          "numero": {
+            "valor": "R-2026-044",
+            "confianza": 0.79
+          },
+          "fecha_emision": {
+            "valor": "2026-09-15",
+            "confianza": 0.89
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.89
+          },
+          "total_centimos": {
+            "valor": 36300,
+            "confianza": 0.96
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 21,
+                "base_centimos": 30000,
+                "cuota_centimos": 6300
+              }
+            ],
+            "confianza": 0.94
+          }
+        },
+        "texto": "Reformas Irreales S.L. FACTURA\nC/ Andamio 33, 33000 Oviedo Nº R-2026-044\nNIF: B40219571 Fecha: 15/09/2026\nCliente\nPanadería Ejemplo S.L.\nNIF: B00000000\nConcepto Importe (€)\nReparación de horno, mano de obra 300,00\nBase imponible 300,00 €\nIVA 21% sobre 300,00 63,00 €\nTOTAL 363,00 €\nForma de pago: transferencia a 30 días. Documento ficticio generado para pruebas."
+      },
+      {
+        "id": "t01-cafeteria",
+        "segundos": 2.707,
+        "puntuacion": {
+          "id": "t01-cafeteria",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "ticket_simplificado",
+              "leido": "ticket_simplificado",
+              "confianza": 0.89
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Cafetería La Taza Inventada",
+              "leido": "Cafetería La Taza Inventada",
+              "confianza": 0.74
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "B44173813",
+              "leido": "B44173813",
+              "confianza": 0.93
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "T-000231",
+              "leido": "T-000231",
+              "confianza": 0.79
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-07-14",
+              "leido": "2026-07-14",
+              "confianza": 0.89
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.89
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 370,
+              "leido": 370,
+              "confianza": 0.95
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 10,
+                  "base_centimos": 336,
+                  "cuota_centimos": 34
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 10,
+                  "base_centimos": 336,
+                  "cuota_centimos": 34
+                }
+              ],
+              "confianza": 0.93
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "ticket_simplificado",
+            "confianza": 0.89
+          },
+          "nombre_emisor": {
+            "valor": "Cafetería La Taza Inventada",
+            "confianza": 0.74
+          },
+          "nif_emisor": {
+            "valor": "B44173813",
+            "confianza": 0.93
+          },
+          "nif_receptor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "numero": {
+            "valor": "T-000231",
+            "confianza": 0.79
+          },
+          "fecha_emision": {
+            "valor": "2026-07-14",
+            "confianza": 0.89
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.89
+          },
+          "total_centimos": {
+            "valor": 370,
+            "confianza": 0.95
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 10,
+                "base_centimos": 336,
+                "cuota_centimos": 34
+              }
+            ],
+            "confianza": 0.93
+          }
+        },
+        "texto": "Cafetería La Taza Inventada\nC/ Imaginaria 12, 28000 Madrid\nNIF：B44173813\nFACTURA SIMPLIFICADA\nNº:T-000231\nFecha: 14/07/2026 13:42\n2 Café con leche 2,60\n1 Tostada 1,10\nTOTAL € 3,70\nBASE CUOTA\nIVA 10% 3,36 0,34\nPago con tarjeta\nGracias por su visita\nDocumento ficticio generado para pruebas"
+      },
+      {
+        "id": "t02-gasolinera",
+        "segundos": 2.581,
+        "puntuacion": {
+          "id": "t02-gasolinera",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "ticket_simplificado",
+              "leido": "ticket_simplificado",
+              "confianza": 0.89
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Estación de Servicio Ficticia",
+              "leido": "Estación de Servicio Ficticia",
+              "confianza": 0.74
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "A28509131",
+              "leido": "A28509131",
+              "confianza": 0.94
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "0042-118734",
+              "leido": "0042-118734",
+              "confianza": 0.79
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-08-02",
+              "leido": "2026-08-02",
+              "confianza": 0.89
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.89
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 5000,
+              "leido": 5000,
+              "confianza": 0.96
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 4132,
+                  "cuota_centimos": 868
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 4132,
+                  "cuota_centimos": 868
+                }
+              ],
+              "confianza": 0.94
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "ticket_simplificado",
+            "confianza": 0.89
+          },
+          "nombre_emisor": {
+            "valor": "Estación de Servicio Ficticia",
+            "confianza": 0.74
+          },
+          "nif_emisor": {
+            "valor": "A28509131",
+            "confianza": 0.94
+          },
+          "nif_receptor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "numero": {
+            "valor": "0042-118734",
+            "confianza": 0.79
+          },
+          "fecha_emision": {
+            "valor": "2026-08-02",
+            "confianza": 0.89
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.89
+          },
+          "total_centimos": {
+            "valor": 5000,
+            "confianza": 0.96
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 21,
+                "base_centimos": 4132,
+                "cuota_centimos": 868
+              }
+            ],
+            "confianza": 0.94
+          }
+        },
+        "texto": "Estación de Servicio Ficticia\nCtra. Supuesta km 4, 41000 Sevilla\nNIF: A28509131\nFACTURA SIMPLIFICADA\nNº:0042-118734\nFecha: 02/08/2026 13:42\nGasóleo A 31,25 L x 1,600 50,00\nTOTAL € 50,00\nBASE CUOTA\nIVA 21% 41,32 8,68\nPago con tarjeta\nGracias por su visita\nDocumento ficticio generado para pruebas"
+      },
+      {
+        "id": "t03-supermercado",
+        "segundos": 3.309,
+        "puntuacion": {
+          "id": "t03-supermercado",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "ticket_simplificado",
+              "leido": "ticket_simplificado",
+              "confianza": 0.89
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Supermercados Imaginarios S.A.",
+              "leido": "Supermercados Imaginarios S.A.",
+              "confianza": 0.74
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "A77314029",
+              "leido": "A77314029",
+              "confianza": 0.94
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "2026/11/004512",
+              "leido": "2026/11/004512",
+              "confianza": 0.79
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-09-21",
+              "leido": "2026-09-21",
+              "confianza": 0.89
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.89
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 2663,
+              "leido": 2663,
+              "confianza": 0.96
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 4,
+                  "base_centimos": 289,
+                  "cuota_centimos": 12
+                },
+                {
+                  "tipo_iva": 10,
+                  "base_centimos": 1245,
+                  "cuota_centimos": 125
+                },
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 820,
+                  "cuota_centimos": 172
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 4,
+                  "base_centimos": 289,
+                  "cuota_centimos": 12
+                },
+                {
+                  "tipo_iva": 10,
+                  "base_centimos": 1245,
+                  "cuota_centimos": 125
+                },
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 820,
+                  "cuota_centimos": 172
+                }
+              ],
+              "confianza": 0.94
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "ticket_simplificado",
+            "confianza": 0.89
+          },
+          "nombre_emisor": {
+            "valor": "Supermercados Imaginarios S.A.",
+            "confianza": 0.74
+          },
+          "nif_emisor": {
+            "valor": "A77314029",
+            "confianza": 0.94
+          },
+          "nif_receptor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "numero": {
+            "valor": "2026/11/004512",
+            "confianza": 0.79
+          },
+          "fecha_emision": {
+            "valor": "2026-09-21",
+            "confianza": 0.89
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.89
+          },
+          "total_centimos": {
+            "valor": 2663,
+            "confianza": 0.96
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 4,
+                "base_centimos": 289,
+                "cuota_centimos": 12
+              },
+              {
+                "tipo_iva": 10,
+                "base_centimos": 1245,
+                "cuota_centimos": 125
+              },
+              {
+                "tipo_iva": 21,
+                "base_centimos": 820,
+                "cuota_centimos": 172
+              }
+            ],
+            "confianza": 0.94
+          }
+        },
+        "texto": "Supermercados Imaginarios S.A.\nAv. de Prueba 3, 46000 Valencia\nNIF：A77314029\nFACTURA SIMPLIFICADA\nNº：2026/11/004512\nFecha: 21/09/2026 13:42\nPan de molde 1,50\nLeche entera 6 u. 1,51\nAceite de oliva 1 L 8,70\nFruta variada 5,00\nDetergente 9,92\nTOTAL € 26,63\nBASE CUOTA\nIVA 4% 2,89 0,12\nIVA 10% 12,45 1,25\nIVA 21% 8,20 1,72\nPago con tarjeta\nGracias por su visita\nDocumento ficticio generado para pruebas"
+      },
+      {
+        "id": "t07-foto-torcida",
+        "segundos": 2.194,
+        "puntuacion": {
+          "id": "t07-foto-torcida",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "ticket_simplificado",
+              "leido": "ticket_simplificado",
+              "confianza": 0.9
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Restaurante El Plato Ficticio",
+              "leido": "Restaurante El Plato Ficticio",
+              "confianza": 0.75
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "B90451261",
+              "leido": "B90451261",
+              "confianza": 0.95
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "M12-00877",
+              "leido": "M12-00877",
+              "confianza": 0.8
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-07-25",
+              "leido": "2026-07-25",
+              "confianza": 0.9
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.9
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 2002,
+              "leido": 2002,
+              "confianza": 0.97
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 10,
+                  "base_centimos": 1820,
+                  "cuota_centimos": 182
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 10,
+                  "base_centimos": 1820,
+                  "cuota_centimos": 182
+                }
+              ],
+              "confianza": 0.95
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "ticket_simplificado",
+            "confianza": 0.9
+          },
+          "nombre_emisor": {
+            "valor": "Restaurante El Plato Ficticio",
+            "confianza": 0.75
+          },
+          "nif_emisor": {
+            "valor": "B90451261",
+            "confianza": 0.95
+          },
+          "nif_receptor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "numero": {
+            "valor": "M12-00877",
+            "confianza": 0.8
+          },
+          "fecha_emision": {
+            "valor": "2026-07-25",
+            "confianza": 0.9
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.9
+          },
+          "total_centimos": {
+            "valor": 2002,
+            "confianza": 0.97
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 10,
+                "base_centimos": 1820,
+                "cuota_centimos": 182
+              }
+            ],
+            "confianza": 0.95
+          }
+        },
+        "texto": "Restaurante El Plato Ficticio\nC/ Inventada 45, 29000 Málaga\nNIF:B90451261\nFACTURA SIMPLIFICADA\nNº:M12-00877\nFecha: 25/07/2026 13:42\n20,02\nMenú del día x2\n20,02\nTOTAL €\nBASE CUOTA\nIVA 10% 18,20 1,82\nPago con tarjeta\nGracias por su visita\nDocumento ficticio generado para pruebas"
+      },
+      {
+        "id": "t08-ilegible",
+        "segundos": 0.678,
+        "puntuacion": {
+          "id": "t08-ilegible",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "vacio",
+              "real": "ticket_simplificado",
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "vacio",
+              "real": "Ferretería Supuesta",
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "vacio",
+              "real": "B11877305",
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "numero",
+              "resultado": "vacio",
+              "real": "000915",
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "vacio",
+              "real": "2026-08-11",
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "moneda",
+              "resultado": "vacio",
+              "real": "EUR",
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "vacio",
+              "real": 3000,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "vacio",
+              "real": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 2479,
+                  "cuota_centimos": 521
+                }
+              ],
+              "leido": [],
+              "confianza": 0
+            }
+          ],
+          "correctos": 1,
+          "errores": 0,
+          "vacios": 8,
+          "errores_confiados": 0,
+          "correcciones": 8,
+          "total_ok": false,
+          "desglose_ok": false,
+          "tipo_ok": false
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": null,
+            "confianza": 0
+          },
+          "nombre_emisor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "nif_emisor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "nif_receptor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "numero": {
+            "valor": null,
+            "confianza": 0
+          },
+          "fecha_emision": {
+            "valor": null,
+            "confianza": 0
+          },
+          "moneda": {
+            "valor": null,
+            "confianza": 0
+          },
+          "total_centimos": {
+            "valor": null,
+            "confianza": 0
+          },
+          "lineas_iva": {
+            "valor": [],
+            "confianza": 0
+          }
+        },
+        "texto": ""
+      },
+      {
+        "id": "t09-duplicado-t02",
+        "segundos": 1.706,
+        "puntuacion": {
+          "id": "t09-duplicado-t02",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "ticket_simplificado",
+              "leido": "ticket_simplificado",
+              "confianza": 0.89
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Estación de Servicio Ficticia",
+              "leido": "Estación de Servicio Ficticia",
+              "confianza": 0.74
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "A28509131",
+              "leido": "A28509131",
+              "confianza": 0.94
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "0042-118734",
+              "leido": "0042-118734",
+              "confianza": 0.79
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-08-02",
+              "leido": "2026-08-02",
+              "confianza": 0.89
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.89
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 5000,
+              "leido": 5000,
+              "confianza": 0.96
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 4132,
+                  "cuota_centimos": 868
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 4132,
+                  "cuota_centimos": 868
+                }
+              ],
+              "confianza": 0.94
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "ticket_simplificado",
+            "confianza": 0.89
+          },
+          "nombre_emisor": {
+            "valor": "Estación de Servicio Ficticia",
+            "confianza": 0.74
+          },
+          "nif_emisor": {
+            "valor": "A28509131",
+            "confianza": 0.94
+          },
+          "nif_receptor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "numero": {
+            "valor": "0042-118734",
+            "confianza": 0.79
+          },
+          "fecha_emision": {
+            "valor": "2026-08-02",
+            "confianza": 0.89
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.89
+          },
+          "total_centimos": {
+            "valor": 5000,
+            "confianza": 0.96
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 21,
+                "base_centimos": 4132,
+                "cuota_centimos": 868
+              }
+            ],
+            "confianza": 0.94
+          }
+        },
+        "texto": "Estación de Servicio Ficticia\nCtra. Supuesta km 4, 41000 Sevilla\nNIF: A28509131\nFACTURA SIMPLIFICADA\nNº:0042-118734\nFecha: 02/08/2026 13:42\nGasóleo A 31,25 L x 1,600 50,00\nTOTAL € 50,00\nBASE CUOTA\nIVA 21% 41,32 8,68\nPago con tarjeta\nGracias por su visita\nDocumento ficticio generado para pruebas"
+      },
+      {
+        "id": "t10-descuadre",
+        "segundos": 2.301,
+        "puntuacion": {
+          "id": "t10-descuadre",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "ticket_simplificado",
+              "leido": "ticket_simplificado",
+              "confianza": 0.88
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Kiosco Hipotético",
+              "leido": "Kiosco Hipotético",
+              "confianza": 0.73
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "B55620181",
+              "leido": "B55620181",
+              "confianza": 0.93
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "K-3390",
+              "leido": "K-3390",
+              "confianza": 0.78
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2026-09-08",
+              "leido": "2026-09-08",
+              "confianza": 0.88
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.88
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 1915,
+              "leido": 1915,
+              "confianza": 0.59
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 1500,
+                  "cuota_centimos": 315
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 21,
+                  "base_centimos": 1500,
+                  "cuota_centimos": 315
+                }
+              ],
+              "confianza": 0.59
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "ticket_simplificado",
+            "confianza": 0.88
+          },
+          "nombre_emisor": {
+            "valor": "Kiosco Hipotético",
+            "confianza": 0.73
+          },
+          "nif_emisor": {
+            "valor": "B55620181",
+            "confianza": 0.93
+          },
+          "nif_receptor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "numero": {
+            "valor": "K-3390",
+            "confianza": 0.78
+          },
+          "fecha_emision": {
+            "valor": "2026-09-08",
+            "confianza": 0.88
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.88
+          },
+          "total_centimos": {
+            "valor": 1915,
+            "confianza": 0.59
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 21,
+                "base_centimos": 1500,
+                "cuota_centimos": 315
+              }
+            ],
+            "confianza": 0.59
+          }
+        },
+        "texto": "Kiosco Hipotético\nC/ Periódico 2, 37000 Salamanca\nNIF:B55620181\nFACTURA SIMPLIFICADA\nNº: K-3390\nFecha: 08/09/2026 13:42\nPrensa V revistas 18,15\nTOTAL € 19,15\nBASE CUOTA\nIVA 21% 15,00 3,15\nPago con tarjeta\nGracias por su visita\nDocumento ficticio generado para pruebas"
+      },
+      {
+        "id": "t12-fecha-futura",
+        "segundos": 2.287,
+        "puntuacion": {
+          "id": "t12-fecha-futura",
+          "campos": [
+            {
+              "campo": "tipo",
+              "resultado": "correcto",
+              "real": "ticket_simplificado",
+              "leido": "ticket_simplificado",
+              "confianza": 0.89
+            },
+            {
+              "campo": "nombre_emisor",
+              "resultado": "correcto",
+              "real": "Librería Imaginada",
+              "leido": "Librería Imaginada",
+              "confianza": 0.74
+            },
+            {
+              "campo": "nif_emisor",
+              "resultado": "correcto",
+              "real": "48213077V",
+              "leido": "48213077V",
+              "confianza": 0.94
+            },
+            {
+              "campo": "nif_receptor",
+              "resultado": "correcto",
+              "real": null,
+              "leido": null,
+              "confianza": 0
+            },
+            {
+              "campo": "numero",
+              "resultado": "correcto",
+              "real": "L-771",
+              "leido": "L-771",
+              "confianza": 0.79
+            },
+            {
+              "campo": "fecha_emision",
+              "resultado": "correcto",
+              "real": "2031-02-28",
+              "leido": "2031-02-28",
+              "confianza": 0.89
+            },
+            {
+              "campo": "moneda",
+              "resultado": "correcto",
+              "real": "EUR",
+              "leido": "EUR",
+              "confianza": 0.89
+            },
+            {
+              "campo": "total_centimos",
+              "resultado": "correcto",
+              "real": 1045,
+              "leido": 1045,
+              "confianza": 0.96
+            },
+            {
+              "campo": "lineas_iva",
+              "resultado": "correcto",
+              "real": [
+                {
+                  "tipo_iva": 10,
+                  "base_centimos": 950,
+                  "cuota_centimos": 95
+                }
+              ],
+              "leido": [
+                {
+                  "tipo_iva": 10,
+                  "base_centimos": 950,
+                  "cuota_centimos": 95
+                }
+              ],
+              "confianza": 0.94
+            }
+          ],
+          "correctos": 9,
+          "errores": 0,
+          "vacios": 0,
+          "errores_confiados": 0,
+          "correcciones": 0,
+          "total_ok": true,
+          "desglose_ok": true,
+          "tipo_ok": true
+        },
+        "extraccion": {
+          "tipo": {
+            "valor": "ticket_simplificado",
+            "confianza": 0.89
+          },
+          "nombre_emisor": {
+            "valor": "Librería Imaginada",
+            "confianza": 0.74
+          },
+          "nif_emisor": {
+            "valor": "48213077V",
+            "confianza": 0.94
+          },
+          "nif_receptor": {
+            "valor": null,
+            "confianza": 0
+          },
+          "numero": {
+            "valor": "L-771",
+            "confianza": 0.79
+          },
+          "fecha_emision": {
+            "valor": "2031-02-28",
+            "confianza": 0.89
+          },
+          "moneda": {
+            "valor": "EUR",
+            "confianza": 0.89
+          },
+          "total_centimos": {
+            "valor": 1045,
+            "confianza": 0.96
+          },
+          "lineas_iva": {
+            "valor": [
+              {
+                "tipo_iva": 10,
+                "base_centimos": 950,
+                "cuota_centimos": 95
+              }
+            ],
+            "confianza": 0.94
+          }
+        },
+        "texto": "Librería Imaginada\nC/ Página 8, 47000 Valladolid\nNIF:48213077V\nFACTURA SIMPLIFICADA\nNº:L-771\nFecha: 28/02/2031 13:42\nCuaderno A4 10,45\nTOTAL € 10,45\nBASE CUOTA\nIVA 10% 9,50 0,95\nPago con tarjeta\nGracias por su visita\nDocumento ficticio generado para pruebas"
+      }
+    ]
+  },
+  {
+    "motor": {
+      "id": "C",
+      "nombre": "Ollama · qwen2.5vl:7b",
+      "local": true
+    },
+    "omitido": "Ollama no está instalado o no está en marcha (descarga no autorizada todavía)."
+  }
+]

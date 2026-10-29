@@ -10,7 +10,8 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "db:reset": "tsx scripts/bd-reset.ts",
-    "banco:generar": "tsx scripts/generar-banco.ts"
+    "banco:generar": "tsx scripts/generar-banco.ts",
+    "comparar": "tsx comparativa/comparar.ts"
   },
   "engines": {
     "node": ">=24"
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
+    "@tesseract.js-data/spa": "^1.0.0",
     "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^24.19.2",
     "@types/react": "^19",
@@ -31,6 +33,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
     "tailwindcss": "^4",
+    "tesseract.js": "^7.0.0",
     "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "^5.0.5"

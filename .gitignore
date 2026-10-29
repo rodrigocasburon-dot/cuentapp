@@ -45,5 +45,7 @@ next-env.d.ts
 # Documentos reales del banco de pruebas: pueden tener datos personales.
 /banco-tickets/reales/*
 !/banco-tickets/reales/LEEME.md
+# Entorno virtual de Python del motor B (RapidOCR)
+/.venv-ocr/
 # Resultados de las pruebas de lectura con documentos reales
 /banco-tickets/resultados/reales/

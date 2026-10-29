@@ -1,6 +1,7 @@
 {
   "id": "t02-gasolinera",
   "descripcion": "Ticket de combustible, 21 % IVA",
+  "degradacion": "ninguna",
   "tipo": "ticket_simplificado",
   "nombre_emisor": "Estación de Servicio Ficticia",
   "nif_emisor": "A28509131",

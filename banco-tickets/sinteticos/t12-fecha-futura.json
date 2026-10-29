@@ -1,6 +1,7 @@
 {
   "id": "t12-fecha-futura",
   "descripcion": "Ticket con fecha no plausible (en el futuro)",
+  "degradacion": "ninguna",
   "tipo": "ticket_simplificado",
   "nombre_emisor": "Librería Imaginada",
   "nif_emisor": "48213077V",

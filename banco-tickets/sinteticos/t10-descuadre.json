@@ -1,6 +1,7 @@
 {
   "id": "t10-descuadre",
   "descripcion": "Ticket cuyo total impreso NO cuadra con base + cuota",
+  "degradacion": "ninguna",
   "tipo": "ticket_simplificado",
   "nombre_emisor": "Kiosco Hipotético",
   "nif_emisor": "B55620181",

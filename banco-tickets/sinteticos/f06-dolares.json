@@ -1,6 +1,7 @@
 {
   "id": "f06-dolares",
   "descripcion": "Factura en USD (requiere tipo de cambio por fecha)",
+  "degradacion": "ninguna",
   "tipo": "factura_completa",
   "nombre_emisor": "Imaginary Software Inc.",
   "nif_emisor": null,
