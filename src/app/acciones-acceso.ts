@@ -3,6 +3,7 @@
 // Acciones de servidor de registro, entrada y salida (RF-01).
 
 import { redirect } from "next/navigation";
+import { ACCESO_DEMO, CUENTAS_DEMO } from "@/config";
 import { EntradaSchema, RegistroSchema, erroresPorCampo, type EstadoFormulario } from "@/dominio/formularios-acceso";
 import { cifrarContrasena, hashParaIgualarTiempos, verificarContrasena } from "@/servidor/auth/contrasenas";
 import { abrirSesion, cerrarSesion } from "@/servidor/auth/sesion";
@@ -63,6 +64,22 @@ export async function entrar(_previo: EstadoFormulario, f: FormData): Promise<Es
   }
 
   olvidarIntentos(bd(), email);
+  await abrirSesion(usuario.id, empresa.id);
+  redirect("/panel");
+}
+
+/**
+ * Acceso de demostración (solo local + desarrollo, ver ACCESO_DEMO): entra sin
+ * contraseña, pero ÚNICAMENTE con las cuentas de prueba de la lista. La
+ * sesión es una sesión normal, así que el aislamiento entre empresas no cambia.
+ */
+export async function entrarDemo(f: FormData): Promise<void> {
+  if (!ACCESO_DEMO) throw new Error("El acceso de demostración está desactivado.");
+  const email = texto(f, "email");
+  if (!CUENTAS_DEMO.some((c) => c.email === email)) throw new Error("Cuenta de demostración desconocida.");
+  const usuario = buscarCredenciales(bd(), email);
+  const empresa = usuario ? empresasDeUsuario(bd(), usuario.id)[0] : undefined;
+  if (!usuario || !empresa) throw new Error("No existe la cuenta de prueba. Ejecuta npm run db:reset.");
   await abrirSesion(usuario.id, empresa.id);
   redirect("/panel");
 }
