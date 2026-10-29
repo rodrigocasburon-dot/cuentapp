@@ -12,7 +12,7 @@
 @theme {
   --color-crema: #f7f8f3;
   --color-crema-2: #eef1e6;
-  --color-marron-oscuro: #15171c;
+  --color-marron-oscuro: #0f2a1f; /* tinta verde bosque (≈ 15:1 sobre crema) */
   --color-marron: #4a4f57;
   --color-arena: #e3a72f;
   --color-rojo: #b42318;
@@ -39,9 +39,21 @@ body {
     url("/topo.svg") center 4rem / 1100px no-repeat;
 }
 
+/* Banda lima horizontal de la portada (segunda referencia): blanco → lima → blanco */
+.banda {
+  background: linear-gradient(180deg, transparent 0%, rgb(217 242 79 / 0.75) 30%, rgb(200 236 70 / 0.9) 55%, rgb(217 242 79 / 0.6) 80%, transparent 100%);
+}
+
+/* Tarjeta de cristal sobre la banda */
+.cristal {
+  background: rgb(255 255 255 / 0.45);
+  border: 1px solid rgb(255 255 255 / 0.7);
+  backdrop-filter: blur(12px);
+}
+
 /* Texto con degradado (solo titulares grandes; el color base ya cumple AA) */
 .degradado {
-  background: linear-gradient(90deg, #15171c 0%, #3f6212 55%, #65a30d 100%);
+  background: linear-gradient(90deg, #0f2a1f 0%, #1f5133 55%, #3f7d20 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

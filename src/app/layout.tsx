@@ -7,7 +7,7 @@ import "./globals.css";
 // al compilar y la sirve desde la propia app: el navegador no llama a Google (D-49).
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta", display: "swap" });
 
-export const viewport: Viewport = { themeColor: "#15171c" };
+export const viewport: Viewport = { themeColor: "#0f2a1f" };
 export const metadata: Metadata = {
   title: "Cuentapp",
   description: "El semáforo del trimestre: tus documentos listos para el gestor.",

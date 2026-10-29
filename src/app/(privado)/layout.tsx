@@ -3,6 +3,7 @@
 // repositorioActual(), porque las acciones de servidor no pasan por aquí.
 
 import Link from "next/link";
+import { EnlaceNav } from "@/componentes/EnlaceNav";
 import { exigirSesion } from "@/servidor/auth/sesion";
 import { salir } from "../acciones-acceso";
 
@@ -25,9 +26,9 @@ export default async function LayoutPrivado({ children }: { children: React.Reac
               ["/buzon", "Buzón"],
               ["/cuenta", "Mi cuenta"],
             ].map(([href, texto]) => (
-              <Link key={href} href={href} className="rounded-full px-3 py-1.5 text-sm font-semibold hover:bg-crema-2">
+              <EnlaceNav key={href} href={href}>
                 {texto}
-              </Link>
+              </EnlaceNav>
             ))}
           </nav>
           <div className="flex items-center gap-4">
